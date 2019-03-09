@@ -4,15 +4,10 @@
 import sys
 import os
 
-from .board import Board
+import utils.gui as gui 
+from utils.const import GameMode
 
-def printClear():
-    if os.name == 'nt':
-        clear = lambda : os.system('cls')
-        clear()
-    else:
-        clear = lambda : os.system('clear')
-        clear()
+from .board import Board
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -28,35 +23,49 @@ class Game():
         self.boardPrint = 1
 
     # Simulación de un juego
-    def play(self):
+    def play(self, mode, players):
+
+        if mode == GameMode.PLAYING:
+            self.playUI(players)
+
+        elif mode == GameMode.TRAINING:
+            self.playTraining(players)
+
+
+    def playUI(self, player):
 
         keyboard = ''
+        while keyboard != '0':
 
-        while keyboard != 0:
-
-            printClear()
+            gui.printClear()
 
             b = Board()
 
             if self.boardPrint == 1:
-                b.printBoardHex(False)
+                gui.printBoardHex(b.getMatrix(), False, b.inverse1, b.inverse2)
             elif self.boardPrint == 2:
-                b.printBoardHex(True)
+                gui.printBoardHex(b.getMatrix(), True, b.inverse1, b.inverse2)
             elif self.boardPrint == 3:
-                b.printBoardMatrix()
+                gui.printBoardMatrix(b.getMatrix(), b.getLength())
 
             print("-> Ingrese su jugada o el numero de la opción deseada: ")
+            print("---> Para mover la ficha (x,y) a la posicion (w,z) ingrese x,y w,z")
             print("---> 1 - Ver tablero normal")
             print("---> 2 - Ver tablero grilla")
             print("---> 3 - Ver tablero matriz")
             print("---> 0 - Abandonar")
-            keyboard = int(input())
+            keyboard = input()
 
-            if keyboard == 1:
+            if keyboard == '1':
                 self.boardPrint = 1
 
-            elif keyboard == 2:
+            elif keyboard == '2':
                 self.boardPrint = 2
 
-            elif keyboard == 3:
+            elif keyboard == '3':
                 self.boardPrint = 3
+
+    def playTraining(self, players):
+
+        (player1, player2) = players
+        

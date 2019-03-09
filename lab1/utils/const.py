@@ -21,3 +21,9 @@ class PlayerType(Enum):
 class GameMode(Enum):
     TRAINING = 1
     PLAYING = 2
+
+# Tipos de pieza para la clase Game y Board
+class GameTokens(Enum):
+    PLAYER1 = 1
+    PLAYER2 = 2
+    EMPTY = 0
