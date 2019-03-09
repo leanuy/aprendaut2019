@@ -5,7 +5,7 @@ import os
 import sys
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode
+from .const import MenuOps, PlayerType, GameMode, GameTokens
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -93,11 +93,11 @@ def printPlayerType():
 def printToken(slot):
     token = slot.getToken()
     print("(", end="")
-    if token == 0:
+    if token == GameTokens.EMPTY:
         print("       ", end="")
-    elif token == 1:
+    elif token == GameTokens.PLAYER1:
         cprint("   O   ", 'yellow', end="")
-    elif token == 2:
+    elif token == GameTokens.PLAYER2:
         cprint("   O   ", 'magenta', end="")
     print(")", end="")
 
@@ -115,11 +115,11 @@ def printSlot(slot):
     else:
         cprint(x, 'cyan', end=' ')
 
-    if token == 0:
+    if token == GameTokens.EMPTY:
         print("X", end=" ")
-    elif token == 1:
+    elif token == GameTokens.PLAYER1:
         cprint("O", 'yellow', end=" ")
-    elif token == 2:
+    elif token == GameTokens.PLAYER2:
         cprint("O", 'magenta', end=" ")
 
     if y > 0:
@@ -144,7 +144,7 @@ def printBoardMatrix(matrix, length):
     print("")
 
 # Imprime el tablero en forma de rombo
-def printBoardHex(matrix, showGrid, inverse1, inverse2):
+def printBoardHex(matrix, showGrid, fromVirtual):
 
     print("")
 
@@ -158,8 +158,7 @@ def printBoardHex(matrix, showGrid, inverse1, inverse2):
 
         for i in range(0, limit):
             xAux = x + i
-            (x2,y2) = inverse2(xAux,y)
-            (x3,y3) = inverse1(x2,y2)
+            (x3,y3) = fromVirtual((xAux,y))
             
             if showGrid:
                 printSlot(matrix[x3,y3])
@@ -182,8 +181,7 @@ def printBoardHex(matrix, showGrid, inverse1, inverse2):
 
         for i in range(limit, 0, -1):
             xAux = x + limit - i
-            (x2,y2) = inverse2(xAux,y)
-            (x3,y3) = inverse1(x2,y2)
+            (x3,y3) = fromVirtual((xAux,y))
 
             if showGrid:
                 printSlot(matrix[x3,y3])
