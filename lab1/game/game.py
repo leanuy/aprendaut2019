@@ -5,9 +5,10 @@ import sys
 import os
 
 import utils.gui as gui 
-from utils.const import GameMode, GameTokens, GameTokenMoves
+from utils.const import PlayerType, GameMode, GameTokens, GameTokenMoves
 
 from .board import Board
+from .player import Player
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -88,10 +89,14 @@ class Game():
                     elif res == GameTokenMoves.INVALID_COORDS:
                         print("-> No existe en el tablero la posición " + str((fromX, fromY)) + " o la posición " + str((toX, toY)) + ". Intentelo de nuevo")
                         input()
+                    elif res == GameTokenMoves.VALID_MOVE:
+                        # El turno pasa al otro jugador, que elige su jugada 
+                        ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
+                        b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
                 except:
-                  print("-> La entrada ingresada no sigue el formato adecuado. Intentelo de nuevo")
-                  input()
+                    print("-> La entrada ingresada no sigue el formato adecuado. Intentelo de nuevo")
+                    input()
                 
 
     def playTraining(self, players):

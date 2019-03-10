@@ -51,22 +51,22 @@ class Board():
 
     # Restricción 1 y su inversa al momento de parsear el tablero virtual al real
     def restriction1(self, x, y):
-        return (x - 4, - y + 4)
+        return (x - self.radius, - y + self.radius)
     def inverse1(self, x, y):
-        return (x + 4, -y + 4)
+        return (x + self.radius, - y + self.radius)
 
     # Restricción 2 y su inversa al momento de parsear el tablero virtual al real
     def restriction2(self, x, y):
-        if x + y > 4:
-            return (x, y - 9)
-        elif x + y < -4:
-            return (x, y + 9)
+        if x + y > self.radius:
+            return (x, y - self.length)
+        elif x + y < -self.radius:
+            return (x, y + self.length)
         return (x, y)
     def inverse2(self, x, y):
-        if y > 4:
-            return (x, y - 9)
-        elif y < -4:
-            return (x, y + 9)
+        if y > self.radius:
+            return (x, y - self.length)
+        elif y < -self.radius:
+            return (x, y + self.length)
         return (x, y)
 
     # Parseo de coordenadas reales a virtuales y viceversa
@@ -79,16 +79,15 @@ class Board():
         (x2, y2) = self.inverse2(x, y)
         return self.inverse1(x2, y2)
 
-    # Comprueba que las coordenadas reales existan
-    def isInBounds(self, pair):
-        (x, y) = pair
-        return x >= 0 and x < self.length and y >= 0 and y < self.length
+    # Comprueba que las coordenadas virtuales existan
+    def isInVirtualBounds(self, pair):
+        return pair in self.slots
 
     # Rellena el tablero con las fichas correspondientes
     def fillPlayers(self, x, y):
-        if x + y > 4:
+        if x + y > self.radius:
             return GameTokens.PLAYER1
-        elif x + y < -4:
+        elif x + y < -self.radius:
             return GameTokens.PLAYER2
         return GameTokens.EMPTY
 
@@ -101,6 +100,7 @@ class Board():
         self.radius = 4
         self.length = 9
         self.matrix = np.zeros((self.length, self.length), dtype=object)
+        self.slots = []
 
         for y in range(0, self.length):
             for x in range(0, self.length):
@@ -111,6 +111,7 @@ class Board():
                 (x2, y2) = self.matrix[x,y].getVPos()
                 self.matrix[x,y].setVPos(self.restriction2(x2,y2))
                 self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
+                self.slots.append(self.matrix[x,y].getVPos())
 
     ### GETTERS y SETTERS
     ### -------------------
@@ -126,6 +127,15 @@ class Board():
 
     ### METODOS PRINCIPALES
     ### -------------------
+
+    # 
+    def getPlayerSlots(self, player):
+        slots = []
+        for x in range(0, self.length):
+            for y in range(0, self.length):
+                if self.matrix[x,y].getToken() == player:
+                    slots.append(self.matrix[x,y].getVPos())
+        return slots
 
     # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
     # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
@@ -146,17 +156,17 @@ class Board():
         rEast = self.fromVirtual(east)
         rNortheast = self.fromVirtual(northeast)
 
-        if self.matrix[rNorthwest].isEmpty() and self.isInBounds(rNorthwest):
+        if self.isInVirtualBounds(northwest) and self.matrix[rNorthwest].isEmpty():
             moves.append(northwest)
-        if self.matrix[rWest].isEmpty() and self.isInBounds(rWest):
+        if self.isInVirtualBounds(west) and self.matrix[rWest].isEmpty():
             moves.append(west)
-        if self.matrix[rSouthwest].isEmpty() and self.isInBounds(rSouthwest):
+        if self.isInVirtualBounds(southwest) and self.matrix[rSouthwest].isEmpty():
             moves.append(southwest)
-        if self.matrix[rSoutheast].isEmpty() and self.isInBounds(rSoutheast):
+        if self.isInVirtualBounds(southeast) and self.matrix[rSoutheast].isEmpty():
             moves.append(southeast)
-        if self.matrix[rEast].isEmpty() and self.isInBounds(rEast):
+        if self.isInVirtualBounds(east) and self.matrix[rEast].isEmpty():
             moves.append(east)
-        if self.matrix[rNortheast].isEmpty() and self.isInBounds(rNortheast):
+        if self.isInVirtualBounds(northeast) and self.matrix[rNortheast].isEmpty():
             moves.append(northeast)
 
         return moves
@@ -169,7 +179,7 @@ class Board():
         (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
 
         # Comprobar si las coordenadas FROM son validas
-        if not self.isInBounds((fromRX, fromRY)):
+        if not self.isInVirtualBounds((fromVX, fromVY)):
             return GameTokenMoves.INVALID_COORDS
 
         # Comprobar si en FROM hay una ficha del jugador PLAYER
@@ -180,7 +190,7 @@ class Board():
         (toRX, toRY) = self.fromVirtual((toVX, toVY))
 
         # Comprobar si las coordenadas TO son validas
-        if not self.isInBounds((toRX, toRY)):
+        if not self.isInVirtualBounds((toVX, toVY)):
             return GameTokenMoves.INVALID_COORDS
 
         # Comprobar si en TO hay una ficha o esta vacío

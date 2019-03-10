@@ -6,9 +6,10 @@ import os
 import time
 
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens
 
 from game.game import Game
+from game.player import Player
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -39,6 +40,7 @@ if __name__ == '__main__':
             print(toc-tic)
 
             player = {
+                'player': Player(GameTokens.PLAYER1, playerType),
                 'type': playerType,
                 'name': playerName,
                 'time': toc-tic,
@@ -63,6 +65,6 @@ if __name__ == '__main__':
 
                 if c >= 0 and c < len(players):
                     g = Game()
-                    g.play(GameMode.PLAYING, players[c])
+                    g.play(GameMode.PLAYING, players[c]['player'])
                 else:
                     print("-> El índice ingresado no corresponde a ningún jugador")
