@@ -18,24 +18,40 @@ class Game():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self):
+    def __init__(self, mode, players):
+        
+        # Modo de juego
+        # 1. Entrenamiento
+        # 2. Juego
+        self.mode = mode
+
+        # Si modo es 1, representa al par de jugadores
+        # Si modo es 2, representa al jugador oponente al humano
+        self.players = players
+
         # Historial de tableros por turno
         self.boards = []
+
+        # Opcion de impresión de tablero
+        # 1. Hexagonal común
+        # 2. Hexagonal con coordenadas
+        # 3. Matriz con coordenadas
         self.boardPrint = 1
 
     # Simulación de un juego
-    def play(self, mode, players):
+    def play(self):
 
-        if mode == GameMode.PLAYING:
-            self.playUI(players)
+        if self.mode == GameMode.PLAYING:
+            self.playUI()
 
-        elif mode == GameMode.TRAINING:
-            self.playTraining(players)
+        elif self.mode == GameMode.TRAINING:
+            self.playTraining()
 
 
-    def playUI(self, player):
+    def playUI(self):
 
         b = Board()
+        player = self.players
         keyboard = ''
 
         while keyboard != '0':
@@ -121,7 +137,7 @@ class Game():
                     input()
                 
 
-    def playTraining(self, players):
+    def playTraining(self):
 
-        (player1, player2) = players
+        (player1, player2) = self.players
         
