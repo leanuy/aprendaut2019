@@ -128,7 +128,7 @@ class Board():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    # 
+    # Devuelve una lista con las coordenadas virtuales de las piezas del jugador
     def getPlayerSlots(self, player):
         slots = []
         for x in range(0, self.length):
@@ -140,7 +140,21 @@ class Board():
     # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
     # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
     def getPossibleMoves(self, player, vX, vY):
+        
+        (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
+
+        for jump in jumps:
+            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump))
+
+        return moves
+
+    # Dado un par de coordenadas virtuales genera un par compuesto por unalista 
+    # de posibles movimientos a casillas adyacentes o de posibles casillas a saltar
+    def getPossibleAdjacentMoves(self, player, position):
         moves = []
+        jumps = []
+
+        (vX, vY) = position
 
         northwest = (vX, vY-1)
         west = (vX-1, vY)
@@ -156,18 +170,64 @@ class Board():
         rEast = self.fromVirtual(east)
         rNortheast = self.fromVirtual(northeast)
 
-        if self.isInVirtualBounds(northwest) and self.matrix[rNorthwest].isEmpty():
-            moves.append(northwest)
-        if self.isInVirtualBounds(west) and self.matrix[rWest].isEmpty():
-            moves.append(west)
-        if self.isInVirtualBounds(southwest) and self.matrix[rSouthwest].isEmpty():
-            moves.append(southwest)
-        if self.isInVirtualBounds(southeast) and self.matrix[rSoutheast].isEmpty():
-            moves.append(southeast)
-        if self.isInVirtualBounds(east) and self.matrix[rEast].isEmpty():
-            moves.append(east)
-        if self.isInVirtualBounds(northeast) and self.matrix[rNortheast].isEmpty():
-            moves.append(northeast)
+        if self.isInVirtualBounds(northwest): 
+            if self.matrix[rNorthwest].isEmpty():
+                moves.append(northwest)
+            else:
+                jumps.append(northwest)
+
+        if self.isInVirtualBounds(west):
+            if self.matrix[rWest].isEmpty():
+                moves.append(west)
+            else:
+                jumps.append(west)
+
+        if self.isInVirtualBounds(southwest):
+            if self.matrix[rSouthwest].isEmpty():
+                moves.append(southwest)
+            else:
+                jumps.append(southwest)
+
+        if self.isInVirtualBounds(southeast):
+            if self.matrix[rSoutheast].isEmpty():
+                moves.append(southeast)
+            else:
+                jumps.append(southeast)
+
+        if self.isInVirtualBounds(east):
+            if self.matrix[rEast].isEmpty():
+                moves.append(east)
+            else:
+                jumps.append(east)
+
+        if self.isInVirtualBounds(northeast):
+            if self.matrix[rNortheast].isEmpty():
+                moves.append(northeast)
+            else:
+                jumps.append(northeast)
+
+        return (moves, jumps)
+
+    # Dado un par de coordenadas virtuales y un vecino a saltar, genera una lista
+    # de posibles saltos para la pieza en las coordenadas dadas
+    def getPossibleJumpMoves(self, player, fromJump, jump):
+
+        moves = []
+
+        (fromVX, fromVY) = fromJump
+        (vX, vY) = jump
+        
+        (relX, relY) = ((fromVX - vX) * -1, (fromVY - vY) * -1)
+        possibleJump = (vX + relX, vY + relY)
+        rPossibleJump = self.fromVirtual(possibleJump)
+
+        if self.isInVirtualBounds(possibleJump) and self.matrix[rPossibleJump].isEmpty():
+            moves.append(possibleJump)
+
+            (adjacentMoves, adjacentJumps) = self.getPossibleAdjacentMoves(player, possibleJump)
+            for aJump in adjacentJumps:
+                if aJump != jump:
+                    moves.extend(self.getPossibleJumpMoves(player, possibleJump, aJump))
 
         return moves
 
@@ -211,3 +271,20 @@ class Board():
         self.matrix[toRX,toRY].setToken(player)
 
         return GameTokenMoves.VALID_MOVE
+
+
+    #
+    def checkWin(self, player):
+        playerSlots = self.getPlayerSlots(player)
+        if player == GameTokens.PLAYER1:
+            for slot in playerSlots:
+                (x, y) = self.fromVirtual(slot)
+                if y <= self.radius:
+                    return False
+        else:
+            for slot in playerSlots:
+                (x, y) = self.fromVirtual(slot)
+                if y >= -self.radius:
+                    return False
+
+        return True

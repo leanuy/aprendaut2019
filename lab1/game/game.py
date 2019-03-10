@@ -66,6 +66,16 @@ class Game():
             elif keyboard == '3':
                 self.boardPrint = 3
 
+            elif keyboard == 'PASS':
+                # El turno pasa al otro jugador, que elige su jugada 
+                ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
+                b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
+
+                if b.checkWin(GameTokens.PLAYER1):
+                    print("-> Has perdido la partida!")
+                    input()
+                    return
+                    
             elif keyboard != '0':
                 try:
                     coords = keyboard.split()
@@ -90,11 +100,23 @@ class Game():
                         print("-> No existe en el tablero la posición " + str((fromX, fromY)) + " o la posición " + str((toX, toY)) + ". Intentelo de nuevo")
                         input()
                     elif res == GameTokenMoves.VALID_MOVE:
+
+                        if b.checkWin(GameTokens.PLAYER2):
+                            print("-> Has ganado la partida!")
+                            input()
+                            return
+                        
                         # El turno pasa al otro jugador, que elige su jugada 
                         ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
                         b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
-                except:
+                        if b.checkWin(GameTokens.PLAYER1):
+                            print("-> Has perdido la partida!")
+                            input()
+                            return
+
+                except Exception as e:
+                    print(e)
                     print("-> La entrada ingresada no sigue el formato adecuado. Intentelo de nuevo")
                     input()
                 
