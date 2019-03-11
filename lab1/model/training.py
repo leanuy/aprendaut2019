@@ -13,6 +13,12 @@ from utils.const import PlayerType, GameMode, GameTokens
 
 class Training():
 
+    ### METODOS AUXILIARES
+    ### -------------------
+
+    def saveModel(self):
+        print("Guarda los pesos obtenidos del entrenamiento en un archivo de texto")
+
     ### METODOS PRINCIPALES
     ### -------------------
 
@@ -41,10 +47,19 @@ class Training():
     # Entrenamiento del modelo
     def training(self):
 
+        results = [0,0,0]
+
         for i in range(0, self.iters):
 
             g = Game(GameMode.TRAINING, (self.player, self.opponent))
             res = g.play()
 
+            if res:
+                results[0] = results[0] + 1
+            else:
+                results[1] = results[1] + 1
+
             # Aca va el codigo de actualizar los pesos
+
+        return (self.player, results)
 

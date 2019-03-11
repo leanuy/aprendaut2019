@@ -156,8 +156,9 @@ class Board():
         
         (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
 
+        visitedJumps = []
         for jump in jumps:
-            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump))
+            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
 
         return moves
 
@@ -223,24 +224,28 @@ class Board():
 
     # Dado un par de coordenadas virtuales y un vecino a saltar, genera una lista
     # de posibles saltos para la pieza en las coordenadas dadas
-    def getPossibleJumpMoves(self, player, fromJump, jump):
+    def getPossibleJumpMoves(self, player, fromJump, jump, visitedJumps):
 
         moves = []
 
-        (fromVX, fromVY) = fromJump
-        (vX, vY) = jump
-        
-        (relX, relY) = ((fromVX - vX) * -1, (fromVY - vY) * -1)
-        possibleJump = (vX + relX, vY + relY)
-        rPossibleJump = self.fromVirtual(possibleJump)
+        if not (fromJump, jump) in visitedJumps:
 
-        if self.isInVirtualBounds(possibleJump) and self.matrix[rPossibleJump].isEmpty():
-            moves.append(possibleJump)
+            visitedJumps.append((fromJump, jump))
+            
+            (fromVX, fromVY) = fromJump
+            (vX, vY) = jump
+            
+            (relX, relY) = ((fromVX - vX) * -1, (fromVY - vY) * -1)
+            possibleJump = (vX + relX, vY + relY)
+            rPossibleJump = self.fromVirtual(possibleJump)
 
-            (adjacentMoves, adjacentJumps) = self.getPossibleAdjacentMoves(player, possibleJump)
-            for aJump in adjacentJumps:
-                if aJump != jump:
-                    moves.extend(self.getPossibleJumpMoves(player, possibleJump, aJump))
+            if self.isInVirtualBounds(possibleJump) and self.matrix[rPossibleJump].isEmpty():
+                moves.append(possibleJump)
+
+                (adjacentMoves, adjacentJumps) = self.getPossibleAdjacentMoves(player, possibleJump)
+                for aJump in adjacentJumps:
+                    if aJump != jump:
+                        moves.extend(self.getPossibleJumpMoves(player, possibleJump, aJump, visitedJumps))
 
         return moves
 

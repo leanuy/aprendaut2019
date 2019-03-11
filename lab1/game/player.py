@@ -34,6 +34,12 @@ class Player():
         # es None y no se usa
         self.model = model
 
+    ### GETTERS y SETTERS
+    ### -------------------
+
+    def getModel(self):
+        return self.model
+
     ### METODOS PRINCIPALES
     ### -------------------
 

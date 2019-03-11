@@ -40,12 +40,11 @@ if __name__ == '__main__':
             t = Training(playerType, iters, learningRate, weights)
 
             tic = time.time()
-            player = t.training()
+            (player, results) = t.training()
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
-            print("--> Tiempo de entrenamiento: ", end="")
-            print(toc-tic)
+            print()
 
             player = {
                 'player': player,
@@ -55,10 +54,12 @@ if __name__ == '__main__':
                 'iterations': iters,
                 'learningRate': learningRate,
                 'initialWeights': weights,
+                'finalWeights': player.getModel().getWeights(),
+                'results': results,
             }
             players.append(player)
 
-            print()
+            gui.printTrainedPlayer(player)
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.PLAY:

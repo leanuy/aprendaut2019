@@ -123,6 +123,32 @@ def printInitialWeights():
     except:
         return [0.9, 0.9, 0.9]
 
+# Imprime los datos de entrenamiento de un jugador
+def printTrainedPlayer(player):
+
+    print("-> Jugador Entrenado VS : ", end="")
+    print(player['playerName'])
+
+    print("--> Tiempo de entrenamiento: ", end="")
+    print(player['time'])
+
+    print("--> Cantidad de iteraciones: ", end="")
+    print(player['iters'])
+
+    print("--> Ratio de aprendizaje: ", end="")
+    print(player['learningRate'])
+
+    print("--> Pesos iniciales: ", end="")
+    print(player['intialWeights'])
+
+    print("--> Pesos finales: ", end="")
+    print(player['finalWeights'])
+
+    print("--> Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
+    print(player['results'])
+
+    print("--> Porcentaje de partidas ganadas: ", end="")
+    print(player['results'][0] / player['iters'])
 
 ### METODOS AUXILIARES - TABLERO
 ### ----------------------------
