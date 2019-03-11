@@ -308,12 +308,12 @@ class Board():
         playerSlots = self.getPlayerSlots(player)
         if player == GameTokens.PLAYER1:
             for slot in playerSlots:
-                (x, y) = self.fromVirtual(slot)
+                (x, y) = slot
                 if y <= self.radius:
                     return False
         else:
             for slot in playerSlots:
-                (x, y) = self.fromVirtual(slot)
+                (x, y) = slot
                 if y >= -self.radius:
                     return False
 
