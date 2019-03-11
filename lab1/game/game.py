@@ -5,7 +5,7 @@ import sys
 import os
 
 import utils.gui as gui 
-from utils.const import PlayerType, GameMode, GameTokens, GameTokenMoves
+from utils.const import GameMode, GameTokens, GameTokenMoves
 
 from .board import Board
 from .player import Player
@@ -42,10 +42,12 @@ class Game():
     def play(self):
 
         if self.mode == GameMode.PLAYING:
-            self.playUI()
+            res = self.playUI()
 
         elif self.mode == GameMode.TRAINING:
-            self.playTraining()
+            res = self.playTraining()
+
+        return res
 
 
     def playUI(self):
@@ -117,19 +119,20 @@ class Game():
                         input()
                     elif res == GameTokenMoves.VALID_MOVE:
 
+                        # Checkea si el jugador humano ganó luego de su jugada
                         if b.checkWin(GameTokens.PLAYER2):
-                            print("-> Has ganado la partida!")
-                            input()
-                            return
+                            return True
                         
                         # El turno pasa al otro jugador, que elige su jugada 
                         ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
                         b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
+                        # Checkea si el jugador automatico ganó luego de su jugada
                         if b.checkWin(GameTokens.PLAYER1):
-                            print("-> Has perdido la partida!")
-                            input()
-                            return
+                            return False
+
+                        # Agrega el tablero al tablero de turnos
+                        self.boards.append(b)
 
                 except Exception as e:
                     print(e)
@@ -140,4 +143,25 @@ class Game():
     def playTraining(self):
 
         (player1, player2) = self.players
-        
+        b = Board()
+        finished = False
+        res = False
+
+        while not finished:
+
+            ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
+            b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
+
+            if b.checkWin(GameTokens.PLAYER1):
+                finished = True
+                res = True
+
+            ((fromX2, fromY2), (toX2, toY2)) = player2.chooseMove(b)
+            b.moveToken(GameTokens.PLAYER2, fromX2, fromY2, toX2, toY2)
+
+            if b.checkWin(GameTokens.PLAYER2):
+                finished = True
+                res = False
+
+        return res
+                

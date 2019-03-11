@@ -15,8 +15,13 @@ class Slot():
 
     def __init__(self, rPos, vPos, token):
         
+        # Posición real (x,y) en el tablero matriz
         self.rPos = rPos
+
+        # Posición virtual (x,y) en el tablero hexagonal
         self.vPos = vPos
+
+        # Pieza del slot (jugador1, jugador2 o vacio)
         self.token = token
 
     ### GETTERS y SETTERS
@@ -97,21 +102,29 @@ class Board():
 
     def __init__(self):
         
+        # Radio del hexagono
         self.radius = 4
+        
+        # Largo de extremo a extremo
         self.length = 9
+        
+        # Representación del tablero hexagonal en matriz cuadrada
         self.matrix = np.zeros((self.length, self.length), dtype=object)
+        
+        # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
         self.slots = []
 
+        # Rellenado del tablero
         for y in range(0, self.length):
             for x in range(0, self.length):
                 self.matrix[x,y] = Slot((x,y), self.restriction1(x,y), 0)
-                
         for y in range(0, self.length):
             for x in range(0, self.length):
                 (x2, y2) = self.matrix[x,y].getVPos()
                 self.matrix[x,y].setVPos(self.restriction2(x2,y2))
                 self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
                 self.slots.append(self.matrix[x,y].getVPos())
+                
 
     ### GETTERS y SETTERS
     ### -------------------
@@ -143,8 +156,9 @@ class Board():
         
         (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
 
+        visitedJumps = []
         for jump in jumps:
-            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump))
+            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
 
         return moves
 
@@ -210,24 +224,28 @@ class Board():
 
     # Dado un par de coordenadas virtuales y un vecino a saltar, genera una lista
     # de posibles saltos para la pieza en las coordenadas dadas
-    def getPossibleJumpMoves(self, player, fromJump, jump):
+    def getPossibleJumpMoves(self, player, fromJump, jump, visitedJumps):
 
         moves = []
 
-        (fromVX, fromVY) = fromJump
-        (vX, vY) = jump
-        
-        (relX, relY) = ((fromVX - vX) * -1, (fromVY - vY) * -1)
-        possibleJump = (vX + relX, vY + relY)
-        rPossibleJump = self.fromVirtual(possibleJump)
+        if not (fromJump, jump) in visitedJumps:
 
-        if self.isInVirtualBounds(possibleJump) and self.matrix[rPossibleJump].isEmpty():
-            moves.append(possibleJump)
+            visitedJumps.append((fromJump, jump))
+            
+            (fromVX, fromVY) = fromJump
+            (vX, vY) = jump
+            
+            (relX, relY) = ((fromVX - vX) * -1, (fromVY - vY) * -1)
+            possibleJump = (vX + relX, vY + relY)
+            rPossibleJump = self.fromVirtual(possibleJump)
 
-            (adjacentMoves, adjacentJumps) = self.getPossibleAdjacentMoves(player, possibleJump)
-            for aJump in adjacentJumps:
-                if aJump != jump:
-                    moves.extend(self.getPossibleJumpMoves(player, possibleJump, aJump))
+            if self.isInVirtualBounds(possibleJump) and self.matrix[rPossibleJump].isEmpty():
+                moves.append(possibleJump)
+
+                (adjacentMoves, adjacentJumps) = self.getPossibleAdjacentMoves(player, possibleJump)
+                for aJump in adjacentJumps:
+                    if aJump != jump:
+                        moves.extend(self.getPossibleJumpMoves(player, possibleJump, aJump, visitedJumps))
 
         return moves
 
@@ -272,8 +290,20 @@ class Board():
 
         return GameTokenMoves.VALID_MOVE
 
+    # Dado un jugador y un movimiento ya realizado, devuelve el tablero al estado en el que
+    # se encontraba antes de realizar el movimiento
+    # DETALLE: Este metodo debe ser usado solamente luego de moveToken en un entrenamiento
+    def undoToken(self, player, fromVX, fromVY, toVX, toVY):
+        
+        # Obtener las coordenadas en la matriz para FROM y TO
+        (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
+        (toRX, toRY) = self.fromVirtual((toVX, toVY))
 
-    #
+        # Deshacer el movimiento
+        self.matrix[fromRX,fromRY].setToken(player)
+        self.matrix[toRX,toRY].setToken(GameTokens.EMPTY)
+
+    # Checkea si el jugador 'player' ganó en el tablero actual 
     def checkWin(self, player):
         playerSlots = self.getPlayerSlots(player)
         if player == GameTokens.PLAYER1:
@@ -288,3 +318,7 @@ class Board():
                     return False
 
         return True
+
+    # Obtiene los coeficientes de la representacion actual del tablero
+    def getFeatures(self, player):
+        return [1,1,1]

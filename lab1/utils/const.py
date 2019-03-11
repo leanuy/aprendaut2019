@@ -13,9 +13,9 @@ class MenuOps(Enum):
 
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
-    RANDOM = 1
-    SELF = 2
-    HUMAN = 3
+    RANDOM = 0
+    TRAINED_RANDOM = 1
+    TRAINED_SELF = 2
 
 # Tipos de juego para la clase Game
 class GameMode(Enum):

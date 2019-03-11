@@ -51,40 +51,104 @@ def printMenuOption():
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):
-    if players == []:
-        return
-    else:
-        print ("Jugadores actuales:")
-        index = 0
-        for p in players:
-            print("-> ", end="")
-            print(str(index), end="")
-            print(" - ", end="")
-            print("Jugador ", end="")
-            print(p['name'])
-            index = index + 1
-        print ("")
+    print ("Jugadores actuales:")
+    print("-> 0 - Jugador random sin entrenar")
+    for p in players:
+        print("-> ", end="")
+        print(str(index), end="")
+        print(" - ", end="")
+        print("Jugador ", end="")
+        print(p['name'])
+        index = index + 1
+    print ("")
 
 # Imprime las opciones de tipo de jugador y lee la opcion elegida
 def printPlayerType():
     print ("")
     print ("-> Elija un tipo de jugador para entrenar: ")
+    print ("-> DEFAULT: 2")
     print ("1. VS Random")
     print ("2. VS Si Mismo")
-    playerType = int( input() )
 
-    if playerType < 1 or playerType > 2:
-        print("-> El primer argumento debe ser 1 o 2.")
-        sys.exit()
-    else:
-        if playerType == 1:
-            playerType = PlayerType.RANDOM
-            playerName = "Random"
-        elif playerType == 2:
-            playerType = PlayerType.SELF
-            playerName = "Si Mismo"
+    try:
+        playerType = int( input() )
 
-    return (playerType, playerName)
+        if playerType < 1 or playerType > 2:
+            return (PlayerType.TRAINED_SELF, "Si Mismo")
+        else:
+            if playerType == 1:
+                playerType = PlayerType.TRAINED_RANDOM
+                playerName = "Random"
+            elif playerType == 2:
+                playerType = PlayerType.TRAINED_SELF
+                playerName = "Si Mismo"
+
+        return (playerType, playerName)
+
+    except:
+        return (PlayerType.TRAINED_SELF, "Si Mismo")
+    
+# Imprime las opciones de cantidad de iteraciones y lee la opcion elegida
+def printTrainingIterations():
+    print ("")
+    print ("-> Ingrese la cantidad de iteraciones (por defecto 100): ")
+    print ("-> DEFAULT: 100")
+    try:
+        iters = int( input() )
+        return iters
+    except:
+        return 100
+
+# Imprime las opciones de ratio de aprendizaje y lee la opcion elegida
+def printLearningRate():
+    print ("")
+    print ("-> Ingrese el ratio de aprendizaje (por defecto 0.5): ")
+    try:
+        learningRate = float( input() )
+        if learningRate < 0 or learningRate > 1:
+            return 0.5
+        return learningRate
+    except:
+        return 0.5
+
+# Imprime las opciones de pesos iniciales y lee la opcion elegida
+def printInitialWeights():
+    print ("")
+    print ("-> Ingrese la lista de pesos iniciales (por defecto [0.9, 0.9, 0.9]): ")
+    try:
+        weights = input()
+        weights = weights.split(',')
+        weights = [float(w) for w in weights]
+        return learningRate
+    except:
+        return [0.9, 0.9, 0.9]
+
+# Imprime los datos de entrenamiento de un jugador
+def printTrainedPlayer(player):
+
+    print("-> Jugador Entrenado VS : ", end="")
+    print(player['playerName'])
+
+    print("--> Tiempo de entrenamiento: ", end="")
+    print(player['time'])
+
+    print("--> Cantidad de iteraciones: ", end="")
+    print(player['iters'])
+
+    print("--> Ratio de aprendizaje: ", end="")
+    print(player['learningRate'])
+
+    print("--> Pesos iniciales: ", end="")
+    print(player['intialWeights'])
+
+    print("--> Pesos finales: ", end="")
+    print(player['finalWeights'])
+
+    print("--> Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
+    print(player['results'])
+
+    print("--> Porcentaje de partidas ganadas: ", end="")
+    print(player['results'][0] / player['iters'])
 
 ### METODOS AUXILIARES - TABLERO
 ### ----------------------------
