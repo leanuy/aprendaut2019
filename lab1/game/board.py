@@ -114,6 +114,16 @@ class Board():
         # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
         self.slots = []
 
+        # Utils
+        self.axial_directions = {
+            'northwest': (0,-1),
+            'west': (-1,0),
+            'southwest': (-1,1),
+            'southeast': (0,1),
+            'east': (1,0),
+            'northeast': (1,-1)
+        }
+
         # Rellenado del tablero
         for y in range(0, self.length):
             for x in range(0, self.length):
@@ -320,5 +330,53 @@ class Board():
         return True
 
     # Obtiene los coeficientes de la representacion actual del tablero
+        # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
+        # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
+        # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
     def getFeatures(self, player):
-        return [1,1,1]
+        (A1, B1, C1) = self.get_features_for_player(GameTokens.PLAYER1)
+        (A2, B2, C2) = self.get_features_for_player(GameTokens.PLAYER2)
+        return [A2 - A1, B2 - B1, C1 - C2] if player == GameTokens.PLAYER1 else [A1 - A2, B1 - B2, C2 - C1]
+
+    def get_features_for_player(self, player):
+        player_slots = self.getPlayerSlots(player)
+        goal = (self.getRadius(), -(self.getLength()-1)) if player == GameTokens.PLAYER1 else (-self.getRadius(), self.getLength()-1)
+        total_squared_distance_to_goal = 0
+        total_squared_distance_to_center = 0
+        sum_of_maximum_hop_to_goal = 0
+        for slot in player_slots:
+            # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i 
+            total_squared_distance_to_goal += self.hex_distance(slot, goal)^2
+            # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
+            total_squared_distance_to_center += self.distance_to_vertical_center(slot)^2
+            # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
+            sum_of_maximum_hop_to_goal += self.maximum_hop_to_goal_for_player(slot, goal)
+        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
+    
+    # Obtener distancia de una hex a otra
+    # https://www.redblobgames.com/grids/hexagons/#distances
+    def hex_distance(self, from_hex, to_hex):
+        (fromX, fromY) = from_hex
+        (toX, toY) = to_hex
+        return max(abs(fromX - toX), abs(fromX + fromY - toX - toY), abs(fromY - toY))
+
+    def distance_to_vertical_center(self, from_hex):
+        (fromX, fromY) = from_hex
+        centerY = fromY
+        if centerY % 2 == 0: # Is even
+            centerX = -centerY/2
+            return self.hex_distance(from_hex, (centerX, centerY))
+        else:
+            # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
+            west_centerX = -np.sign(centerY)*((abs(centerY) - 1)/2)
+            east_centerX = -np.sign(centerY)*((abs(centerY) + 1)/2)
+            return min(self.hex_distance(from_hex, (west_centerX, centerY)), self.hex_distance(from_hex, (east_centerX, centerY)))
+    
+    def maximum_hop_to_goal_for_player(self, player, slot):
+        return 0
+
+    # Utils
+    def hex_neighbor(self, hex, direction):
+        (dirX, dirY) = self.axial_directions[direction]
+        (hexX, hexY) = hex.getVPos()
+        return (hexX + dirX, hexY + dirY)
