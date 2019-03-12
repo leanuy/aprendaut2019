@@ -22,6 +22,9 @@ if __name__ == '__main__':
     op = MenuOps.TRAIN
     players = []
 
+    # NOTA: variable global con historial de models. Ver si rinde
+    historial_weigths = []
+
     while op == MenuOps.TRAIN or op == MenuOps.PLAY:
 
         gui.printMenu(players)
@@ -40,11 +43,13 @@ if __name__ == '__main__':
             t = Training(playerType, iters, learningRate, weights)
 
             tic = time.time()
-            (player, results) = t.training()
+            (player, results, last_weights) = t.training()
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
             print()
+
+            historial_weigths.append(last_weights)
 
             player = {
                 'player': player,
