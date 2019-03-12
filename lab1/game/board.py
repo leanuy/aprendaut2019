@@ -370,7 +370,7 @@ class Board():
         if centerY % 2 == 0: # Is even
             centerX = -centerY/2
             return self.hex_distance(from_hex, (centerX, centerY))
-        else:
+        else: # Is odd
             # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
             west_centerX = -np.sign(centerY)*((abs(centerY) - 1)/2)
             east_centerX = -np.sign(centerY)*((abs(centerY) + 1)/2)
