@@ -115,6 +115,7 @@ class Board():
         self.slots = []
 
         # Utils
+        # Versores con direcciones de desplazamiento
         self.axial_directions = {
             'northwest': (0,-1),
             'west': (-1,0),
@@ -338,6 +339,9 @@ class Board():
         (A2, B2, C2) = self.get_features_for_player(GameTokens.PLAYER2)
         return [A2 - A1, B2 - B1, C1 - C2] if player == GameTokens.PLAYER1 else [A1 - A2, B1 - B2, C2 - C1]
 
+    ### METODOS AUXILIARES
+    ### -------------------
+
     def get_features_for_player(self, player):
         player_slots = self.getPlayerSlots(player)
         goal = (self.getRadius(), -(self.getLength()-1)) if player == GameTokens.PLAYER1 else (-self.getRadius(), self.getLength()-1)
@@ -350,7 +354,7 @@ class Board():
             # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
             total_squared_distance_to_center += self.distance_to_vertical_center(slot)^2
             # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
-            sum_of_maximum_hop_to_goal += self.maximum_hop_to_goal_for_player(slot, goal)
+            sum_of_maximum_hop_to_goal += self.maximum_hop_to_goal_for_player(slot, player, goal)
         return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
     
     # Obtener distancia de una hex a otra
@@ -372,10 +376,17 @@ class Board():
             east_centerX = -np.sign(centerY)*((abs(centerY) + 1)/2)
             return min(self.hex_distance(from_hex, (west_centerX, centerY)), self.hex_distance(from_hex, (east_centerX, centerY)))
     
-    def maximum_hop_to_goal_for_player(self, player, slot):
-        return 0
+    def maximum_hop_to_goal_for_player(self, from_hex, player, goal):
+        (fromX, fromY) = from_hex
+        moves = self.getPossibleMoves(player, fromX, fromY)
+        maximum_hop = 0
+        for move in moves:
+            distance = self.hex_distance(move, goal)
+            if distance > maximum_hop:
+                maximum_hop = distance
+        return maximum_hop
 
-    # Utils
+    # Mueve una celda en una dirección "east", "northwest", etc
     def hex_neighbor(self, hex, direction):
         (dirX, dirY) = self.axial_directions[direction]
         (hexX, hexY) = hex.getVPos()
