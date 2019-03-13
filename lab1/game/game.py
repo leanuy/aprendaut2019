@@ -3,6 +3,7 @@
 
 import sys
 import os
+import re
 
 import utils.gui as gui 
 from utils.const import GameMode, GameTokens, GameTokenMoves
@@ -99,7 +100,27 @@ class Game():
                     print("-> Has perdido la partida!")
                     input()
                     return
-                    
+            elif keyboard == 'metrics for players':
+                metrics = b.getFeatures(GameTokens.PLAYER2)
+                print("Sum of squared distance to goal: " + str(metrics[0]))
+                print("Sum of squared distance to center: " + str(metrics[1]))
+                print("Sum of maximum hops: " + str(metrics[2]))
+                input()
+            elif keyboard == 'player metrics':
+                metrics = b.get_features_for_player(GameTokens.PLAYER2)
+                print("Sum of squared distance to goal: " + str(metrics[0]))
+                print("Sum of squared distance to center: " + str(metrics[1]))
+                print("Sum of maximum hops: " + str(metrics[2]))
+                input()
+            elif re.search(r"^metrics [-+]?\d+,[-+]?\d+$", keyboard) is not None:
+                coords = re.sub(r"^metrics ", "", keyboard).split(',')
+                token = (int(coords[0]), int(coords[1]))
+                if token in b.getPlayerSlots(GameTokens.PLAYER2):
+                    goal = (b.getRadius(), -(b.getLength()-1))
+                    print("Distance to goal: " + str(b.hex_distance(token, goal)))
+                    print("Distance to center: " + str(b.distance_to_vertical_center(token)))
+                    print("Maximum hop: " + str(b.maximum_hop_towards_goal_for_player(token, GameTokens.PLAYER2, goal)))
+                    input()
             elif keyboard != '0':
                 try:
                     coords = keyboard.split()
