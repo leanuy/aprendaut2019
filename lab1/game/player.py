@@ -43,6 +43,9 @@ class Player():
     def setModel(self, m):
         self.model = m
 
+    def getPlayerType(self):
+        return self.playerType
+
     ### METODOS PRINCIPALES
     ### -------------------
 

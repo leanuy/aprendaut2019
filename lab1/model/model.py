@@ -31,7 +31,7 @@ class Model():
     def update(self, board, v_t, k):
         # LMS weight update rule
         v_t_tablero = self.evaluate(board)
-		X = board.get_features()
+		X = board.getFeatures()
 		for i in range(len(self.weights)):
             self.weights[i] = self.weights[i] + k * (v_t - v_t_tablero) * X[i]
 

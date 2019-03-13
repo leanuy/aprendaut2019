@@ -84,8 +84,13 @@ class Training():
             for t in ejemplos_entrenamiento:
                 new_model.update(t[0], t[1], self.learningRate)
 
-            # revisar... ya no se lo que hago a esta hora jeje
+            # Set past experience to the player
             self.player.setModel(new_model)
+
+            # Set experience to oponent if not Random oponent
+            if self.oponent.getPlayerType != PlayerType.TRAINED_RANDOM:
+                self.oponent.setModel(model)
+
 
         return (self.player, results, new_model.getWeights())
 
