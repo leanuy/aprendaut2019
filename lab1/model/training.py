@@ -8,6 +8,8 @@ from game.player import Player
 
 from utils.const import PlayerType, GameMode, GameTokens
 
+import copy
+
 ### CLASE PRINCIPAL
 ### ------------------
 
@@ -54,12 +56,42 @@ class Training():
             g = Game(GameMode.TRAINING, (self.player, self.opponent))
             res = g.play()
 
+            # Obtener tableros del juego
+            historial = g.getBoards()
+
+            # Obtener model
+            model = self.player.getModel()
+
+            # Se arma la lista de pares [tablero, v_train]
+            ejemplos_entrenamiento = []
+            for tablero, sucesor_t in zip(historial, historial[1:]):
+                features = tablero.getFeatures(GameTokens.PLAYER1)
+                featuresSuccessor = sucesor_t.getFeatures(GameTokens.PLAYER1)
+                ejemplos_entrenamiento.append([features, model.evaluate(featuresSuccessor)])
+
+            # Reviso si gane o perdi para poner el ultimo v_train
             if res:
+                v_entrenamiento = 1
                 results[0] = results[0] + 1
             else:
+                v_entrenamiento = 0
                 results[1] = results[1] + 1
 
-            # Aca va el codigo de actualizar los pesos
+            ult_tablero = historial[-1]
+            ejemplos_entrenamiento.append([ult_tablero, v_entrenamiento])
 
-        return (self.player, results)
+            new_model = copy.deepcopy(model)
+
+            for t in ejemplos_entrenamiento:
+                new_model.update(t[0], t[1], self.learningRate)
+
+            # Set past experience to the player
+            self.player.setModel(new_model)
+
+            # Set experience to oponent if not Random oponent
+            if self.oponent.getPlayerType != PlayerType.TRAINED_RANDOM:
+                self.oponent.setModel(model)
+
+
+        return (self.player, results, new_model.getWeights())
 

@@ -39,6 +39,12 @@ class Game():
         # 3. Matriz con coordenadas
         self.boardPrint = 1
 
+    ### GETTERS y SETTERS
+    ### -------------------
+
+    def getBoards(self):
+        return self.boards
+
     # Simulación de un juego
     def play(self):
 
