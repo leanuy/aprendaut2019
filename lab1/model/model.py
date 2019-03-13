@@ -32,11 +32,8 @@ class Model():
         return suma
 
     # Actualiza los pesos
-    def update(self, board, v_t, k):
+    def update(self, features, v_t, k):
         # LMS weight update rule
-        v_t_tablero = self.evaluate(board)
-		X = board.getFeatures()
+        v_t_tablero = self.evaluate(features)
 		for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] + k * (v_t - v_t_tablero) * X[i]
-
-    	print("Actualizando pesos en base a un tablero y su clasificacion")
+            self.weights[i] = self.weights[i] + k * (v_t - v_t_tablero) * features[i]

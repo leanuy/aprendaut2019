@@ -65,8 +65,9 @@ class Training():
             # Se arma la lista de pares [tablero, v_train]
             ejemplos_entrenamiento = []
             for tablero, sucesor_t in zip(historial, historial[1:]):
-                v_entrenamiento = model.evaluate(sucesor_t)
-                ejemplos_entrenamiento.append([tablero, v_entrenamiento])
+                features = tablero.getFeatures(GameTokens.PLAYER1)
+                featuresSuccessor = sucesor_t.getFeatures(GameTokens.PLAYER1)
+                ejemplos_entrenamiento.append([features, model.evaluate(featuresSuccessor)])
 
             # Reviso si gane o perdi para poner el ultimo v_train
             if res:
