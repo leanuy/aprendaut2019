@@ -344,17 +344,20 @@ class Board():
 
     def get_features_for_player(self, player):
         player_slots = self.getPlayerSlots(player)
-        goal = (self.getRadius(), -(self.getLength()-1)) if player == GameTokens.PLAYER1 else (-self.getRadius(), self.getLength()-1)
+        if player == GameTokens.PLAYER1:
+            goal = (-self.getRadius(), self.getLength()-1)
+        else:
+            goal = (self.getRadius(), -(self.getLength()-1))
         total_squared_distance_to_goal = 0
         total_squared_distance_to_center = 0
         sum_of_maximum_hop_to_goal = 0
         for slot in player_slots:
             # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i 
-            total_squared_distance_to_goal += self.hex_distance(slot, goal)^2
+            total_squared_distance_to_goal += self.hex_distance(slot, goal) ** 2
             # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
-            total_squared_distance_to_center += self.distance_to_vertical_center(slot)^2
+            total_squared_distance_to_center += self.distance_to_vertical_center(slot) ** 2
             # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
-            sum_of_maximum_hop_to_goal += self.maximum_hop_to_goal_for_player(slot, player, goal)
+            sum_of_maximum_hop_to_goal += self.maximum_hop_towards_goal_for_player(slot, player, goal)
         return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
     
     # Obtener distancia de una hex a otra
@@ -369,24 +372,29 @@ class Board():
         centerY = fromY
         if centerY % 2 == 0: # Is even
             # Checks distance with the hex in the middle
-            centerX = -centerY/2
+            centerX = -centerY//2
             return self.hex_distance(from_hex, (centerX, centerY))
         else: # Is odd
             # There is no middle hex, so checks with the one on the northwest and northeast.
             # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
-            west_centerX = -np.sign(centerY)*((abs(centerY) - 1)/2)
-            east_centerX = -np.sign(centerY)*((abs(centerY) + 1)/2)
+            west_centerX = -np.sign(centerY)*((abs(centerY) - 1)//2)
+            east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
             return min(self.hex_distance(from_hex, (west_centerX, centerY)), self.hex_distance(from_hex, (east_centerX, centerY)))
     
-    def maximum_hop_to_goal_for_player(self, from_hex, player, goal):
+    def maximum_hop_towards_goal_for_player(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
         moves = self.getPossibleMoves(player, fromX, fromY)
-        maximum_hop = 0
+        best_distance_to_goal = self.getLength()*2
+        best_move = None
         for move in moves:
-            distance = self.hex_distance(move, goal)
-            if distance > maximum_hop:
-                maximum_hop = distance
-        return maximum_hop
+            distance_to_goal = self.hex_distance(move, goal)
+            if best_distance_to_goal > distance_to_goal:
+                best_distance_to_goal = distance_to_goal
+                best_move = move
+        if best_move is None:
+            return 0
+        else:
+            return self.hex_distance(from_hex, best_move)
 
     # Mueve una celda en una dirección "east", "northwest", etc
     def hex_neighbor(self, hex, direction):
