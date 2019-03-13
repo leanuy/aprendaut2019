@@ -24,8 +24,12 @@ class Model():
     ### -------------------
 
     # Evalua un tablero dado
-    def evaluate(self, board):
-    	return random.uniform(0, 1)
+    def evaluate(self, features):
+		X = features
+		suma = 0
+		for i in range(len(X)):
+			suma += X[i]*self.W[i]
+        return suma
 
     # Actualiza los pesos
     def update(self, board, v_t, k):
