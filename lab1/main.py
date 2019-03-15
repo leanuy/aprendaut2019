@@ -34,13 +34,14 @@ if __name__ == '__main__':
 
             (playerType, playerName) = gui.printPlayerType()
             iters = gui.printTrainingIterations()
+            maxRounds = gui.printMaxRounds()
             learningRate = gui.printLearningRate()
             weights = gui.printInitialWeights()
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
-            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights)
+            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights, maxRounds)
 
             tic = time.time()
             (player, results) = t.training()
@@ -57,6 +58,7 @@ if __name__ == '__main__':
                 'name': playerName,
                 'time': toc-tic,
                 'iterations': iters,
+                'maxRounds': maxRounds,
                 'learningRate': learningRate,
                 'initialWeights': weights,
                 'finalWeights': player.getModel().getWeights(),

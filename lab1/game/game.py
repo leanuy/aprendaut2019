@@ -113,7 +113,7 @@ class Game():
                     goal = (b.getRadius(), -(b.getLength()-1))
                     print("Suma cuadrada de distancia al extremo: " + str(b.hexDistance(token, goal)))
                     print("Suma cuadrada de distancia al centro: " + str(b.verticalCenterDistance(token)))
-                    print("Suma de maxima cantidad de saltos: " + str(b.MaxHopsToGoal(token, GameTokens.PLAYER2, goal)))
+                    print("Suma de maxima cantidad de saltos: " + str(b.maxHopsToGoal(token, GameTokens.PLAYER2, goal)))
                     print()
                     input()
 
@@ -172,8 +172,6 @@ class Game():
         res = False
 
         while not finished:
-
-            #gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
 
             # El jugador a entrenar elige su movimiento y juega
             ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)

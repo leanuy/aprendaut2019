@@ -31,7 +31,7 @@ class Training():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, playerToken, playerType, iters, learningRate, weights):
+    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds):
 
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
@@ -61,6 +61,9 @@ class Training():
         # Ratio de aprendizaje en el entrenamiento
         self.learningRate = learningRate
 
+        # Cantidad de turnos antes de declarar empate
+        self.maxRounds = maxRounds
+
     # Entrenamiento del modelo
     def training(self):
 
@@ -71,7 +74,7 @@ class Training():
         for i in range(0, self.iters):
 
             # Se genera un juego nuevo para cada iteración
-            g = Game(GameMode.TRAINING, (self.player, self.opponent))
+            g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)
             res = g.play()
 
             # Obtener tableros del juego

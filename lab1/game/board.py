@@ -2,6 +2,7 @@
 ### ------------------
 
 import numpy as np
+import random
 
 from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections
 
@@ -194,21 +195,29 @@ class Board():
     ### -------------------
 
     def getPlayerFeatures(self, player):
+        
         player_slots = self.getPlayerSlots(player)
+        
         if player == GameTokens.PLAYER1:
             goal = (-self.getRadius(), self.getLength()-1)
         else:
             goal = (self.getRadius(), -(self.getLength()-1))
+        
         total_squared_distance_to_goal = 0
         total_squared_distance_to_center = 0
         sum_of_maximum_hop_to_goal = 0
+
         for slot in player_slots:
-            # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i 
+
+            # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i
             total_squared_distance_to_goal += self.hexDistance(slot, goal) ** 2
+
             # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
             total_squared_distance_to_center += self.verticalCenterDistance(slot) ** 2
+            
             # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
-            sum_of_maximum_hop_to_goal += self.MaxHopsToGoal(slot, player, goal)
+            sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
+        
         return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
     
     # Obtener distancia de una hex a otra
@@ -232,7 +241,7 @@ class Board():
             east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
             return min(self.hexDistance(from_hex, (west_centerX, centerY)), self.hexDistance(from_hex, (east_centerX, centerY)))
     
-    def MaxHopsToGoal(self, from_hex, player, goal):
+    def maxHopsToGoal(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
         moves = self.getPossibleMoves(player, fromX, fromY)
         best_distance_to_goal = self.getLength()*2
@@ -262,7 +271,6 @@ class Board():
             else:
                 newFeatures.append(feature / norm)
         return newFeatures
-
 
     ### METODOS AUXILIARES
     ### TRAINING

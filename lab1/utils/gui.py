@@ -109,7 +109,7 @@ def printPlayerType():
 # Imprime las opciones de cantidad de iteraciones y lee la opcion elegida
 def printTrainingIterations():
     print ("")
-    print ("-> Ingrese la cantidad de iteraciones (por defecto 100): ")
+    print ("-> Ingrese la cantidad de iteraciones: ")
     print ("-> DEFAULT: 100")
     try:
         iters = int( input() )
@@ -117,10 +117,22 @@ def printTrainingIterations():
     except:
         return 100
 
+# Imprime las opciones de cantidad de turnos y lee la opcion elegida
+def printMaxRounds():
+    print ("")
+    print ("-> Ingrese la cantidad de turnos antes de declarar empate: ")
+    print ("-> DEFAULT: 100")
+    try:
+        rounds = int( input() )
+        return rounds
+    except:
+        return 100
+
 # Imprime las opciones de ratio de aprendizaje y lee la opcion elegida
 def printLearningRate():
     print ("")
-    print ("-> Ingrese el ratio de aprendizaje (por defecto 0.5): ")
+    print ("-> Ingrese el ratio de aprendizaje: ")
+    print ("-> DEFAULT: 0.5")
     try:
         learningRate = float( input() )
         if learningRate < 0 or learningRate > 1:
@@ -132,7 +144,8 @@ def printLearningRate():
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
     print ("")
-    print ("-> Ingrese la lista de pesos iniciales (por defecto [0.9, 0.9, 0.9]): ")
+    print ("-> Ingrese la lista de pesos iniciales: ")
+    print ("-> DEFAULT: [0.9, 0.9, 0.9]")
     try:
         weights = input()
         weights = weights.split(',')
@@ -153,6 +166,9 @@ def printTrainedPlayer(player):
 
     print("--> Cantidad de iteraciones: ", end="")
     print(player['iterations'])
+
+    print("--> Cantidad máxima de turnos por juego: ", end="")
+    print(player['maxRounds'])
 
     print("--> Ratio de aprendizaje: ", end="")
     print(player['learningRate'])
