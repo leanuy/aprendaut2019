@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from utils.const import GameMode, GameTokens, GameTokenMoves
+from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections
 
 ### CLASE AUXILIAR
 ### ------------------
@@ -52,6 +52,7 @@ class Slot():
 class Board():
 
     ### METODOS AUXILIARES
+    ### REPRESENTACION
     ### -------------------
 
     # Restricción 1 y su inversa al momento de parsear el tablero virtual al real
@@ -96,84 +97,11 @@ class Board():
             return GameTokens.PLAYER2
         return GameTokens.EMPTY
 
-
-    ### CONSTRUCTOR
+    ### METODOS AUXILIARES
+    ### JUGADA
     ### -------------------
 
-    def __init__(self):
-        
-        # Radio del hexagono
-        self.radius = 4
-        
-        # Largo de extremo a extremo
-        self.length = 9
-        
-        # Representación del tablero hexagonal en matriz cuadrada
-        self.matrix = np.zeros((self.length, self.length), dtype=object)
-        
-        # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
-        self.slots = []
-
-        # Utils
-        # Versores con direcciones de desplazamiento
-        self.axial_directions = {
-            'northwest': (0,-1),
-            'west': (-1,0),
-            'southwest': (-1,1),
-            'southeast': (0,1),
-            'east': (1,0),
-            'northeast': (1,-1)
-        }
-
-        # Rellenado del tablero
-        for y in range(0, self.length):
-            for x in range(0, self.length):
-                self.matrix[x,y] = Slot((x,y), self.restriction1(x,y), 0)
-        for y in range(0, self.length):
-            for x in range(0, self.length):
-                (x2, y2) = self.matrix[x,y].getVPos()
-                self.matrix[x,y].setVPos(self.restriction2(x2,y2))
-                self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
-                self.slots.append(self.matrix[x,y].getVPos())
-                
-
-    ### GETTERS y SETTERS
-    ### -------------------
-
-    def getMatrix(self):
-        return self.matrix
-
-    def getRadius(self):
-        return self.radius
-    
-    def getLength(self):
-        return self.length
-
-    ### METODOS PRINCIPALES
-    ### -------------------
-
-    # Devuelve una lista con las coordenadas virtuales de las piezas del jugador
-    def getPlayerSlots(self, player):
-        slots = []
-        for x in range(0, self.length):
-            for y in range(0, self.length):
-                if self.matrix[x,y].getToken() == player:
-                    slots.append(self.matrix[x,y].getVPos())
-        return slots
-
-    # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
-    # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
-    def getPossibleMoves(self, player, vX, vY):
-        
-        (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
-
-        visitedJumps = []
-        for jump in jumps:
-            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
-
-        return moves
-
-    # Dado un par de coordenadas virtuales genera un par compuesto por unalista 
+        # Dado un par de coordenadas virtuales genera un par compuesto por unalista 
     # de posibles movimientos a casillas adyacentes o de posibles casillas a saltar
     def getPossibleAdjacentMoves(self, player, position):
         moves = []
@@ -260,6 +188,165 @@ class Board():
 
         return moves
 
+
+    ### METODOS AUXILIARES
+    ### FEATURES
+    ### -------------------
+
+    def getPlayerFeatures(self, player):
+        player_slots = self.getPlayerSlots(player)
+        if player == GameTokens.PLAYER1:
+            goal = (-self.getRadius(), self.getLength()-1)
+        else:
+            goal = (self.getRadius(), -(self.getLength()-1))
+        total_squared_distance_to_goal = 0
+        total_squared_distance_to_center = 0
+        sum_of_maximum_hop_to_goal = 0
+        for slot in player_slots:
+            # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i 
+            total_squared_distance_to_goal += self.hexDistance(slot, goal) ** 2
+            # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
+            total_squared_distance_to_center += self.verticalCenterDistance(slot) ** 2
+            # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
+            sum_of_maximum_hop_to_goal += self.MaxHopsToGoal(slot, player, goal)
+        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
+    
+    # Obtener distancia de una hex a otra
+    # https://www.redblobgames.com/grids/hexagons/#distances
+    def hexDistance(self, from_hex, to_hex):
+        (fromX, fromY) = from_hex
+        (toX, toY) = to_hex
+        return max(abs(fromX - toX), abs(fromX + fromY - toX - toY), abs(fromY - toY))
+
+    def verticalCenterDistance(self, from_hex):
+        (fromX, fromY) = from_hex
+        centerY = fromY
+        if centerY % 2 == 0: # Is even
+            # Checks distance with the hex in the middle
+            centerX = -centerY//2
+            return self.hexDistance(from_hex, (centerX, centerY))
+        else: # Is odd
+            # There is no middle hex, so checks with the one on the northwest and northeast.
+            # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
+            west_centerX = -np.sign(centerY)*((abs(centerY) - 1)//2)
+            east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
+            return min(self.hexDistance(from_hex, (west_centerX, centerY)), self.hexDistance(from_hex, (east_centerX, centerY)))
+    
+    def MaxHopsToGoal(self, from_hex, player, goal):
+        (fromX, fromY) = from_hex
+        moves = self.getPossibleMoves(player, fromX, fromY)
+        best_distance_to_goal = self.getLength()*2
+        best_move = None
+        for move in moves:
+            distance_to_goal = self.hexDistance(move, goal)
+            if best_distance_to_goal > distance_to_goal:
+                best_distance_to_goal = distance_to_goal
+                best_move = move
+        if best_move is None:
+            return 0
+        else:
+            return self.hexDistance(from_hex, best_move)
+
+    # Mueve una celda en una dirección "east", "northwest", etc
+    def hexNeighbor(self, hex, direction):
+        (dirX, dirY) = AxialDirections[direction]
+        (hexX, hexY) = hex.getVPos()
+        return (hexX + dirX, hexY + dirY)
+
+    def normalize(self, features):
+        norm = np.linalg.norm(features)
+        newFeatures = []
+        for feature in features:
+            if feature == 0:
+                newFeatures.append(0)
+            else:
+                newFeatures.append(feature / norm)
+        return newFeatures
+
+
+    ### METODOS AUXILIARES
+    ### TRAINING
+    ### -------------------
+
+    # Dado un jugador y un movimiento ya realizado, devuelve el tablero al estado en el que
+    # se encontraba antes de realizar el movimiento
+    # DETALLE: Este metodo debe ser usado solamente luego de moveToken en un entrenamiento
+    def undoToken(self, player, fromVX, fromVY, toVX, toVY):
+        
+        # Obtener las coordenadas en la matriz para FROM y TO
+        (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
+        (toRX, toRY) = self.fromVirtual((toVX, toVY))
+
+        # Deshacer el movimiento
+        self.matrix[fromRX,fromRY].setToken(player)
+        self.matrix[toRX,toRY].setToken(GameTokens.EMPTY)
+
+
+    ### CONSTRUCTOR
+    ### -------------------
+
+    def __init__(self):
+        
+        # Radio del hexagono
+        self.radius = 4
+        
+        # Largo de extremo a extremo
+        self.length = 9
+        
+        # Representación del tablero hexagonal en matriz cuadrada
+        self.matrix = np.zeros((self.length, self.length), dtype=object)
+        
+        # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
+        self.slots = []
+
+        # Rellenado del tablero
+        for y in range(0, self.length):
+            for x in range(0, self.length):
+                self.matrix[x,y] = Slot((x,y), self.restriction1(x,y), 0)
+        for y in range(0, self.length):
+            for x in range(0, self.length):
+                (x2, y2) = self.matrix[x,y].getVPos()
+                self.matrix[x,y].setVPos(self.restriction2(x2,y2))
+                self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
+                self.slots.append(self.matrix[x,y].getVPos())
+                
+
+    ### GETTERS y SETTERS
+    ### -------------------
+
+    def getMatrix(self):
+        return self.matrix
+
+    def getRadius(self):
+        return self.radius
+    
+    def getLength(self):
+        return self.length
+
+    ### METODOS PRINCIPALES
+    ### -------------------
+
+    # Devuelve una lista con las coordenadas virtuales de las piezas del jugador
+    def getPlayerSlots(self, player):
+        slots = []
+        for x in range(0, self.length):
+            for y in range(0, self.length):
+                if self.matrix[x,y].getToken() == player:
+                    slots.append(self.matrix[x,y].getVPos())
+        return slots
+
+    # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
+    # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
+    def getPossibleMoves(self, player, vX, vY):
+        
+        (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
+
+        visitedJumps = []
+        for jump in jumps:
+            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
+
+        return moves
+
     # Dado un jugador y un movimiento de un par de coordenadas virtuales a otro
     # comprueba si es posible y lo hace en caso de serlo, o devuelve el error correspondiente
     def moveToken(self, player, fromVX, fromVY, toVX, toVY):
@@ -301,19 +388,6 @@ class Board():
 
         return GameTokenMoves.VALID_MOVE
 
-    # Dado un jugador y un movimiento ya realizado, devuelve el tablero al estado en el que
-    # se encontraba antes de realizar el movimiento
-    # DETALLE: Este metodo debe ser usado solamente luego de moveToken en un entrenamiento
-    def undoToken(self, player, fromVX, fromVY, toVX, toVY):
-        
-        # Obtener las coordenadas en la matriz para FROM y TO
-        (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
-        (toRX, toRY) = self.fromVirtual((toVX, toVY))
-
-        # Deshacer el movimiento
-        self.matrix[fromRX,fromRY].setToken(player)
-        self.matrix[toRX,toRY].setToken(GameTokens.EMPTY)
-
     # Checkea si el jugador 'player' ganó en el tablero actual 
     def checkWin(self, player):
         playerSlots = self.getPlayerSlots(player)
@@ -331,73 +405,17 @@ class Board():
         return True
 
     # Obtiene los coeficientes de la representacion actual del tablero
-        # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
-        # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
-        # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
+    # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
+    # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
+    # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
     def getFeatures(self, player):
-        (A1, B1, C1) = self.get_features_for_player(GameTokens.PLAYER1)
-        (A2, B2, C2) = self.get_features_for_player(GameTokens.PLAYER2)
-        return [A2 - A1, B2 - B1, C1 - C2] if player == GameTokens.PLAYER1 else [A1 - A2, B1 - B2, C2 - C1]
+        (A1, B1, C1) = self.getPlayerFeatures(GameTokens.PLAYER1)
+        (A2, B2, C2) = self.getPlayerFeatures(GameTokens.PLAYER2)
 
-    ### METODOS AUXILIARES
-    ### -------------------
-
-    def get_features_for_player(self, player):
-        player_slots = self.getPlayerSlots(player)
         if player == GameTokens.PLAYER1:
-            goal = (-self.getRadius(), self.getLength()-1)
+            featuresPlayer = [A2 - A1, B2 - B1, C1 - C2]
         else:
-            goal = (self.getRadius(), -(self.getLength()-1))
-        total_squared_distance_to_goal = 0
-        total_squared_distance_to_center = 0
-        sum_of_maximum_hop_to_goal = 0
-        for slot in player_slots:
-            # Ai = Suma cuadrada de la distancia a la esquina opuesta para todas las fichas del jugador i 
-            total_squared_distance_to_goal += self.hex_distance(slot, goal) ** 2
-            # Bi = Suma cuadrada de la distancia a la linea central para todas las fichas del jugador i 
-            total_squared_distance_to_center += self.distance_to_vertical_center(slot) ** 2
-            # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
-            sum_of_maximum_hop_to_goal += self.maximum_hop_towards_goal_for_player(slot, player, goal)
-        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
-    
-    # Obtener distancia de una hex a otra
-    # https://www.redblobgames.com/grids/hexagons/#distances
-    def hex_distance(self, from_hex, to_hex):
-        (fromX, fromY) = from_hex
-        (toX, toY) = to_hex
-        return max(abs(fromX - toX), abs(fromX + fromY - toX - toY), abs(fromY - toY))
+            featuresPlayer = [A1 - A2, B1 - B2, C2 - C1]
+            
+        return self.normalize(featuresPlayer)
 
-    def distance_to_vertical_center(self, from_hex):
-        (fromX, fromY) = from_hex
-        centerY = fromY
-        if centerY % 2 == 0: # Is even
-            # Checks distance with the hex in the middle
-            centerX = -centerY//2
-            return self.hex_distance(from_hex, (centerX, centerY))
-        else: # Is odd
-            # There is no middle hex, so checks with the one on the northwest and northeast.
-            # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
-            west_centerX = -np.sign(centerY)*((abs(centerY) - 1)//2)
-            east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
-            return min(self.hex_distance(from_hex, (west_centerX, centerY)), self.hex_distance(from_hex, (east_centerX, centerY)))
-    
-    def maximum_hop_towards_goal_for_player(self, from_hex, player, goal):
-        (fromX, fromY) = from_hex
-        moves = self.getPossibleMoves(player, fromX, fromY)
-        best_distance_to_goal = self.getLength()*2
-        best_move = None
-        for move in moves:
-            distance_to_goal = self.hex_distance(move, goal)
-            if best_distance_to_goal > distance_to_goal:
-                best_distance_to_goal = distance_to_goal
-                best_move = move
-        if best_move is None:
-            return 0
-        else:
-            return self.hex_distance(from_hex, best_move)
-
-    # Mueve una celda en una dirección "east", "northwest", etc
-    def hex_neighbor(self, hex, direction):
-        (dirX, dirY) = self.axial_directions[direction]
-        (hexX, hexY) = hex.getVPos()
-        return (hexX + dirX, hexY + dirY)

@@ -12,7 +12,7 @@ from game.game import Game
 from game.player import Player
 
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -40,16 +40,16 @@ if __name__ == '__main__':
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
-            t = Training(playerType, iters, learningRate, weights)
+            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights)
 
             tic = time.time()
-            (player, results, last_weights) = t.training()
+            (player, results) = t.training()
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
             print()
 
-            historial_weigths.append(last_weights)
+            historial_weigths.append(player.getModel().getWeights())
 
             player = {
                 'player': player,
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
                 # Se juega la partida y se imprime el mensaje segun el resultado
                 res = g.play()
-                if res:
+                if res == GameResults.WIN:
                     print("-> Has ganado la partida. Oprime enter para volver al menú")
                 else:
                     print("-> Has perdido la partida. Oprime enter para volver al menú")

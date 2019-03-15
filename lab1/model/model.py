@@ -14,26 +14,24 @@ class Model():
     def __init__(self, initialWeights = [0.9, 0.9, 0.9]):
         self.weights = initialWeights
 
-	### GETTERS y SETTERS
+    ### GETTERS y SETTERS
     ### -------------------
 
     def getWeights(self):
-    	return self.weights
+        return self.weights
 
-	### METODOS PRINCIPALES
+    ### METODOS PRINCIPALES
     ### -------------------
 
-    # Evalua un tablero dado
+    # Evalua un tablero en forma de features
     def evaluate(self, features):
-		X = features
-		suma = 0
-		for i in range(len(X)):
-			suma += X[i]*self.W[i]
-        return suma
+        total = 0
+        for i in range(len(features)):
+            total += features[i]*self.weights[i]
+        return total
 
-    # Actualiza los pesos
-    def update(self, features, v_t, k):
-        # LMS weight update rule
-        v_t_tablero = self.evaluate(features)
-		for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] + k * (v_t - v_t_tablero) * features[i]
+    # Actualiza los pesos del modelo siguiendo LMS
+    def update(self, features, trainingEvaluation, learningRate):
+        currentEvaluation = self.evaluate(features)
+        for i in range(len(self.weights)):
+            self.weights[i] = self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i]

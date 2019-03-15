@@ -3,6 +3,7 @@
 
 import os
 import sys
+import re
 from termcolor import colored, cprint
 
 from .const import MenuOps, PlayerType, GameMode, GameTokens
@@ -53,6 +54,7 @@ def printMenuOption():
 def printPlayers(players):
     print ("Jugadores actuales:")
     print("-> 0 - Jugador random sin entrenar")
+    index = 1
     for p in players:
         print("-> ", end="")
         print(str(index), end="")
@@ -61,6 +63,22 @@ def printPlayers(players):
         print(p['name'])
         index = index + 1
     print ("")
+
+# Lee la opcion a elegir del menu del juego
+def printGameMenuOption():
+    print("-> Ingrese su jugada o el numero de la opción deseada: ")
+    print("---> Para mover la ficha (x,y) a la posicion (w,z) ingrese x,y w,z")
+    print("---> Para ver las features de la ficha (x,y) ingrese x,y")
+    print("---> Para pasar el turno ingrese PASS")
+    print("---> 1 - Ver tablero normal")
+    print("---> 2 - Ver tablero grilla")
+    print("---> 3 - Ver tablero matriz")
+    print("---> 4 - Ver tablero y features")
+    print("---> 5 - Ver tablero y mis features")
+    print("---> 0 - Abandonar")
+    keyboard = input()
+    keyboardToken = re.search(r"^[-+]?\d+,[-+]?\d+$", keyboard)
+    return (keyboard, keyboardToken)
 
 # Imprime las opciones de tipo de jugador y lee la opcion elegida
 def printPlayerType():
@@ -119,27 +137,28 @@ def printInitialWeights():
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
-        return learningRate
+        return weights
     except:
         return [0.9, 0.9, 0.9]
 
 # Imprime los datos de entrenamiento de un jugador
 def printTrainedPlayer(player):
 
-    print("-> Jugador Entrenado VS : ", end="")
-    print(player['playerName'])
+    print("-> Jugador Entrenado VS ", end="")
+    print(player['name'])
 
     print("--> Tiempo de entrenamiento: ", end="")
-    print(player['time'])
+    print(player['time'], end=" ")
+    print("segundos")
 
     print("--> Cantidad de iteraciones: ", end="")
-    print(player['iters'])
+    print(player['iterations'])
 
     print("--> Ratio de aprendizaje: ", end="")
     print(player['learningRate'])
 
     print("--> Pesos iniciales: ", end="")
-    print(player['intialWeights'])
+    print(player['initialWeights'])
 
     print("--> Pesos finales: ", end="")
     print(player['finalWeights'])
@@ -148,7 +167,16 @@ def printTrainedPlayer(player):
     print(player['results'])
 
     print("--> Porcentaje de partidas ganadas: ", end="")
-    print(player['results'][0] / player['iters'])
+    print(player['results'][0] / player['iterations'])
+
+    print()
+
+# Imprime los features ingresados
+def printFeatures(features):
+    print("Suma cuadrada de distancia al extremo: " + str(features[0]))
+    print("Suma cuadrada de distancia al centro: " + str(features[1]))
+    print("Suma de maxima cantidad de saltos: " + str(features[2]))
+    print()
 
 ### METODOS AUXILIARES - TABLERO
 ### ----------------------------
