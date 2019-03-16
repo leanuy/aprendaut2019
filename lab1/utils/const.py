@@ -35,3 +35,19 @@ class GameTokenMoves(Enum):
     TOKEN_FROM = 2      # La posición FROM no tiene un token del jugador
     TOKEN_TO = 3        # La posición TO esta ocupada por otro token
     INVALID_COORDS = 4  # La posición FROM o TO no existe en el tablero
+
+# Tipos de resultado de una partida
+class GameResults(Enum):
+    WIN = 1
+    LOSE = -1
+    DRAW = 0
+
+# Versores con direcciones de desplazamiento
+AxialDirections = {
+    'northwest': (0,-1),
+    'west': (-1,0),
+    'southwest': (-1,1),
+    'southeast': (0,1),
+    'east': (1,0),
+    'northeast': (1,-1)
+}

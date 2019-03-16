@@ -4,9 +4,10 @@
 import sys
 import os
 import re
+import copy
 
 import utils.gui as gui 
-from utils.const import GameMode, GameTokens, GameTokenMoves
+from utils.const import GameMode, GameTokens, GameTokenMoves, GameResults
 
 from .board import Board
 from .player import Player
@@ -19,7 +20,7 @@ class Game():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, mode, players):
+    def __init__(self, mode, players, maxRounds = 100):
         
         # Modo de juego
         # 1. Entrenamiento
@@ -32,6 +33,9 @@ class Game():
 
         # Historial de tableros por turno
         self.boards = []
+
+        # Cantidad de turnos antes de declarar empate
+        self.maxRounds = maxRounds
 
         # Opcion de impresión de tablero
         # 1. Hexagonal común
@@ -74,13 +78,7 @@ class Game():
             elif self.boardPrint == 3:
                 gui.printBoardMatrix(b.getMatrix(), b.getLength())
 
-            print("-> Ingrese su jugada o el numero de la opción deseada: ")
-            print("---> Para mover la ficha (x,y) a la posicion (w,z) ingrese x,y w,z")
-            print("---> 1 - Ver tablero normal")
-            print("---> 2 - Ver tablero grilla")
-            print("---> 3 - Ver tablero matriz")
-            print("---> 0 - Abandonar")
-            keyboard = input()
+            (keyboard, keyboardToken) = gui.printGameMenuOption()
 
             if keyboard == '1':
                 self.boardPrint = 1
@@ -91,8 +89,15 @@ class Game():
             elif keyboard == '3':
                 self.boardPrint = 3
 
+            elif keyboard == '4':
+                gui.printFeatures(b.getFeatures(GameTokens.PLAYER2))
+                input()
+
+            elif keyboard == '5':
+                gui.printFeatures(b.getPlayerFeatures(GameTokens.PLAYER2))
+                input()
+
             elif keyboard == 'PASS':
-                # El turno pasa al otro jugador, que elige su jugada 
                 ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
                 b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
@@ -100,27 +105,18 @@ class Game():
                     print("-> Has perdido la partida!")
                     input()
                     return
-            elif keyboard == 'metrics for players':
-                metrics = b.getFeatures(GameTokens.PLAYER2)
-                print("Sum of squared distance to goal: " + str(metrics[0]))
-                print("Sum of squared distance to center: " + str(metrics[1]))
-                print("Sum of maximum hops: " + str(metrics[2]))
-                input()
-            elif keyboard == 'player metrics':
-                metrics = b.get_features_for_player(GameTokens.PLAYER2)
-                print("Sum of squared distance to goal: " + str(metrics[0]))
-                print("Sum of squared distance to center: " + str(metrics[1]))
-                print("Sum of maximum hops: " + str(metrics[2]))
-                input()
-            elif re.search(r"^metrics [-+]?\d+,[-+]?\d+$", keyboard) is not None:
-                coords = re.sub(r"^metrics ", "", keyboard).split(',')
+
+            elif keyboardToken is not None:
+                coords = keyboard.split(',')
                 token = (int(coords[0]), int(coords[1]))
                 if token in b.getPlayerSlots(GameTokens.PLAYER2):
                     goal = (b.getRadius(), -(b.getLength()-1))
-                    print("Distance to goal: " + str(b.hex_distance(token, goal)))
-                    print("Distance to center: " + str(b.distance_to_vertical_center(token)))
-                    print("Maximum hop: " + str(b.maximum_hop_towards_goal_for_player(token, GameTokens.PLAYER2, goal)))
+                    print("Suma cuadrada de distancia al extremo: " + str(b.hexDistance(token, goal)))
+                    print("Suma cuadrada de distancia al centro: " + str(b.verticalCenterDistance(token)))
+                    print("Suma de maxima cantidad de saltos: " + str(b.maxHopsToGoal(token, GameTokens.PLAYER2, goal)))
+                    print()
                     input()
+
             elif keyboard != '0':
                 try:
                     coords = keyboard.split()
@@ -148,18 +144,19 @@ class Game():
 
                         # Checkea si el jugador humano ganó luego de su jugada
                         if b.checkWin(GameTokens.PLAYER2):
-                            return True
+                            self.boards.append(copy.deepcopy(b))
+                            return GameResults.WIN
                         
                         # El turno pasa al otro jugador, que elige su jugada 
                         ((fromX2, fromY2), (toX2, toY2)) = player.chooseMove(b)
                         b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
+                        # Agrega el tablero al tablero de turnos
+                        self.boards.append(copy.deepcopy(b))
+
                         # Checkea si el jugador automatico ganó luego de su jugada
                         if b.checkWin(GameTokens.PLAYER1):
-                            return False
-
-                        # Agrega el tablero al tablero de turnos
-                        self.boards.append(b)
+                            return GameResults.LOSE
 
                 except Exception as e:
                     print(e)
@@ -176,19 +173,31 @@ class Game():
 
         while not finished:
 
+            # El jugador a entrenar elige su movimiento y juega
             ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
             b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
 
+            # Se checkea si el jugador a entrenar gana
             if b.checkWin(GameTokens.PLAYER1):
                 finished = True
-                res = True
+                res = GameResults.WIN
 
-            ((fromX2, fromY2), (toX2, toY2)) = player2.chooseMove(b)
-            b.moveToken(GameTokens.PLAYER2, fromX2, fromY2, toX2, toY2)
+            # Si el jugador a entrenar no ganó, el oponente elige su movimiento y juega
+            if not finished:
+                ((fromX2, fromY2), (toX2, toY2)) = player2.chooseMove(b)
+                b.moveToken(GameTokens.PLAYER2, fromX2, fromY2, toX2, toY2)
 
-            if b.checkWin(GameTokens.PLAYER2):
+                if b.checkWin(GameTokens.PLAYER2):
+                    finished = True
+                    res = GameResults.LOSE
+
+            # Agrega el tablero al tablero de turnos
+            self.boards.append(copy.deepcopy(b))
+
+            if len(self.boards) >= self.maxRounds:
                 finished = True
-                res = False
+                res = GameResults.DRAW
 
+        print("Partida finalizada con resultado " + str(res))
         return res
                 
