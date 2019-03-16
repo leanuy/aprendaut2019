@@ -220,7 +220,7 @@ class Board():
             sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
 
             # Di = Suma cuadrada de la distancia hacia la casilla vacia mas proxima del objetivo.
-            sum_of_squared_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player, goal) ** 2
+            sum_of_squared_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, goal) ** 2
         
         return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal, sum_of_squared_distance_to_closest_empty_goal_hex]
     
@@ -240,7 +240,6 @@ class Board():
             return self.hexDistance(from_hex, (centerX, centerY))
         else: # Is odd
             # There is no middle hex, so checks with the one on the northwest and northeast.
-            # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
             west_centerX = -np.sign(centerY)*((abs(centerY) - 1)//2)
             east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
             return min(self.hexDistance(from_hex, (west_centerX, centerY)), self.hexDistance(from_hex, (east_centerX, centerY)))
@@ -248,7 +247,7 @@ class Board():
     def maxHopsToGoal(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
         moves = self.getPossibleMoves(player, fromX, fromY)
-        best_distance_to_goal = self.getLength()*2
+        best_distance_to_goal = self.hexDistance(from_hex, goal)
         best_move = None
         for move in moves:
             distance_to_goal = self.hexDistance(move, goal)
@@ -260,10 +259,10 @@ class Board():
         else:
             return self.hexDistance(from_hex, best_move)
     
-    def hexDistanceToClosestEmptyGoalHex(self, from_hex, player, goal):
-        (fromX, fromY) = from_hex
-        hexes = self.getGoalHexes(player, goal, True)
-        if len(hexes) == 0:
+    def hexDistanceToClosestEmptyGoalHex(self, from_hex, goal):
+        hexes = self.getGoalHexes(goal, True)
+        # If there is no empty hex or the slot is inside the triangle goal measure towards the goal
+        if len(hexes) == 0 or from_hex in self.getGoalHexes(goal):
             return self.hexDistance(from_hex, goal)
 
         closest_distance = self.getLength()*2
@@ -289,7 +288,7 @@ class Board():
                 newFeatures.append(feature / norm)
         return newFeatures
 
-    def getGoalHexes(self, player, goal, empty = False):
+    def getGoalHexes(self, goal, empty = False):
         hexes = []
         (goalX, goalY) = goal
         innerBorderY = np.sign(goalY)*(self.getRadius() + 1)
