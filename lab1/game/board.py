@@ -206,6 +206,7 @@ class Board():
         total_squared_distance_to_goal = 0
         total_squared_distance_to_center = 0
         sum_of_maximum_hop_to_goal = 0
+        sum_of_squared_distance_to_closest_empty_goal_hex = 0
 
         for slot in player_slots:
 
@@ -217,6 +218,9 @@ class Board():
             
             # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
             sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
+
+            # Di = Suma cuadrada de la distancia hacia la casilla vacia mas proxima del objetivo.
+            # sum_of_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player)
         
         return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
     
@@ -255,6 +259,23 @@ class Board():
             return 0
         else:
             return self.hexDistance(from_hex, best_move)
+    
+    def hexDistanceToClosestEmptyGoalHex(from_hex, player, goal):
+        (fromX, fromY) = from_hex
+
+        playerSlots = self.getPlayerSlots(player)
+        if player == GameTokens.PLAYER1:
+            for slot in playerSlots:
+                (x, y) = slot
+                if y <= self.radius:
+                    return False
+        else:
+            for slot in playerSlots:
+                (x, y) = slot
+                if y >= -self.radius:
+                    return False
+
+        return True
 
     # Mueve una celda en una dirección "east", "northwest", etc
     def hexNeighbor(self, hex, direction):
@@ -271,6 +292,20 @@ class Board():
             else:
                 newFeatures.append(feature / norm)
         return newFeatures
+
+    def getGoalHexes(player, goal, empty =false):
+        hexes = []
+        (goalX, goalY) = goal
+        innerBorderY = np.sign(goalY)*(self.getRadius() + 1)
+        fromX = goalX
+        for y in range (goalY, innerBorderY):
+            for x in range (fromX, goalX):
+                if empty:
+                    real_coordinates = self.fromVirtual(x,y)
+                    if not self.matrix[real_coordinates].isEmpty()
+                        continue
+                hexes.append((x,y))
+            fromX = np.sign(fromX)*(abs(fromX) -1)
 
     ### METODOS AUXILIARES
     ### TRAINING
@@ -426,4 +461,3 @@ class Board():
             featuresPlayer = [A1 - A2, B1 - B2, C2 - C1]
             
         return self.normalize(featuresPlayer)
-
