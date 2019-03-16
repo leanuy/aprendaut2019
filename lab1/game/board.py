@@ -456,8 +456,8 @@ class Board():
         (A2, B2, C2) = self.getPlayerFeatures(GameTokens.PLAYER2)
 
         if player == GameTokens.PLAYER1:
-            featuresPlayer = [A2 - A1, B2 - B1, C1 - C2]
+            featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2]
         else:
-            featuresPlayer = [A1 - A2, B1 - B2, C2 - C1]
+            featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1]
             
         return self.normalize(featuresPlayer)
