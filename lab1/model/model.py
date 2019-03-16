@@ -34,4 +34,4 @@ class Model():
     def update(self, features, trainingEvaluation, learningRate):
         currentEvaluation = self.evaluate(features)
         for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i]
+            self.weights[i] = abs(self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i])
