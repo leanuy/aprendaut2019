@@ -145,14 +145,14 @@ def printLearningRate():
 def printInitialWeights():
     print ("")
     print ("-> Ingrese la lista de pesos iniciales: ")
-    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9]")
+    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9, 0.9]")
     try:
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
         return weights
     except:
-        return [0.9, 0.9, 0.9, 0.9]
+        return [0.9, 0.9, 0.9, 0.9, 0.9]
 
 # Imprime los datos de entrenamiento de un jugador
 def printTrainedPlayer(player):

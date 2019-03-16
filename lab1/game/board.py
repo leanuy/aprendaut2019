@@ -220,9 +220,9 @@ class Board():
             sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
 
             # Di = Suma cuadrada de la distancia hacia la casilla vacia mas proxima del objetivo.
-            # sum_of_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player)
+            sum_of_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player, goal) ** 2
         
-        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
+        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal, sum_of_distance_to_closest_empty_goal_hex]
     
     # Obtener distancia de una hex a otra
     # https://www.redblobgames.com/grids/hexagons/#distances
@@ -262,20 +262,13 @@ class Board():
     
     def hexDistanceToClosestEmptyGoalHex(from_hex, player, goal):
         (fromX, fromY) = from_hex
+        hexes = self.getGoalHexes(player, goal, true)
+        closest_distance = self.getLength()*2
+        for slot in hexes:
+            if hexDistance(from_hex, slot) < closest_distance:
+                closest_distance = hexDistance(from_hex, slot)
+        retun closest_distance
 
-        playerSlots = self.getPlayerSlots(player)
-        if player == GameTokens.PLAYER1:
-            for slot in playerSlots:
-                (x, y) = slot
-                if y <= self.radius:
-                    return False
-        else:
-            for slot in playerSlots:
-                (x, y) = slot
-                if y >= -self.radius:
-                    return False
-
-        return True
 
     # Mueve una celda en una dirección "east", "northwest", etc
     def hexNeighbor(self, hex, direction):
@@ -451,13 +444,14 @@ class Board():
     # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
     # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
     # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
+    # Penalizar D: Cuanto mas lejos estas de la casilla cercana mas vacia del objetivo, peor estas
     def getFeatures(self, player):
-        (A1, B1, C1) = self.getPlayerFeatures(GameTokens.PLAYER1)
-        (A2, B2, C2) = self.getPlayerFeatures(GameTokens.PLAYER2)
+        (A1, B1, C1, D1) = self.getPlayerFeatures(GameTokens.PLAYER1)
+        (A2, B2, C2, D2) = self.getPlayerFeatures(GameTokens.PLAYER2)
 
         if player == GameTokens.PLAYER1:
-            featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2]
+            featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2, D2 - D1]
         else:
-            featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1]
-            
+            featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1, D1 - D2]
+
         return self.normalize(featuresPlayer)
