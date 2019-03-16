@@ -220,9 +220,9 @@ class Board():
             sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
 
             # Di = Suma cuadrada de la distancia hacia la casilla vacia mas proxima del objetivo.
-            sum_of_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player, goal) ** 2
+            sum_of_squared_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, player, goal) ** 2
         
-        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal, sum_of_distance_to_closest_empty_goal_hex]
+        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal, sum_of_squared_distance_to_closest_empty_goal_hex]
     
     # Obtener distancia de una hex a otra
     # https://www.redblobgames.com/grids/hexagons/#distances
@@ -260,14 +260,17 @@ class Board():
         else:
             return self.hexDistance(from_hex, best_move)
     
-    def hexDistanceToClosestEmptyGoalHex(from_hex, player, goal):
+    def hexDistanceToClosestEmptyGoalHex(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
-        hexes = self.getGoalHexes(player, goal, true)
+        hexes = self.getGoalHexes(player, goal, True)
+        if len(hexes) == 0:
+            return self.hexDistance(from_hex, goal)
+
         closest_distance = self.getLength()*2
         for slot in hexes:
-            if hexDistance(from_hex, slot) < closest_distance:
-                closest_distance = hexDistance(from_hex, slot)
-        retun closest_distance
+            if self.hexDistance(from_hex, slot) < closest_distance:
+                closest_distance = self.hexDistance(from_hex, slot)
+        return closest_distance
 
 
     # Mueve una celda en una dirección "east", "northwest", etc
@@ -286,19 +289,18 @@ class Board():
                 newFeatures.append(feature / norm)
         return newFeatures
 
-    def getGoalHexes(player, goal, empty =false):
+    def getGoalHexes(self, player, goal, empty = False):
         hexes = []
         (goalX, goalY) = goal
         innerBorderY = np.sign(goalY)*(self.getRadius() + 1)
         fromX = goalX
         for y in range (goalY, innerBorderY):
             for x in range (fromX, goalX):
-                if empty:
-                    real_coordinates = self.fromVirtual(x,y)
-                    if not self.matrix[real_coordinates].isEmpty()
-                        continue
-                hexes.append((x,y))
+                real_coordinates = self.fromVirtual((x,y))
+                if not empty or self.matrix[real_coordinates].isEmpty():
+                    hexes.append((x,y))
             fromX = np.sign(fromX)*(abs(fromX) -1)
+        return hexes
 
     ### METODOS AUXILIARES
     ### TRAINING

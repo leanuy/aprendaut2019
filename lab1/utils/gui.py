@@ -192,6 +192,7 @@ def printFeatures(features):
     print("Suma cuadrada de distancia al extremo: " + str(features[0]))
     print("Suma cuadrada de distancia al centro: " + str(features[1]))
     print("Suma de maxima cantidad de saltos: " + str(features[2]))
+    print("Suma cuadrada de distancia al hex del goal vacio mas cercano (o a goal si no hay): " + str(features[3]))
     print()
 
 ### METODOS AUXILIARES - TABLERO
