@@ -37,12 +37,17 @@ class Model():
         currentEvaluation = self.evaluate(features)
         for i in range(len(self.weights)):
             self.weights[i] = self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i]
-            if self.normalize_weights:
-                self.weights[i] = self.normalize(self.weights[i], 0, 1)
+        if self.normalize_weights:
+            self.weights = self.normalize(self.weights)
 
     
-    def normalize(self, value, minimum_value, maximum_value):
-        if maximum_value - minimum_value > 0:
-            return (value - minimum_value)/(maximum_value - minimum_value)
-        else:
-            return 0
+    def normalize(self, values):
+        maximum_value = max(values)
+        minimum_value = min(values)
+        for value in values:
+            if maximum_value - minimum_value > 0:
+                value = (value - minimum_value)/(maximum_value - minimum_value) 
+            else:
+                value = 0
+        return values
+        
