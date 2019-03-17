@@ -70,9 +70,20 @@ class Training():
         results = [0,0,0]
         x_axis = []
         y_axis = []
+
+        variable = self.learningRate == 'var'
+
+        if variable:
+            self.learningRate = 1
+            count = 100
         
         for i in range(0, self.iters):
-
+            if variable:
+                print("Iteracion numero: ", str(i))
+                if count != 100 and count % 10 == 0:
+                    self.learningRate -= 0.1
+                    print("Learning rate = ", str(self.learningRate))
+            
             # Se genera un juego nuevo para cada iteración
             g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)
             res = g.play()
@@ -123,6 +134,8 @@ class Training():
             if self.opponent.getPlayerType() != PlayerType.TRAINED_RANDOM:
                 self.opponent.setModel(model)
 
+            if variable:
+                count -= 1
         self.printPlot(x_axis, y_axis, self.iters)
         
         return (self.player, results)

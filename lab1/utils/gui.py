@@ -132,14 +132,18 @@ def printMaxRounds():
 def printLearningRate():
     print ("")
     print ("-> Ingrese el ratio de aprendizaje: ")
-    print ("-> DEFAULT: 0.5")
-    try:
-        learningRate = float( input() )
-        if learningRate < 0 or learningRate > 1:
+    print ("-> DEFAULT: 0.5, 'var' para variable")
+    learningRate = input()
+    if learningRate == "var":
+        return 'var'
+    else:
+        try:
+            learningRate = float( learningRate )
+            if learningRate < 0 or learningRate > 1:
+                return 0.5
+            return learningRate
+        except:
             return 0.5
-        return learningRate
-    except:
-        return 0.5
 
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
