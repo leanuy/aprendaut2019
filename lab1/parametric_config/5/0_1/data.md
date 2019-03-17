@@ -1,31 +1,29 @@
-# 0.1
+Pesos - 0.1 0.9 0.1 0.1 0.1 - Figura 1
 -> Jugador Entrenado VS Si Mismo
---> Tiempo de entrenamiento: 5053.6714906692505 segundos
 --> Cantidad de iteraciones: 100
 --> Cantidad máxima de turnos por juego: 150
---> Ratio de aprendizaje: 0.5
+--> Ratio de aprendizaje: 0.1
 --> Pesos iniciales: [0.1, 0.9, 0.1, 0.1, 0.1]
---> Pesos finales: [0.0707471738993487, 1.0561806392325543, 0.62635549127951, 0.17771595001761176, 0.09973029766155288]
---> Cantidad de partidas ganadas, perdidas, empatadas: [65, 17, 18]
+--> Pesos finales: [0.1198, 0.3306, 0.2113, 0.0118, 0.0946]
+--> Cantidad de partidas ganadas, perdidas, empatadas: [70, 18, 12]
 --> Porcentaje de partidas ganadas: 0.65
 
-# 0.5
+Pesos - 0.5 0.5 0.5 0.5 0.5 - Figura 2
 -> Jugador Entrenado VS Si Mismo
---> Tiempo de entrenamiento: 4735.975536346436 segundos
 --> Cantidad de iteraciones: 100
 --> Cantidad máxima de turnos por juego: 150
---> Ratio de aprendizaje: 0.5
+--> Ratio de aprendizaje: 0.1
 --> Pesos iniciales: [0.5, 0.5, 0.5, 0.5, 0.5]
---> Pesos finales: [0.5377901434786051, 0.7518493839342909, 0.2987448947422323, 0.06622900786344532, 0.42827913764913983]
---> Cantidad de partidas ganadas, perdidas, empatadas: [71, 20, 9]
---> Porcentaje de partidas ganadas: 0.71
+--> Pesos finales: [0.06056547960809264, 0.516034844233764, 0.07942773009978454, 0.09863960089178221, 0.15189400875198222]
+--> Cantidad de partidas ganadas, perdidas, empatadas: [68, 24, 8]
+--> Porcentaje de partidas ganadas: 0.68
 
-# 0.9
---> Tiempo de entrenamiento: 4926.7524292469025 segundos
+Pesos - 0.9 0.9 0.9 0.9 0.9 - Figura 3
+-> Jugador Entrenado VS Si Mismo
 --> Cantidad de iteraciones: 100
 --> Cantidad máxima de turnos por juego: 150
---> Ratio de aprendizaje: 0.5
+--> Ratio de aprendizaje: 0.1
 --> Pesos iniciales: [0.9, 0.9, 0.9, 0.9, 0.9]
---> Pesos finales: [0.17585068186145933, 0.42316796221589853, 0.004240191772741125, 0.27421436681494715, 0.604517733871301]
---> Cantidad de partidas ganadas, perdidas, empatadas: [72, 18, 10]
---> Porcentaje de partidas ganadas: 0.72
+--> Pesos finales: [0.0589, 0.3711, 0.0744, 0.1477, 0.0207]
+--> Cantidad de partidas ganadas, perdidas, empatadas: [61, 22, 17]
+--> Porcentaje de partidas ganadas: 0.61
