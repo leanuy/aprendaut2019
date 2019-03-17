@@ -42,12 +42,13 @@ class Model():
 
     
     def normalize(self, values):
+        normalized_values = []
         maximum_value = max(values)
         minimum_value = min(values)
         for value in values:
             if maximum_value - minimum_value > 0:
-                value = (value - minimum_value)/(maximum_value - minimum_value) 
+                normalized_values.append((value - minimum_value)/(maximum_value - minimum_value))
             else:
-                value = 0
+                normalized_values.append(0)
         return values
         
