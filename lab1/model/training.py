@@ -79,10 +79,10 @@ class Training():
         
         for i in range(0, self.iters):
             if variable:
-                print("Iteracion numero: ", str(i))
+                # print("Iteracion numero: ", str(i))
                 if count != 100 and count % 10 == 0:
                     self.learningRate -= 0.1
-                    print("Learning rate = ", str(self.learningRate))
+                    # print("Learning rate = ", str(self.learningRate))
             
             # Se genera un juego nuevo para cada iteración
             g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)
