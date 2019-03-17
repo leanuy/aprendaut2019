@@ -158,13 +158,24 @@ def printInitialWeights():
     except:
         return [0.9, 0.9, 0.9, 0.9, 0.9]
 
-# Imprime las opciones de cantidad de turnos y lee la opcion elegida
+# Pregunta al usuario si desea normalizar el modelo
 def printNormalizeWeights():
     print ("")
     print ("-> Desea normalizar el modelo? (y/n) ")
     print ("-> DEFAULT: n")
     normalized_model = input()
     if normalized_model == 'y':
+        return True
+    else:
+        return False
+
+# Pregunta al usuario si desea no contar los empates
+def printSkipOnDraw():
+    print ("")
+    print ("-> Desea no contar una iteracion que empate? (y/n) ")
+    print ("-> DEFAULT: n")
+    skip_on_draw = input()
+    if skip_on_draw == 'y':
         return True
     else:
         return False
