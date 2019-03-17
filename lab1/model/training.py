@@ -31,7 +31,7 @@ class Training():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds):
+    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights):
 
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
@@ -42,7 +42,7 @@ class Training():
             self.opponentToken = GameTokens.PLAYER1
 
         # Crea al jugador a entrenar y su respectivo modelo
-        self.player = Player(self.playerToken, playerType, Model(weights))
+        self.player = Player(self.playerToken, playerType, Model(normalize_weights, weights))
         
         # Crea al oponente y su respectivo modelo en base al playerType, es decir
         # al tipo de jugador que se quiere entrenar
@@ -50,7 +50,7 @@ class Training():
         if playerType == PlayerType.TRAINED_RANDOM:
             self.opponent = Player(self.opponentToken, PlayerType.RANDOM)
         elif playerType == PlayerType.TRAINED_SELF:
-            self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, Model(weights))
+            self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, Model(normalize_weights, weights))
 
         # Tipo de jugador a entrenar (basado en su oponente)
         self.playerType = playerType

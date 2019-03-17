@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import numpy as np
 import random
 
 ### CLASE PRINCIPAL
@@ -11,8 +12,9 @@ class Model():
     ### CONSTRUCTOR
     ### -------------------
 
-    def __init__(self, initialWeights = [0.9, 0.9, 0.9, 0.9, 0.9]):
+    def __init__(self, normalize_weights, initialWeights = [0.9, 0.9, 0.9, 0.9, 0.9]):
         self.weights = initialWeights
+        self.normalize_weights = normalize_weights
 
     ### GETTERS y SETTERS
     ### -------------------
@@ -34,4 +36,13 @@ class Model():
     def update(self, features, trainingEvaluation, learningRate):
         currentEvaluation = self.evaluate(features)
         for i in range(len(self.weights)):
-            self.weights[i] = abs(self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i])
+            self.weights[i] = self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i]
+            if self.normalize_weights:
+                self.weights[i] = self.normalize(self.weights[i], 0, 1)
+
+    
+    def normalize(self, value, minimum_value, maximum_value):
+        if maximum_value - minimum_value > 0:
+            return (value - minimum_value)/(maximum_value - minimum_value)
+        else:
+            return 0
