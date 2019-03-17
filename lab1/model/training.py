@@ -31,7 +31,8 @@ class Training():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights):
+    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights, skip_on_draw):
+        self.skip_on_draw = skip_on_draw
 
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
@@ -77,7 +78,8 @@ class Training():
             self.learningRate = 1
             count = 100
         
-        for i in range(0, self.iters):
+        i = 0
+        while i < self.iters:
             if variable:
                 # print("Iteracion numero: ", str(i))
                 if count != 100 and count % 10 == 0:
@@ -110,6 +112,9 @@ class Training():
                 lastEvaluation = -1
                 results[1] = results[1] + 1
             else:
+                if self.skip_on_draw:
+                    print("Resultado omitido a causa de empate")
+                    continue
                 lastEvaluation = 0
                 results[2] = results[2] + 1
 
@@ -134,6 +139,7 @@ class Training():
             if self.opponent.getPlayerType() != PlayerType.TRAINED_RANDOM:
                 self.opponent.setModel(model)
 
+            i += 1
             if variable:
                 count -= 1
         self.printPlot(x_axis, y_axis, self.iters)

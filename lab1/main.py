@@ -38,11 +38,12 @@ if __name__ == '__main__':
             learningRate = gui.printLearningRate()
             weights = gui.printInitialWeights()
             normalize_weights = gui.printNormalizeWeights()
+            skip_on_draw = gui.printSkipOnDraw()
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
-            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights, maxRounds, normalize_weights)
+            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights, maxRounds, normalize_weights, skip_on_draw)
 
             tic = time.time()
             (player, results) = t.training()
