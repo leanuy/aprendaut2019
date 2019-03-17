@@ -4,6 +4,7 @@
 import random
 
 from model.model import Model
+from random import randint
 
 from utils.const import PlayerType
 
@@ -110,13 +111,15 @@ class Player():
 
                     # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida
                     # hasta ahora, se guarda como el mejor movimiento
-                    if bestTo == None or evaluation > bestEvaluation:
+                    if bestTo == None or evaluation >= bestEvaluation:
+                        if bestTo == None or evaluation > bestEvaluation:
+                            best_moves = []
                         bestFrom = (fromVX, fromVY)
                         bestTo = (toVX, toVY)
                         bestEvaluation = evaluation
-
+                        best_moves.append((bestFrom, bestTo))
                     # Se deja el tablero en el estado anterior
                     board.undoToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
 
-            return (bestFrom, bestTo)
+            return best_moves[randint(0,len(best_moves)-1)]
         

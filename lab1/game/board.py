@@ -206,6 +206,7 @@ class Board():
         total_squared_distance_to_goal = 0
         total_squared_distance_to_center = 0
         sum_of_maximum_hop_to_goal = 0
+        sum_of_squared_distance_to_closest_empty_goal_hex = 0
 
         for slot in player_slots:
 
@@ -217,8 +218,11 @@ class Board():
             
             # Ci = Suma del maximo avance vertical posible para todas las fichas del jugador i
             sum_of_maximum_hop_to_goal += self.maxHopsToGoal(slot, player, goal)
+
+            # Di = Suma cuadrada de la distancia hacia la casilla vacia mas proxima del objetivo.
+            sum_of_squared_distance_to_closest_empty_goal_hex += self.hexDistanceToClosestEmptyGoalHex(slot, goal) ** 2
         
-        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal]
+        return [total_squared_distance_to_goal, total_squared_distance_to_center, sum_of_maximum_hop_to_goal, sum_of_squared_distance_to_closest_empty_goal_hex]
     
     # Obtener distancia de una hex a otra
     # https://www.redblobgames.com/grids/hexagons/#distances
@@ -236,7 +240,6 @@ class Board():
             return self.hexDistance(from_hex, (centerX, centerY))
         else: # Is odd
             # There is no middle hex, so checks with the one on the northwest and northeast.
-            # TODO: Esto se podria pulir si hay una forma facil de determinar si un hex esta al este u oeste de la vertical.
             west_centerX = -np.sign(centerY)*((abs(centerY) - 1)//2)
             east_centerX = -np.sign(centerY)*((abs(centerY) + 1)//2)
             return min(self.hexDistance(from_hex, (west_centerX, centerY)), self.hexDistance(from_hex, (east_centerX, centerY)))
@@ -244,7 +247,7 @@ class Board():
     def maxHopsToGoal(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
         moves = self.getPossibleMoves(player, fromX, fromY)
-        best_distance_to_goal = self.getLength()*2
+        best_distance_to_goal = self.hexDistance(from_hex, goal)
         best_move = None
         for move in moves:
             distance_to_goal = self.hexDistance(move, goal)
@@ -255,6 +258,19 @@ class Board():
             return 0
         else:
             return self.hexDistance(from_hex, best_move)
+    
+    def hexDistanceToClosestEmptyGoalHex(self, from_hex, goal):
+        hexes = self.getGoalHexes(goal, True)
+        # If there is no empty hex or the slot is inside the triangle goal measure towards the goal
+        if len(hexes) == 0 or from_hex in self.getGoalHexes(goal):
+            return self.hexDistance(from_hex, goal)
+
+        closest_distance = self.getLength()*2
+        for slot in hexes:
+            if self.hexDistance(from_hex, slot) < closest_distance:
+                closest_distance = self.hexDistance(from_hex, slot)
+        return closest_distance
+
 
     # Mueve una celda en una dirección "east", "northwest", etc
     def hexNeighbor(self, hex, direction):
@@ -271,6 +287,19 @@ class Board():
             else:
                 newFeatures.append(feature / norm)
         return newFeatures
+
+    def getGoalHexes(self, goal, empty = False):
+        hexes = []
+        (goalX, goalY) = goal
+        innerBorderY = np.sign(goalY)*(self.getRadius() + 1)
+        fromX = goalX
+        for y in range (goalY, innerBorderY):
+            for x in range (fromX, goalX):
+                real_coordinates = self.fromVirtual((x,y))
+                if not empty or self.matrix[real_coordinates].isEmpty():
+                    hexes.append((x,y))
+            fromX = np.sign(fromX)*(abs(fromX) -1)
+        return hexes
 
     ### METODOS AUXILIARES
     ### TRAINING
@@ -416,14 +445,14 @@ class Board():
     # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
     # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
     # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
+    # Penalizar D: Cuanto mas lejos estas de la casilla cercana mas vacia del objetivo, peor estas
     def getFeatures(self, player):
-        (A1, B1, C1) = self.getPlayerFeatures(GameTokens.PLAYER1)
-        (A2, B2, C2) = self.getPlayerFeatures(GameTokens.PLAYER2)
+        (A1, B1, C1, D1) = self.getPlayerFeatures(GameTokens.PLAYER1)
+        (A2, B2, C2, D2) = self.getPlayerFeatures(GameTokens.PLAYER2)
 
         if player == GameTokens.PLAYER1:
-            featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2]
+            featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2, D2 - D1]
         else:
-            featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1]
-            
-        return self.normalize(featuresPlayer)
+            featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1, D1 - D2]
 
+        return self.normalize(featuresPlayer)
