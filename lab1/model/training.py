@@ -112,6 +112,7 @@ class Training():
                 lastEvaluation = -1
                 results[1] = results[1] + 1
             else:
+                results[2] = results[2] + 1
                 if not self.skip_on_draw:
                     print("Resultado omitido a causa de empate")
                     i += 1
@@ -119,7 +120,6 @@ class Training():
                         count -= 1
                     continue
                 lastEvaluation = 0
-                results[2] = results[2] + 1
 
             x_axis.append(i)
             y_axis.append(lastEvaluation)
