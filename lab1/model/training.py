@@ -112,8 +112,11 @@ class Training():
                 lastEvaluation = -1
                 results[1] = results[1] + 1
             else:
-                if self.skip_on_draw:
+                if not self.skip_on_draw:
                     print("Resultado omitido a causa de empate")
+                    i += 1
+                    if variable:
+                        count -= 1
                     continue
                 lastEvaluation = 0
                 results[2] = results[2] + 1

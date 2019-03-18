@@ -169,10 +169,10 @@ def printNormalizeWeights():
     else:
         return False
 
-# Pregunta al usuario si desea no contar los empates
+# Pregunta al usuario si desea contar los empates
 def printSkipOnDraw():
     print ("")
-    print ("-> Desea no contar una iteracion que empate? (y/n) ")
+    print ("-> Desea contar una iteracion que empate? (y/n) ")
     print ("-> DEFAULT: n")
     skip_on_draw = input()
     if skip_on_draw == 'y':
