@@ -20,12 +20,29 @@ class Training():
     ### METODOS AUXILIARES
     ### -------------------
 
-    def saveModel(self):
-        print("Guarda los pesos obtenidos del entrenamiento en un archivo de texto")
-
-    def printPlot(self, x_axis, y_axis, iterations):
+    def printResultsPlot(self, axis, iterations):
+        (x_axis, y_axis) = axis
         plt.plot(x_axis, y_axis, 'ro')
         plt.axis([0, iterations - 1, -2, 2])
+        plt.show()
+
+    def generateErrorSublist(self, iterations):
+        if iterations <= 10:
+            return list(range(0, iterations))
+        elif iterations <= 100:
+            return list(range(0, iterations, 10))
+        else:
+            return list(range(0, iterations, 100))
+
+    def printErrorPlot(self, plots, iterations):
+        sublist = self.generateErrorSublist(iterations)
+        sublistPlots = [x for x in plots if plots.index(x) in sublist]
+        fig, ax = plt.subplots()
+        for pairs in sublistPlots:
+            (x_axis, y_axis) = pairs
+            ax.plot(x_axis, y_axis, label="Iter " + str(sublistPlots.index(pairs)))
+        ax.legend()
+
         plt.show()
 
     ### METODOS PRINCIPALES
@@ -69,8 +86,11 @@ class Training():
     def training(self):
 
         results = [0,0,0]
-        x_axis = []
-        y_axis = []
+
+        results_x_axis = []
+        results_y_axis = []
+
+        errors = []
 
         variable = self.learningRate == 'var'
 
@@ -118,8 +138,8 @@ class Training():
                 lastEvaluation = 0
                 results[2] = results[2] + 1
 
-            x_axis.append(i)
-            y_axis.append(lastEvaluation)
+            results_x_axis.append(i)
+            results_y_axis.append(lastEvaluation)
             
             lastBoard = historial[-1]
             trainingExamples.append([lastBoard.getFeatures(self.playerToken), lastEvaluation])
@@ -127,11 +147,18 @@ class Training():
             # Se realiza una copia del modelo actual para que el oponente use
             # en la próxima iteración (a menos que sea oponente random)
             new_model = copy.deepcopy(model)
+            errors.append(([], []))
+            (error_x_axis, error_y_axis) = errors[i]
 
             # Se actualizan los pesos del modelo utilizando los datos de la
             # última partida
+            index = 0
             for t in trainingExamples:
                 new_model.update(t[0], t[1], self.learningRate)
+                mse = new_model.update(t[0], t[1], self.learningRate)
+                index += 1
+                error_x_axis.append(index)
+                error_y_axis.append(mse)
             self.player.setModel(new_model)
 
             # Se sustituye el modelo del oponente por el modelo utilizado en
@@ -142,7 +169,6 @@ class Training():
             i += 1
             if variable:
                 count -= 1
-        self.printPlot(x_axis, y_axis, self.iters)
-        
-        return (self.player, results)
+
+        return (self.player, results, (results_x_axis, results_y_axis), errors)
 

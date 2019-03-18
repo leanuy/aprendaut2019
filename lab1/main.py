@@ -46,7 +46,7 @@ if __name__ == '__main__':
             t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights, maxRounds, normalize_weights, skip_on_draw)
 
             tic = time.time()
-            (player, results) = t.training()
+            (player, results, resultsPlot, errorsPlot) = t.training()
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
@@ -69,6 +69,8 @@ if __name__ == '__main__':
             players.append(player)
 
             gui.printTrainedPlayer(player)
+            t.printResultsPlot(resultsPlot, iters)
+            t.printErrorPlot(errorsPlot, iters)
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.PLAY:

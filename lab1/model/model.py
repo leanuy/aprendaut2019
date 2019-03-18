@@ -12,7 +12,7 @@ class Model():
     ### CONSTRUCTOR
     ### -------------------
 
-    def __init__(self, normalize_weights, initialWeights = [0.9, 0.9, 0.9, 0.9, 0.9]):
+    def __init__(self, normalize_weights, initialWeights = [0.9, -0.9, 0.9, -0.9, 0.9, 0.9, -0.9, -0.9, 0.9]):
         self.weights = initialWeights
         self.normalize_weights = normalize_weights
 
@@ -39,7 +39,7 @@ class Model():
             self.weights[i] = self.weights[i] + learningRate * (trainingEvaluation - currentEvaluation) * features[i]
         if self.normalize_weights:
             self.weights = self.normalize(self.weights)
-
+        return trainingEvaluation - currentEvaluation
     
     def normalize(self, values):
         normalized_values = []

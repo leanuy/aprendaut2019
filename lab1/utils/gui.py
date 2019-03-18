@@ -148,20 +148,20 @@ def printLearningRate():
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
     print ("")
-    print ("-> Ingrese la lista de pesos iniciales: ")
-    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9, 0.9]")
+    print ("-> Ingrese la lista de pesos iniciales: [w0, wA1, wA2, wB1, wB2, wC1, wC2, wD1, wD2]")
+    print ("-> DEFAULT: [0.9, -0.9, 0.9, -0.9, 0.9, 0.9, -0.9, -0.9, 0.9]")
     try:
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
         return weights
     except:
-        return [0.9, 0.9, 0.9, 0.9, 0.9]
+        return [0.9, -0.9, 0.9, -0.9, 0.9, 0.9, -0.9, -0.9, 0.9]
 
 # Pregunta al usuario si desea normalizar el modelo
 def printNormalizeWeights():
     print ("")
-    print ("-> Desea normalizar el modelo? (y/n) ")
+    print ("-> Desea normalizar el los pesos? (y/n) ")
     print ("-> DEFAULT: n")
     normalized_model = input()
     if normalized_model == 'y':
@@ -172,10 +172,10 @@ def printNormalizeWeights():
 # Pregunta al usuario si desea no contar los empates
 def printSkipOnDraw():
     print ("")
-    print ("-> Desea no contar una iteracion que empate? (y/n) ")
-    print ("-> DEFAULT: n")
+    print ("-> Desea contar una las iteraciones que empate? (y/n) ")
+    print ("-> DEFAULT: y")
     skip_on_draw = input()
-    if skip_on_draw == 'y':
+    if skip_on_draw == 'n':
         return True
     else:
         return False
