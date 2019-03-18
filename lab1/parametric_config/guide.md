@@ -1,9 +1,9 @@
 
 ### Instancias (2):
-##### 5 pesos normalizados
-##### 9 pesos no normalizados
+        - 5 pesos normalizados
+        - 9 pesos no normalizados
 
-### Posibles combinaciones (12):
+### Configuración paramétrica (12):
 ##### Ratio:
         - 0.5
         - 0.9
