@@ -148,15 +148,15 @@ def printLearningRate():
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
     print ("")
-    print ("-> Ingrese la lista de pesos iniciales: [w0, wA1, wA2, wB1, wB2, wC1, wC2, wD1, wD2]")
-    print ("-> DEFAULT: [0.9, -0.9, 0.9, -0.9, 0.9, 0.9, -0.9, -0.9, 0.9]")
+    print ("-> Ingrese la lista de pesos iniciales: [w0, wA, wB, wC, wD]")
+    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9, 0.9]")
     try:
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
         return weights
     except:
-        return [0.9, -0.9, 0.9, -0.9, 0.9, 0.9, -0.9, -0.9, 0.9]
+        return [0.9, 0.9, 0.9, 0.9, 0.9]
 
 # Pregunta al usuario si desea normalizar el modelo
 def printNormalizeWeights():
