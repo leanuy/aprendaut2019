@@ -1,0 +1,9 @@
+-> Jugador Entrenado VS Si Mismo
+--> Tiempo de entrenamiento: 2772.2032170295715 segundos
+--> Cantidad de iteraciones: 100
+--> Cantidad máxima de turnos por juego: 100
+--> Ratio de aprendizaje: var
+--> Pesos iniciales: [0.9, 0.9, 0.9, 0.9, 0.9]
+--> Pesos finales: [0.3987952169766996, 0.80941890527178, 1.0, 0.5377309259322403, 0.0]
+--> Cantidad de partidas ganadas, perdidas, empatadas: [49, 26, 25]
+--> Porcentaje de partidas ganadas: 0.49
