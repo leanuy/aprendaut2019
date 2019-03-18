@@ -48,8 +48,8 @@ class Training():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights, skip_on_draw):
-        self.skip_on_draw = skip_on_draw
+    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights, notDraw):
+        self.notDraw = notDraw
 
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
@@ -133,7 +133,7 @@ class Training():
                 results[1] = results[1] + 1
             else:
                 results[2] = results[2] + 1
-                if not self.skip_on_draw:
+                if not self.notDraw:
                     print("Resultado omitido a causa de empate")
                     i += 1
                     if variable:
