@@ -175,7 +175,7 @@ def printSkipOnDraw():
     print ("-> Desea contar una iteracion que empate? (y/n) ")
     print ("-> DEFAULT: n")
     skip_on_draw = input()
-    if skip_on_draw == 'n':
+    if skip_on_draw == 'y':
         return True
     else:
         return False

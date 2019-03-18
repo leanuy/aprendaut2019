@@ -151,7 +151,7 @@ class Training():
             # en la próxima iteración (a menos que sea oponente random)
             new_model = copy.deepcopy(model)
             errors.append(([], []))
-            (error_x_axis, error_y_axis) = errors[i]
+            (error_x_axis, error_y_axis) = errors[-1]
 
             # Se actualizan los pesos del modelo utilizando los datos de la
             # última partida
