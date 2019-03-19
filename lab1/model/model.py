@@ -50,5 +50,5 @@ class Model():
                 normalized_values.append((value - minimum_value)/(maximum_value - minimum_value))
             else:
                 normalized_values.append(0)
-        return values
+        return normalized_values
         
