@@ -4,8 +4,10 @@
 import numpy as np
 import random
 
-from .decision_tree import id3_train, id3_classify
-from .decision_forest import id3_forest_train, id3_forest_classify
+from .decision_tree import id3Train, id3Classify
+from .decision_forest import id3ForestTrain, id3ForestClassify
+
+import processing.reader as reader
 
 from utils.const import ModelOps, ContinuousOps
 
@@ -21,6 +23,7 @@ class Model():
         self.model = modelType
         self.dataset = None
         self.attributes = None
+        self.results = None
         self.classifier = None
 
     ### GETTERS y SETTERS
@@ -29,7 +32,7 @@ class Model():
     def getModelType(self):
         return self.modelType
 
-    def getAttributes(self):
+    def getModelAttributes(self):
         return self.attributes
 
     def getClassifier(self):
@@ -41,26 +44,30 @@ class Model():
     def train(self, dataset, continuous = 0):
 
         self.dataset = dataset
-        self.attributes = []
+        self.attributes = reader.getAttributes(dataset)
+        self.results = reader.getResults(dataset)
 
+        print(self.attributes)
+        print(self.results)
+        
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.train_tree(continuous)
+            self.classifier = self.trainTree(continuous)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            self.classifier = self.train_forest(continuous)
+            self.classifier = self.trainForest(continuous)
 
     def classify(self, example, continuous = 0):
 
         if self.model == ModelOps.DECISION_TREE:
-            return self.classify_tree(example, continuous)
+            return self.classifyTree(example, continuous)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            return self.classify_forest(example, continuous)
+            return self.classifyForest(example, continuous)
 
     ### METODOS AUXILIARES
     ### -------------------
 
-    def classify_set(self, example_set, continuous = 0):
+    def classifySet(self, example_set, continuous = 0):
         
         results = []
         
@@ -70,12 +77,22 @@ class Model():
 
         return results
 
+    def printClassifier(self):
+        self.classifier.printTree(0)
+        print()
+
     ### METODOS INTERNOS
     ### -------------------
 
-    def train_tree(self, continuous):
-        return id3_train(self.dataset, self.attributes, continuous)
+    def trainTree(self, continuous):
+        return id3Train(self.dataset, self.attributes, self.results, continuous)
 
-    def classify_tree(self, example, continuous):
-        return id3_classify(self.classifier, example, continuous)
+    def classifyTree(self, example, continuous):
+        return id3Classify(self.classifier, example, continuous)
+
+    def trainForest(self, continuous):
+        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous)
+
+    def classifyForest(self, example, continuous):
+        return id3ForestClassify(self.classifier, example, continuous)
 

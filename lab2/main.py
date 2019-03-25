@@ -7,6 +7,8 @@ import time
 
 from model.model import Model
 
+import processing.reader as reader
+
 import utils.gui as gui
 from utils.const import MenuOps, ModelOps, ContinuousOps
 
@@ -18,7 +20,7 @@ if __name__ == '__main__':
     op = MenuOps.TRAIN
     classifiers = []
 
-    while op == MenuOps.TRAIN or op == MenuOps.CLASSIFY or op == MenuOps.EVALUATE:
+    while op == MenuOps.TRAIN or op == MenuOps.CLASSIFY or op == MenuOps.EVALUATE or op == MenuOps.SHOW:
 
         gui.printMenu(classifiers)
         op = gui.printMenuOption()
@@ -29,12 +31,13 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy()
 
             model = Model(modelType)
+            dataset = reader.readDataset()
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(continuous)
+            model.train(dataset, continuous)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
@@ -70,6 +73,7 @@ if __name__ == '__main__':
                     print("Clasificador " + str(c['name']) + " elegido para clasificar")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
+                    input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.EVALUATE:
 
@@ -89,3 +93,26 @@ if __name__ == '__main__':
                     print("Clasificador " + str(c['name']) + " elegido para evaluar")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
+                    input("-> Oprima enter para volver al menú")
+
+        elif op == MenuOps.SHOW:
+
+            if classifiers == []:
+                print()
+                print("-> No hay clasificadores, entrene uno para mostrar")
+
+            else:
+                gui.printClear()
+                gui.printClassifiers(classifiers)
+
+                c = int( input("-> Elija un clasificador por el índice: ") )
+                c -= 1
+                print("")
+
+                if c >= 0 and c < len(classifiers):
+                    classifiers[c]['model'].printClassifier()
+                    
+                else:
+                    print("-> El índice ingresado no corresponde a ningún clasificador")
+
+            input("-> Oprima enter para volver al menú")

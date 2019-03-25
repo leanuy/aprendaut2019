@@ -31,6 +31,7 @@ def printMenu(classifiers):
     print ("1. Entrenar")
     print ("2. Clasificar")
     print ("3. Evaluar")
+    print ("4. Mostrar")
     print ("0. Salir")
 
 # Lee la opcion a elegir del menu principal
@@ -39,7 +40,7 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 3:
+    if op < 1 or op > 4:
         sys.exit()
     else:
         if op == 1:
@@ -48,6 +49,8 @@ def printMenuOption():
             op = MenuOps.CLASSIFY
         elif op == 3:
             op = MenuOps.EVALUATE
+        elif op == 4:
+            op = MenuOps.SHOW
 
     return op
 
@@ -80,10 +83,10 @@ def printModelType():
         else:
             if modelType == 1:
                 modelType = ModelOps.DECISION_TREE
-                modelName = "Random"
+                modelName = "Árbol"
             elif modelType == 2:
                 modelType = ModelOps.DECISION_FOREST
-                modelName = "Si Mismo"
+                modelName = "Bosque"
 
         return (modelType, modelName)
 

@@ -11,6 +11,7 @@ class MenuOps(Enum):
     TRAIN = 1
     CLASSIFY = 2
     EVALUATE = 3
+    SHOW = 4
 
 # Opciones del tipo de modelo
 class ModelOps(Enum):
@@ -21,3 +22,8 @@ class ModelOps(Enum):
 class ContinuousOps(Enum):
     FIXED = 1
     VARIABLE = 2
+
+# Tipos de atributos
+class AttributeType(Enum):
+    DISCRETE = 0
+    CONTINUOUS = 1
