@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, ModelOps, ContinuousOps
+from .const import MenuOps, ModelOps, ContinuousOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -67,6 +67,24 @@ def printClassifiers(classifiers):
         index = index + 1
     print ("")
 
+# Imprime las opciones de conjunto de datos y lee la opción elegida
+def printDataset():
+    print ("")
+    print ("-> Elija un conjunto de datos como fuente del entrenamiento: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Iris")
+    print ("2. CoverType")
+
+    try:
+        dataset = int( input() )
+        if dataset == 2:
+            return COVERTYPE_DATASET
+        else:
+            return IRIS_DATASET
+
+    except:
+        return IRIS_DATASET
+
 # Imprime las opciones de tipo de modelo y lee la opción elegida
 def printModelType():
     print ("")
@@ -116,7 +134,18 @@ def printContinuousStrategy():
 
     except:
         return ContinuousOps.FIXED
-    
+
+# Pregunta al usuario si desea mostrar la entropia y ganancia calculadas al entrenar
+def printShowDecisions():
+    print ("")
+    print ("-> Desea mostrar las decisiones de atributos al entrenar? (y/n) ")
+    print ("-> DEFAULT: n")
+    showDecisions = input()
+    if showDecisions == 'y':
+        return True
+    else:
+        return False
+
 # Imprime los datos de entrenamiento de un clasificador
 def printTrainedClassifier(classifier):
 

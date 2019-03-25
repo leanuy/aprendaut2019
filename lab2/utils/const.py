@@ -9,7 +9,7 @@ from enum import Enum
 # Opciones del menú principal
 class MenuOps(Enum):
     TRAIN = 1
-    CLASSIFY = 2
+    CLASSIFY = 2    
     EVALUATE = 3
     SHOW = 4
 
@@ -27,3 +27,6 @@ class ContinuousOps(Enum):
 class AttributeType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
+
+IRIS_DATASET = 'data/iris.arff'
+COVERTYPE_DATASET = 'data/covertype.arff'

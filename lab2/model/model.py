@@ -41,17 +41,14 @@ class Model():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def train(self, dataset, continuous = 0):
+    def train(self, dataset, continuous = 0, showDecisions = False):
 
-        self.dataset = dataset
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
+        self.dataset = dataset
 
-        print(self.attributes)
-        print(self.results)
-        
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.trainTree(continuous)
+            self.classifier = self.trainTree(continuous, showDecisions)
 
         elif self.model == ModelOps.DECISION_FOREST:
             self.classifier = self.trainForest(continuous)
@@ -84,8 +81,8 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, continuous):
-        return id3Train(self.dataset, self.attributes, self.results, continuous)
+    def trainTree(self, continuous, showDecisions):
+        return id3Train(self.dataset, self.attributes, self.results, continuous, showDecisions)
 
     def classifyTree(self, example, continuous):
         return id3Classify(self.classifier, example, continuous)

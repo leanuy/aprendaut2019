@@ -1,8 +1,9 @@
 ### DEPENDENCIAS
 ### ------------------
 
-from scipy.io import arff
+import operator
 import pandas as pd
+from scipy.io import arff
 
 from utils.const import AttributeType, ContinuousOps
 
@@ -10,8 +11,8 @@ from utils.const import AttributeType, ContinuousOps
 ### -------------------
 
 # Lee 'dsFile' y lo devuelve como un diccionario (atributo, valor)
-def readDataset():
-    ds = arff.loadarff('data/iris.arff')
+def readDataset(filename):
+    ds = arff.loadarff(filename)
     df = pd.DataFrame(ds[0])
     ds = df.to_dict('records')
     return ds
@@ -39,23 +40,31 @@ def getPossibleValues(dataset, attribute, continuous):
         return values
     
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.FIXED:
-        minVal = min(values)
-        maxVal = max(values)
+       
+        interval1 = len(values) // 3
+        interval2 = (len(values) // 3) * 2
 
         possibleValues = []
-        possibleValues.append((maxVal - minVal) / 3 + minVal)
-        possibleValues.append((maxVal - minVal) / 3 + (2* minVal))
+        possibleValues.append(values[interval1 - 1])
+        possibleValues.append(values[interval2 - 1])
         possibleValues.append("bigger")
 
         return possibleValues
 
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
-        minVal = min(values)
-        maxVal = max(values)
 
+        sortedDataset = sorted(dataset, key=operator.itemgetter(attributeKey))
         possibleValues = []
-        possibleValues.append((maxVal - minVal) / 3 + minVal)
-        possibleValues.append((maxVal - minVal) / 3 + (2* minVal))
+        lastRes = None
+        lastExample = None
+
+        # Iterate through sorted training examples, adding a new value to whenever the answer changes
+        # adding the median value between the current value and the previous one
+        for example in sortedDataset:
+            if lastRes != None and example['class'] != lastRes:
+                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
+            lastRes = example['class']
+            lastExample = example[attributeKey]
         possibleValues.append("bigger")
 
         return possibleValues
@@ -71,13 +80,13 @@ def getPossibleDiscreteValues(dataset, attribute):
 ### ---------------------------------
 
 # Devuelve el subconjunto de 'dataset' con valor 'value' en el atributo 'attribute'
-def getExamplesForValue(dataset, attribute, values, value, continuous):
+def getExamplesForValue(dataset, attribute, values, value):
     (attributeKey, attributeType) = attribute
 
     if attributeType == AttributeType.DISCRETE:
         return [x for x in dataset if x[attributeKey] == value]
     
-    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.FIXED:
+    elif attributeType == AttributeType.CONTINUOUS:
         index = values.index(value)
 
         # If it is the first element, just check if the value is lesser
@@ -91,21 +100,6 @@ def getExamplesForValue(dataset, attribute, values, value, continuous):
          # If it is the last element, just check if the value is greater
         else:
             return [x for x in dataset if x[attributeKey] > values[index-1]]
-        
-    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
-        index = values.index(value)
-
-        # If it is the first element, just check if the value is lesser
-        if index == 0:
-            return [x for x in examples if x[attributeKey] <= value]
-
-        # If it is an intermediate interval, check if the value is in there
-        elif interval != "bigger":
-            return [x for x in examples if x[attributeKey] <= value and x[att] > values[index-1]]
-
-         # If it is the last element, just check if the value is greater
-        else:
-            return [x for x in examples if x[attributeKey] > values[index-1]]
 
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------

@@ -27,17 +27,19 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
+            datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
+            showDecisions = gui.printShowDecisions()
 
             model = Model(modelType)
-            dataset = reader.readDataset()
+            dataset = reader.readDataset(datasetFile)
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(dataset, continuous)
+            model.train(dataset, continuous, showDecisions)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
