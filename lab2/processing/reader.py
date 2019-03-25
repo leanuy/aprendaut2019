@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import copy
 import operator
 import pandas as pd
 from scipy.io import arff
@@ -17,6 +18,24 @@ def readDataset(filename):
     ds = df.to_dict('records')
     return ds
 
+def getFormattedDataset(dataset, attributes, continuous):
+    
+    formattedDataset = copy.deepcopy(dataset)
+    
+    for attribute in attributes:
+
+        (attributeKey, attributeType) = attribute
+        values = getDiscretePossibleValues(formattedDataset, attribute, continuous)
+
+        for example in formattedDataset:
+            if attributeType == AttributeType.CONTINUOUS:
+                for value in values:
+                    if value == 'bigger' or example[attributeKey] <= value:
+                        example[attributeKey] = value
+                        break
+
+    return formattedDataset
+
 ### METODOS PRINCIPALES - ATRIBUTOS
 ### ---------------------------------
 
@@ -27,14 +46,25 @@ def getAttributes(dataset):
     for key in list(example.keys()):
         if key != 'class':
             attribute = str(key)
-            attributeType = checkAttributeType(getPossibleDiscreteValues(dataset, attribute))
+            attributeType = checkAttributeType(getAllPossibleValues(dataset, attribute))
             attributes.add((attribute, attributeType))
     return list(attributes)
 
 # Devuelve la lista de posibles valores en 'dataset' para 'attribute'
-def getPossibleValues(dataset, attribute, continuous):
+def getPossibleValues(dataset, attribute):
     (attributeKey, attributeType) = attribute
-    values = getPossibleDiscreteValues(dataset, attributeKey)
+    values = []
+    for x in dataset:
+        if x[attributeKey] not in values:
+          values.append(x[attributeKey])
+    return values
+
+# Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
+def getDiscretePossibleValues(dataset, attribute, continuous):
+    
+    (attributeKey, attributeType) = attribute
+    sortedDataset = sorted(dataset, key=operator.itemgetter(attributeKey))
+    values = getPossibleValues(sortedDataset, attribute)
 
     if attributeType == AttributeType.DISCRETE:
         return values
@@ -53,7 +83,6 @@ def getPossibleValues(dataset, attribute, continuous):
 
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
 
-        sortedDataset = sorted(dataset, key=operator.itemgetter(attributeKey))
         possibleValues = []
         lastRes = None
         lastExample = None
@@ -70,11 +99,26 @@ def getPossibleValues(dataset, attribute, continuous):
         return possibleValues
 
 # Devuelve la lista de posibles valores discretos en 'dataset' para 'attribute'
-def getPossibleDiscreteValues(dataset, attribute):
+def getAllPossibleValues(dataset, attribute):
     possibleValues = set()
     for x in dataset:
         possibleValues.add(x[attribute])
-    return sorted(list(possibleValues))
+    return list(possibleValues)
+
+# Devuelve la lista de posibles valores para todos los atributos dde 'dataset'
+def getDatasetPossibleValues(dataset, attributes):
+    values = {}
+    for attribute in attributes:
+        (attributeKey, attributeType) = attribute
+        attributeValues = getPossibleValues(dataset, attribute)
+        # Si es un atributo continuo, ordena la lista de atributos
+        if attributeType == AttributeType.CONTINUOUS:
+            attributeValues = sorted([str(x) for x in attributeValues])
+            attributeValues = [float(x) for x in attributeValues if x != 'bigger']
+            attributeValues.append('bigger')
+        values[attributeKey] = attributeValues
+    print(values)
+    return values
 
 ### METODOS PRINCIPALES - EJEMPLOS
 ### ---------------------------------
@@ -82,24 +126,7 @@ def getPossibleDiscreteValues(dataset, attribute):
 # Devuelve el subconjunto de 'dataset' con valor 'value' en el atributo 'attribute'
 def getExamplesForValue(dataset, attribute, values, value):
     (attributeKey, attributeType) = attribute
-
-    if attributeType == AttributeType.DISCRETE:
-        return [x for x in dataset if x[attributeKey] == value]
-    
-    elif attributeType == AttributeType.CONTINUOUS:
-        index = values.index(value)
-
-        # If it is the first element, just check if the value is lesser
-        if index == 0:
-            return [x for x in dataset if x[attributeKey] <= value]
-
-        # If it is an intermediate interval, check if the value is in there
-        elif value != "bigger":
-            return [x for x in dataset if x[attributeKey] <= value and x[attributeKey] > values[index-1]]
-
-         # If it is the last element, just check if the value is greater
-        else:
-            return [x for x in dataset if x[attributeKey] > values[index-1]]
+    return [x for x in dataset if x[attributeKey] == value]
 
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------

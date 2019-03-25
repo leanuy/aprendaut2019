@@ -30,7 +30,7 @@ class Model():
     ### -------------------
 
     def getModelType(self):
-        return self.modelType
+        return self.model
 
     def getModelAttributes(self):
         return self.attributes
@@ -45,7 +45,8 @@ class Model():
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
-        self.dataset = dataset
+        self.dataset = reader.getFormattedDataset(dataset, self.attributes, continuous)
+        self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
 
         if self.model == ModelOps.DECISION_TREE:
             self.classifier = self.trainTree(continuous, showDecisions)
@@ -82,7 +83,7 @@ class Model():
     ### -------------------
 
     def trainTree(self, continuous, showDecisions):
-        return id3Train(self.dataset, self.attributes, self.results, continuous, showDecisions)
+        return id3Train(self.dataset, self.attributes, self.values, self.results, continuous, showDecisions)
 
     def classifyTree(self, example, continuous):
         return id3Classify(self.classifier, example, continuous)
