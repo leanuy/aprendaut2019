@@ -23,6 +23,11 @@ class ContinuousOps(Enum):
     FIXED = 1
     VARIABLE = 2
 
+# Estrategias de evaluación
+class EvaluationOps(Enum):
+    NORMAL = 1
+    CROSS = 2
+
 # Tipos de atributos
 class AttributeType(Enum):
     DISCRETE = 0

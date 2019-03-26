@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, ModelOps, ContinuousOps, IRIS_DATASET, COVERTYPE_DATASET
+from .const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -148,4 +148,52 @@ def printTrainedClassifier(classifier):
     print("--> Estrategia de atributos continuos: ", end="")
     print(classifier['continuous'])
 
+    print()
+
+# Imprime las estrategias de evaluación y lee la opción elegida
+def printEvaluationMode():
+    print ("")
+    print ("-> Elija un algoritmo de evaluación: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Validación normal")
+    print ("2. Validación cruzada")
+
+    try:
+        evaluation = int( input() )
+        if evaluation == 2:
+            return EvaluationOps.CROSS
+        else:
+            return EvaluationOps.NORMAL
+
+    except:
+        return EvaluationOps.NORMAL
+
+# Imprime los datos de entrenamiento de un clasificador
+def printEvaluation(classifier, eval, accuracy):
+
+    print()
+    print("-> Modelo Entrenado - ", end="")
+    print(classifier['name'])
+    print("--> Estrategia de atributos continuos: ", end="")
+    print(classifier['continuous'])
+
+    print()
+
+    print("-> Evaluación normal (80/20)")
+    print("--> Accuracy: ", end="")
+    print(accuracy)
+
+    for result in eval:
+        print()
+        print("--> Evaluación para ", end="")
+        print(result, end=": ")
+        print()
+        (a, b, (precision, recall, Fmeasure)) = eval[result]
+        print("---> Precision: ", end="")
+        print(precision)
+        print("---> Recall: ", end="")
+        print(recall)        
+        print("---> F-Measure: ", end="")
+        print(Fmeasure)
+        
     print()

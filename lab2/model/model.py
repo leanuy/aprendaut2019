@@ -43,8 +43,14 @@ class Model():
             attributeNames.append(attributeKey)
         return attributeNames
 
+    def getModelResults(self):
+        return self.results
+
     def getClassifier(self):
         return self.classifier
+
+    def getDataset(self):
+        return self.dataset
 
     ### METODOS PRINCIPALES
     ### -------------------
@@ -73,13 +79,13 @@ class Model():
     ### METODOS AUXILIARES
     ### -------------------
 
-    def classifySet(self, example_set, continuous = 0):
+    def classifySet(self, exampleSet, continuous = 0):
         
         results = []
         
-        for example in example_set:
-            res = self.classify(example, continuous)
-            results.append(res)
+        for example in exampleSet:
+            example['class'] = self.classify(example, continuous)
+            results.append(example)
 
         return results
 

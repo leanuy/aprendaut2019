@@ -10,8 +10,10 @@ from model.model import Model
 import processing.reader as reader
 import processing.parser as parser
 
+from evaluation.evaluate import normalValidation
+
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps
+from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -46,6 +48,7 @@ if __name__ == '__main__':
             print()
 
             classifier = {
+                'dataset': dataset,
                 'model': model,
                 'type': modelType,
                 'name': modelName,
@@ -101,10 +104,15 @@ if __name__ == '__main__':
 
                 c = int( input("-> Elija un clasificador por el índice: ") )
                 c -= 1
-                print("")
 
                 if c >= 0 and c < len(classifiers):
-                    print("Clasificador " + str(c['name']) + " elegido para evaluar")
+                    evalMode = gui.printEvaluationMode()
+
+                    if evalMode == EvaluationOps.NORMAL:
+                        (eval, accuracy) = normalValidation(classifiers[c]['dataset'], classifiers[c])
+
+                    gui.printEvaluation(classifiers[c], eval, accuracy)
+                    input("-> Oprima enter para volver al menú")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
                     input("-> Oprima enter para volver al menú")
