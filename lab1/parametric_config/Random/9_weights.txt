@@ -1,9 +1,0 @@
--> Jugador Entrenado VS Random
---> Tiempo de entrenamiento: 1462.748155117035 segundos
---> Cantidad de iteraciones: 100
---> Cantidad máxima de turnos por juego: 100
---> Ratio de aprendizaje: var
---> Pesos iniciales: [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
---> Pesos finales: [0.10141426103872259, -0.483029864065073, 0.8955534398739402, -0.10063004376453873, 0.1554962757356989, 0.11746981044803477, -0.015386360702857114, 0.31697013593492285, -0.24982309754536175]
---> Cantidad de partidas ganadas, perdidas, empatadas: [27, 0, 73]
---> Porcentaje de partidas ganadas: 0.27
