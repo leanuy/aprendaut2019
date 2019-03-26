@@ -28,66 +28,66 @@ def normalValidation(dataset, classifier):
 
 def crossValidation(dataset, classifier, k):
 
-    validator = list(ds)
+    validator = list(dataset)
     random.seed(20)
     random.shuffle(validator)
 
-    if model['model'].model == ModelType.KNN:
-        validator = one_hot_encode_ds(validator)
-        if model['missing'] == 1:
-            fill_missing_values(validator, get_attributes_from_dataset(validator))
+    partitions = [validator[i::k] for i in range(0,k)]
+    results = classifier['model'].getModelResults()
+    evaluations = []
 
-    k_partitions = [validator[i::k] for i in range(0,k)]
-    results = []
-    result_mean = {}
+    metricsMean = {}
+    for result in results:
+        metricsMean[result] = (0, 0, 0)
+    evaluationsMean = (0, metricsMean)
 
+    # Generar 'k' evaluaciones
     for i in range(0,k):
-        train_data = []
-        test_data = k_partitions[i]
-        for idx, partition in enumerate(k_partitions):
+
+        # Generar conjunto de entrenamiento y evaluación para la iteración 'i'
+        trainingSet = []
+        evaluationSet = partitions[i]
+        for idx, partition in enumerate(partitions):
             if idx != i:
-                train_data.extend(partition)
+                trainingSet.extend(partition)
 
-        # se entrena el modelo
-        classify_array = []
-        for example in test_data:
+        evalSet = []
+        for example in evaluationSet:
             d = dict(example)
-            d.pop('truth', None)
-            classify_array.append(d)
+            d.pop('class', None)
+            evalSet.append(d)
 
-        model['model'].train(train_data, model['continuous'], model['missing'], model['norm'], model['k'], model['m'], True)
-        result = model['model'].classify_set(classify_array, model['continuous'], model['missing'], model['norm'], model['k'], model['m'])
+        classifier['model'].train(trainingSet, classifier['continuous'])
+        resultSet = classifier['model'].classifySet(evalSet)
 
-        # evaluo
-        r = get_results(result, k_partitions[i])
-        results.append(r)
+        # Evaluar el modelo entrenado
+        evaluations.append(getEvaluation(resultSet, evaluationSet, results))
 
-    result_mean['total_true'] = 0
-    result_mean['total_false'] = 0
-    result_mean['precision_true'] = 0
-    result_mean['precision_false'] = 0
-    result_mean['recall_true'] = 0
-    result_mean['recall_false'] = 0
-    result_mean['f_true'] = 0
-    result_mean['f_false'] = 0
-    result_mean['accuracy'] = 0
+    # Generar promedio de las 'k' evaluaciones
+    for evaluation in evaluations:
+        (accuracy, metrics, confusionMatrix) = evaluation
+        (accuracyMean, metricsMean) = evaluationsMean
+        accuracyMean += accuracy
+        for result in metrics:
+            (precision, recall, Fmeasure) = metrics[result]
+            (precisionMean, recallMean, FmeasureMean) = metricsMean[result]
+            precisionMean += precision
+            recallMean += recall
+            FmeasureMean += Fmeasure
+            metricsMean[result] = (precisionMean, recallMean, FmeasureMean)
+        evaluationsMean = (accuracyMean, metricsMean)
 
-    for res in results:
-        (r, cm) = res
-        result_mean['total_true'] = result_mean['total_true'] + r['total_true']
-        result_mean['total_false'] = result_mean['total_false'] + r['total_false']
-        result_mean['precision_true'] = result_mean['precision_true'] + r['precision_true']
-        result_mean['precision_false'] = result_mean['precision_false'] + r['precision_false']
-        result_mean['recall_true'] = result_mean['recall_true'] + r['recall_true']
-        result_mean['recall_false'] = result_mean['recall_false'] + r['recall_false']
-        result_mean['f_true'] = result_mean['f_true'] + r['f_true']
-        result_mean['f_false'] = result_mean['f_false'] + r['f_false']
-        result_mean['accuracy'] = result_mean['accuracy'] + r['accuracy']
-
-    for key in result_mean.keys():
-        result_mean[key] = result_mean[key] / k
-
-    return (results,result_mean)
+    (accuracyMean, metricsMean) = evaluationsMean
+    accuracyMean = accuracyMean / k
+    for result in metricsMean:
+        (precisionMean, recallMean, FmeasureMean) = metricsMean[result]
+        precisionMean = precisionMean / k
+        recallMean = recallMean / k
+        FmeasureMean = FmeasureMean / k
+        metricsMean[result] = (precisionMean, recallMean, FmeasureMean)
+    evaluationsMean = (accuracyMean, metricsMean)
+            
+    return (evaluations, evaluationsMean)
 
 ### METODOS AUXILIARES - CONJUNTOS
 ### --------------------------------
@@ -133,8 +133,7 @@ def getEvaluation(resultSet, evaluationSet, results):
 
     # Obtener accuracy total
     correctTotal = getAllTrueResultClassification(confusionMatrix)
-    incorrectTotal = getAllFalseResultClassification(confusionMatrix)
-    accuracy = getAccuracy(correctTotal, incorrectTotal, len(resultSet))
+    accuracy = getAccuracy(correctTotal, len(resultSet))
 
     return (accuracy, evaluation, confusionMatrix)
 
@@ -182,9 +181,6 @@ def getFalseNotResultClassification(confusionMatrix, results, result):
 def getAllTrueResultClassification(confusionMatrix):
     return confusionMatrix.trace()
 
-def getAllFalseResultClassification(confusionMatrix):
-    return confusionMatrix.sum() - confusionMatrix.trace()
-
 ### METODOS AUXILIARES - MEDIDAS
 ### ---------------------------------
 
@@ -199,5 +195,5 @@ def getRecall(tp, fn):
 def getFMeasure(precision, recall):
     return (2*precision*recall)/(precision+recall)
 
-def getAccuracy(tp, tn, total):
-    return (tp + tn) / total
+def getAccuracy(tr, total):
+    return tr / total

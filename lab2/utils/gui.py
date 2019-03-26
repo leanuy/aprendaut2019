@@ -168,40 +168,41 @@ def printEvaluationMode():
     except:
         return EvaluationOps.NORMAL
 
-# Imprime los datos de entrenamiento de un clasificador
+# Imprime las opciones de particiones de evaluación y lee la opción elegida
+def printEvaluationK():
+    print ("")
+    print ("-> Elija cantidad de particiones para evaluar: ")
+    print ("-> DEFAULT: 10")
+    try:
+        evaluationK = int( input() )
+        return evaluationK
+    except:
+        return 10
+
+# A
 def printEvaluation(classifier, eval, accuracy, confusionMatrix):
-
-    print()
-    print("-> Modelo Entrenado - ", end="")
-    print(classifier['name'])
-    print("--> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
-
-    print()
-
-    print("-> Evaluación normal (80/20)")
-    print("--> Accuracy: ", end="")
+    print("-> Accuracy: ", end="")
     print(accuracy)
-    print("--> Confusion Matrix: ")
+    print("-> Confusion Matrix: ")
     print()
     printConfusionMatrix(confusionMatrix, classifier['results'])
 
     for result in eval:
         print()
-        print("--> Evaluación para ", end="")
+        print("-> Evaluación para ", end="")
         print(result, end=": ")
         print()
         (precision, recall, Fmeasure) = eval[result]
-        print("---> Precision: ", end="")
+        print("--> Precision: ", end="")
         print(precision)
-        print("---> Recall: ", end="")
+        print("--> Recall: ", end="")
         print(recall)        
-        print("---> F-Measure: ", end="")
+        print("--> F-Measure: ", end="")
         print(Fmeasure)
         
     print()
 
-# Imprime los datos de entrenamiento de un clasificador
+# Imprime una matriz de confusión dada para un vector de posibles clases
 def printConfusionMatrix(confusionMatrix, results):
 
     maxWordLength = 0
@@ -231,3 +232,67 @@ def printConfusionMatrix(confusionMatrix, results):
 
         print()
         print()
+
+# A
+def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLength):
+    print()
+    print("MODELO:")
+    print()
+    print("-> Modelo Entrenado: ", end="")
+    print(classifier['name'])
+    print("-> Estrategia de atributos continuos: ", end="")
+    print(classifier['continuous'])
+    print()
+    print("EVALUACIÓN NORMAL (80/20):")
+    print()
+    trainingLength = (dataLength // 5) * 4
+    evaluationLength = dataLength // 5
+    print("-> Total de ejemplos: " + str(dataLength))
+    print("-> Ejemplos de entrenamiento: " + str(trainingLength))
+    print("-> Ejemplos de evaluación: " + str(evaluationLength))
+    print()
+    printEvaluation(classifier, eval, accuracy, confusionMatrix)
+
+# A
+def printCrossEvaluation(classifier, eval, evalMean, dataLength):
+    print()
+    print("MODELO:")
+    print()
+    print("-> Modelo Entrenado: ", end="")
+    print(classifier['name'])
+    print("-> Estrategia de atributos continuos: ", end="")
+    print(classifier['continuous'])
+    print()
+    print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
+    print()
+    trainingLength = (dataLength // len(eval)) * (len(eval) - 1)
+    evaluationLength = dataLength // len(eval)
+    print("-> Total de ejemplos: " + str(dataLength))
+    print("-> Ejemplos de entrenamiento: " + str(trainingLength))
+    print("-> Ejemplos de evaluación: " + str(evaluationLength))
+    print()
+    for i in range(0, len(eval)):
+        print()
+        print("--- Partición N° " + str(i+1) + " ---")
+        print()
+        (accuracyK, evalK, confusionMatrixK) = eval[i]
+        printEvaluation(classifier, evalK, accuracyK, confusionMatrixK)
+    print()
+    print("--- Promedio de Evaluación ---")
+    print()
+    (accuracy, metricsMean) = evalMean
+    print("-> Accuracy: ", end="")
+    print(accuracy)
+    for result in metricsMean:
+        print()
+        print("-> Evaluación para ", end="")
+        print(result, end=": ")
+        print()
+        (precision, recall, Fmeasure) = metricsMean[result]
+        print("--> Precision: ", end="")
+        print(precision)
+        print("--> Recall: ", end="")
+        print(recall)        
+        print("--> F-Measure: ", end="")
+        print(Fmeasure)
+    print()

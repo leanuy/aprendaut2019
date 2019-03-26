@@ -10,7 +10,7 @@ from model.model import Model
 import processing.reader as reader
 import processing.parser as parser
 
-from evaluation.evaluate import normalValidation
+from evaluation.evaluate import normalValidation, crossValidation
 
 import utils.gui as gui
 from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps
@@ -112,8 +112,13 @@ if __name__ == '__main__':
 
                     if evalMode == EvaluationOps.NORMAL:
                         (accuracy, eval, confusionMatrix) = normalValidation(classifiers[c]['dataset'], classifiers[c])
+                        gui.printNormalEvaluation(classifiers[c], eval, accuracy, confusionMatrix, len(classifiers[c]['dataset']))
 
-                    gui.printEvaluation(classifiers[c], eval, accuracy, confusionMatrix)
+                    elif evalMode == EvaluationOps.CROSS:
+                        evalK = gui.printEvaluationK()
+                        (eval, evalMean) = crossValidation(classifiers[c]['dataset'], classifiers[c], evalK)
+                        gui.printCrossEvaluation(classifiers[c], eval, evalMean, len(classifiers[c]['dataset']))
+
                     input("-> Oprima enter para volver al menú")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
