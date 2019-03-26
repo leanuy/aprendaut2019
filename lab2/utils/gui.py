@@ -169,7 +169,7 @@ def printEvaluationMode():
         return EvaluationOps.NORMAL
 
 # Imprime los datos de entrenamiento de un clasificador
-def printEvaluation(classifier, eval, accuracy):
+def printEvaluation(classifier, eval, accuracy, confusionMatrix):
 
     print()
     print("-> Modelo Entrenado - ", end="")
@@ -182,13 +182,16 @@ def printEvaluation(classifier, eval, accuracy):
     print("-> Evaluación normal (80/20)")
     print("--> Accuracy: ", end="")
     print(accuracy)
+    print("--> Confusion Matrix: ")
+    print()
+    printConfusionMatrix(confusionMatrix, classifier['results'])
 
     for result in eval:
         print()
         print("--> Evaluación para ", end="")
         print(result, end=": ")
         print()
-        (a, b, (precision, recall, Fmeasure)) = eval[result]
+        (precision, recall, Fmeasure) = eval[result]
         print("---> Precision: ", end="")
         print(precision)
         print("---> Recall: ", end="")
@@ -197,3 +200,34 @@ def printEvaluation(classifier, eval, accuracy):
         print(Fmeasure)
         
     print()
+
+# Imprime los datos de entrenamiento de un clasificador
+def printConfusionMatrix(confusionMatrix, results):
+
+    maxWordLength = 0
+    for result in results:
+        length = len(result)
+        if length > maxWordLength:
+            maxWordLength = length
+
+    print(' ' * maxWordLength, end=" ")
+
+    for result in results:
+        print(result, end=" ")
+
+    print()
+    print()
+
+    for i in range(0, len(results)):
+
+        print(results[i], end=" ")
+        if len(results[i]) < maxWordLength:
+            print(' ' * (maxWordLength - len(results[i])), end="")
+
+        for j in range(0, len(results)):
+            print(' ' * (len(results[j]) // 2), end="")
+            print(confusionMatrix[i][j], end=" ")
+            print(' ' * (len(results[j]) // 2), end="")
+
+        print()
+        print()

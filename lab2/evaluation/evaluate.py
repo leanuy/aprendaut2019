@@ -1,8 +1,9 @@
 ### DEPENDENCIAS
 ### ------------------
 
-import random
 import math
+import random
+import numpy as np
 
 import processing.reader as reader
 from utils.const import AttributeType, ContinuousOps
@@ -25,7 +26,7 @@ def normalValidation(dataset, classifier):
 
     return getEvaluation(resultSet, evaluationSet, classifier['model'].getModelResults())
 
-def cross_validation(ds, model, k):
+def crossValidation(dataset, classifier, k):
 
     validator = list(ds)
     random.seed(20)
@@ -88,8 +89,8 @@ def cross_validation(ds, model, k):
 
     return (results,result_mean)
 
-### METODOS AUXILIARES
-### -------------------
+### METODOS AUXILIARES - CONJUNTOS
+### --------------------------------
 
 def splitDataset(dataset, randSeed, percentage):
 
@@ -102,71 +103,90 @@ def splitDataset(dataset, randSeed, percentage):
     cutPoint = math.floor(percentage * length)
     return (shuffled[:cutPoint], shuffled[cutPoint:])
 
+### METODOS AUXILIARES - EVALUACIONES
+### ---------------------------------
+
 def getEvaluation(resultSet, evaluationSet, results):
 
-    # Generar diccionario con resultados de evaluación, almacenando 7 resultados:
-    # 1. Clasificados correctamente como 'result'
-    # 2. Clasificados incorrectamente como 'result'
-    # 3. Clasificados como 'result' (total)
-    # 4. Clasificados incorrectamente como distinto a 'result'
-    # 5. Precision
-    # 6. Recall
-    # 7. Medida F
-    evaluation = {}
-    for result in results:
-        evaluation[result] = ((0, 0, 0), 0, (0, 0, 0))
+    # Generar matriz de confusión de largo len(results)
+    confusionMatrix = getConfusionMatrix(resultSet, evaluationSet, results)
 
-    # Comparar cada ejemplo clasificado con su verdadera clasificación
+    # Generar diccionario con resultados de evaluación, almacenando 3 resultados:
+    # 1. Precision
+    # 2. Recall
+    # 3. Medida F
+    evaluation = {}
+
+    # Generar dichas medidas para cada posible clase 'result'
+    for result in results:
+
+        # Obtener primero
+        trueResult = getTrueResultClassification(confusionMatrix, results, result)
+        falseResult = getFalseResultClassification(confusionMatrix, results, result)
+        falseNotResult = getFalseNotResultClassification(confusionMatrix, results, result)
+
+        # Generasr medidas y cargarlas en el diccionario para 'result'
+        precision = getPrecision(trueResult, falseResult)
+        recall = getRecall(trueResult, falseNotResult)
+        Fmeasure = getFMeasure(precision, recall)
+        evaluation[result] = (precision, recall, Fmeasure)
+
+    # Obtener accuracy total
+    correctTotal = getAllTrueResultClassification(confusionMatrix)
+    incorrectTotal = getAllFalseResultClassification(confusionMatrix)
+    accuracy = getAccuracy(correctTotal, incorrectTotal, len(resultSet))
+
+    return (accuracy, evaluation, confusionMatrix)
+
+### METODOS AUXILIARES - MATRIZ DE CONFUSION
+### ----------------------------------------
+
+def getConfusionMatrix(resultSet, evaluationSet, results):
+    classes = len(results)
+    confusionMatrix = np.zeros((classes, classes), dtype=object)
+
     for i in range(len(resultSet)):
 
         classifiedExample = resultSet[i]
         originalExample = evaluationSet[i]
-        
+
         (classification, probability) = classifiedExample['class']
         originalClassification = originalExample['class']
 
-        ((correct, incorrect, total), aux, others) = evaluation[classification]
-        total += 1
-        if classification == originalClassification:
-            correct += 1
-        else:
-            incorrect += 1
+        i = results.index(classification)
+        j = results.index(originalClassification)
+        confusionMatrix[i][j] += 1
 
-        evaluation[classification] = ((correct, incorrect, total), aux, others)
+    return confusionMatrix
 
-    # Obtener clasificados incorrectamente para cada resultado
-    for result in results:
-        for i in range(len(evaluationSet)):
-            classifiedExample = resultSet[i]
-            originalExample = evaluationSet[i]
+def getTrueResultClassification(confusionMatrix, results, result):
+    i = results.index(result)
+    return confusionMatrix[i][i]
 
-            (classification, probability) = classifiedExample['class']
-            originalClassification = originalExample['class']
-            
-            if originalClassification == result and classification != result:
-                (others1, falseNegative, others2) = evaluation[result]
-                falseNegative += 1
-                evaluation[result] = (others1, falseNegative, others2)
- 
-    # Obtener precision, recall y medida F para cada resultado
-    for result in results:
-        ((correct, incorrect, total), falseNegative, (precision, recall, Fmeasure)) = evaluation[result]
-        precision = getPrecision(correct, incorrect)
-        recall = getRecall(correct, falseNegative)
-        Fmeasure = getFMeasure(precision, recall)
-        evaluation[result] = ((correct, incorrect, total), falseNegative, (precision, recall, Fmeasure))
+def getFalseResultClassification(confusionMatrix, results, result):
+    res = 0
+    j = results.index(result)
+    for i in range(0, len(results)):
+        if i != j:
+            res += confusionMatrix[i][j]
+    return res
 
-    # Obtener accuracy total
-    correctTotal = 0
-    incorrectTotal = 0
-    for result in results:
-        ((correct, incorrect, total), aux, others) = evaluation[result]
-        correctTotal = correct
-        incorrectTotal = incorrect
-  
-    accuracy = getAccuracy(correctTotal, incorrectTotal, len(resultSet))
+def getFalseNotResultClassification(confusionMatrix, results, result):
+    res = 0
+    i = results.index(result)
+    for j in range(0, len(results)):
+        if i != j:
+            res += confusionMatrix[i][j]
+    return res
 
-    return (evaluation, accuracy)
+def getAllTrueResultClassification(confusionMatrix):
+    return confusionMatrix.trace()
+
+def getAllFalseResultClassification(confusionMatrix):
+    return confusionMatrix.sum() - confusionMatrix.trace()
+
+### METODOS AUXILIARES - MEDIDAS
+### ---------------------------------
 
 def getPrecision(tp, fp):
     if tp + fp == 0: return -1

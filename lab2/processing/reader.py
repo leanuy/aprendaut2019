@@ -117,7 +117,7 @@ def getResults(dataset):
     results = set()
     for x in dataset:
         results.add(x['class'])
-    return list(results)
+    return sorted(list(results))
   
 # Devuelve el resultado de 'results' más frecuente en 'dataset'
 def getMostLikelyResult(dataset, results):

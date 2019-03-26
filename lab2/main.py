@@ -50,6 +50,8 @@ if __name__ == '__main__':
             classifier = {
                 'dataset': dataset,
                 'model': model,
+                'attributes': model.getModelAttributesNames(),
+                'results': model.getModelResults(),
                 'type': modelType,
                 'name': modelName,
                 'time': toc-tic,
@@ -109,9 +111,9 @@ if __name__ == '__main__':
                     evalMode = gui.printEvaluationMode()
 
                     if evalMode == EvaluationOps.NORMAL:
-                        (eval, accuracy) = normalValidation(classifiers[c]['dataset'], classifiers[c])
+                        (accuracy, eval, confusionMatrix) = normalValidation(classifiers[c]['dataset'], classifiers[c])
 
-                    gui.printEvaluation(classifiers[c], eval, accuracy)
+                    gui.printEvaluation(classifiers[c], eval, accuracy, confusionMatrix)
                     input("-> Oprima enter para volver al menú")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
