@@ -122,5 +122,5 @@ class Model():
         return id3ForestTrain(self.dataset, self.attributes, self.values, self.results, continuous)
 
     def classifyForest(self, example, continuous):
-        return id3ForestClassify(self.classifier, example, continuous)
+        return id3ForestClassify(self.classifier, example, self.results, continuous)
 
