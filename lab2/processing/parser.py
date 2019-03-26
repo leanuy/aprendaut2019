@@ -42,3 +42,13 @@ def getFormattedExample(text, attributes):
         i = i + 1
     return example
 
+# A 
+def getBooleanDataset(dataset, result):
+    
+    formattedDataset = copy.deepcopy(dataset)
+    
+    for example in formattedDataset:
+        classification = example['class']
+        example['class'] = classification == result
+
+    return formattedDataset
