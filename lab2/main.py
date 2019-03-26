@@ -8,9 +8,12 @@ import time
 from model.model import Model
 
 import processing.reader as reader
+import processing.parser as parser
+
+from evaluation.evaluate import normalValidation, crossValidation
 
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps
+from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -45,7 +48,10 @@ if __name__ == '__main__':
             print()
 
             classifier = {
+                'dataset': dataset,
                 'model': model,
+                'attributes': model.getModelAttributesNames(),
+                'results': model.getModelResults(),
                 'type': modelType,
                 'name': modelName,
                 'time': toc-tic,
@@ -75,7 +81,7 @@ if __name__ == '__main__':
                     print("-> Ingrese un ejemplo a clasificar:")
                     print("ATRIBUTOS: " + str(classifiers[c]['model'].getModelAttributesNames()))
                     example = input()
-                    example = reader.getFormattedExample(example, classifiers[c]['model'].getModelAttributesNames())
+                    example = parser.getFormattedExample(example, classifiers[c]['model'].getModelAttributesNames())
                     (classification, probability) = classifiers[c]['model'].classify(example)
                     print()
                     print("El ejemplo fue clasificado como ", end=" ")
@@ -100,10 +106,20 @@ if __name__ == '__main__':
 
                 c = int( input("-> Elija un clasificador por el índice: ") )
                 c -= 1
-                print("")
 
                 if c >= 0 and c < len(classifiers):
-                    print("Clasificador " + str(c['name']) + " elegido para evaluar")
+                    evalMode = gui.printEvaluationMode()
+
+                    if evalMode == EvaluationOps.NORMAL:
+                        (accuracy, eval, confusionMatrix) = normalValidation(classifiers[c]['dataset'], classifiers[c])
+                        gui.printNormalEvaluation(classifiers[c], eval, accuracy, confusionMatrix, len(classifiers[c]['dataset']))
+
+                    elif evalMode == EvaluationOps.CROSS:
+                        evalK = gui.printEvaluationK()
+                        (eval, evalMean) = crossValidation(classifiers[c]['dataset'], classifiers[c], evalK)
+                        gui.printCrossEvaluation(classifiers[c], eval, evalMean, len(classifiers[c]['dataset']))
+
+                    input("-> Oprima enter para volver al menú")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
                     input("-> Oprima enter para volver al menú")
