@@ -135,17 +135,6 @@ def printContinuousStrategy():
     except:
         return ContinuousOps.FIXED
 
-# Pregunta al usuario si desea mostrar la entropia y ganancia calculadas al entrenar
-def printShowDecisions():
-    print ("")
-    print ("-> Desea mostrar las decisiones de atributos al entrenar? (y/n) ")
-    print ("-> DEFAULT: n")
-    showDecisions = input()
-    if showDecisions == 'y':
-        return True
-    else:
-        return False
-
 # Imprime los datos de entrenamiento de un clasificador
 def printTrainedClassifier(classifier):
 

@@ -6,11 +6,12 @@ import math
 from .node import Node
 
 import processing.reader as reader
+from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3Train(dataset, attributes, values, results, continuous, showDecisions):
+def id3Train(dataset, attributes, values, results, continuous):
 
     # Caso Borde: Todos los ejemplos son de una clase
     (result, proportion) = reader.getMostLikelyResult(dataset, results)
@@ -45,15 +46,36 @@ def id3Train(dataset, attributes, values, results, continuous, showDecisions):
 
             # 4.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
-                options[value] = id3Train(examplesForValue, newAttributes, values, results, continuous, showDecisions)
+                options[value] = id3Train(examplesForValue, newAttributes, values, results, continuous)
 
         # 5. Devolver nodo intermedio
         return Node(attribute, options)
 
 def id3Classify(tree, example, continuous):
-    print("Clasificador ID3 Tree")
-    return True
-
+    if type(tree) == Node:
+        currentAttribute = tree.attribute
+        currentAttributeType = tree.attributeType
+        currentBranches = list(tree.options.keys())
+        for branch in currentBranches:
+            if currentAttributeType == AttributeType.DISCRETE:
+                if branch == example[currentAttribute]:
+                    node = tree.options[branch]
+                    if type(node) == Node:
+                        return id3Classify(node, example, continuous)
+                    else:
+                        return node
+            else:
+                value = example[currentAttribute]
+                if branch == 'bigger' or value <= branch:
+                    node = tree.options[branch]
+                    if type(node) == Node:
+                        return id3Classify(node, example, continuous)
+                    else:
+                        return node
+                    break
+    else:
+        return tree
+    
 ### METODOS AUXILIARES
 ### -------------------
 

@@ -35,13 +35,20 @@ class Model():
     def getModelAttributes(self):
         return self.attributes
 
+    def getModelAttributesNames(self):
+        attributeNames = []
+        for attribute in self.attributes:
+            (attributeKey, attributeValue) = attribute
+            attributeNames.append(attributeKey)
+        return attributeNames
+
     def getClassifier(self):
         return self.classifier
 
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def train(self, dataset, continuous = 0, showDecisions = False):
+    def train(self, dataset, continuous = 0):
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
@@ -49,7 +56,7 @@ class Model():
         self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
 
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.trainTree(continuous, showDecisions)
+            self.classifier = self.trainTree(continuous)
 
         elif self.model == ModelOps.DECISION_FOREST:
             self.classifier = self.trainForest(continuous)
@@ -82,8 +89,8 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, continuous, showDecisions):
-        return id3Train(self.dataset, self.attributes, self.values, self.results, continuous, showDecisions)
+    def trainTree(self, continuous):
+        return id3Train(self.dataset, self.attributes, self.values, self.results, continuous)
 
     def classifyTree(self, example, continuous):
         return id3Classify(self.classifier, example, continuous)

@@ -30,7 +30,6 @@ if __name__ == '__main__':
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
-            showDecisions = gui.printShowDecisions()
 
             model = Model(modelType)
             dataset = reader.readDataset(datasetFile)
@@ -39,7 +38,7 @@ if __name__ == '__main__':
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(dataset, continuous, showDecisions)
+            model.train(dataset, continuous)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
@@ -69,10 +68,21 @@ if __name__ == '__main__':
                 gui.printClassifiers(classifiers)
 
                 c = int( input("-> Elija un clasificador por el índice: ") )
+                c -= 1
                 print("")
 
                 if c >= 0 and c < len(classifiers):
-                    print("Clasificador " + str(c['name']) + " elegido para clasificar")
+                    print("-> Ingrese un ejemplo a clasificar:")
+                    print("ATRIBUTOS: " + str(classifiers[c]['model'].getModelAttributesNames()))
+                    example = input()
+                    example = reader.getFormattedExample(example, classifiers[c]['model'].getModelAttributesNames())
+                    (classification, probability) = classifiers[c]['model'].classify(example)
+                    print()
+                    print("El ejemplo fue clasificado como ", end=" ")
+                    print(classification, end=" ")
+                    print("con probabilidad", end=" ")
+                    print(probability)
+                    input("-> Oprima enter para volver al menú")
                 else:
                     print("-> El índice ingresado no corresponde a ningún clasificador")
                     input("-> Oprima enter para volver al menú")
@@ -89,6 +99,7 @@ if __name__ == '__main__':
                 gui.printClassifiers(classifiers)
 
                 c = int( input("-> Elija un clasificador por el índice: ") )
+                c -= 1
                 print("")
 
                 if c >= 0 and c < len(classifiers):

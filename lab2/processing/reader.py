@@ -36,6 +36,15 @@ def getFormattedDataset(dataset, attributes, continuous):
 
     return formattedDataset
 
+def getFormattedExample(text, attributes):
+    values = text.split(",")
+    example = {}
+    i = 0
+    for attribute in attributes:
+        example[attribute] = float(values[i])
+        i = i + 1
+    return example
+
 ### METODOS PRINCIPALES - ATRIBUTOS
 ### ---------------------------------
 
@@ -117,7 +126,6 @@ def getDatasetPossibleValues(dataset, attributes):
             attributeValues = [float(x) for x in attributeValues if x != 'bigger']
             attributeValues.append('bigger')
         values[attributeKey] = attributeValues
-    print(values)
     return values
 
 ### METODOS PRINCIPALES - EJEMPLOS
