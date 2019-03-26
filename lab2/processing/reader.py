@@ -18,33 +18,6 @@ def readDataset(filename):
     ds = df.to_dict('records')
     return ds
 
-def getFormattedDataset(dataset, attributes, continuous):
-    
-    formattedDataset = copy.deepcopy(dataset)
-    
-    for attribute in attributes:
-
-        (attributeKey, attributeType) = attribute
-        values = getDiscretePossibleValues(formattedDataset, attribute, continuous)
-
-        for example in formattedDataset:
-            if attributeType == AttributeType.CONTINUOUS:
-                for value in values:
-                    if value == 'bigger' or example[attributeKey] <= value:
-                        example[attributeKey] = value
-                        break
-
-    return formattedDataset
-
-def getFormattedExample(text, attributes):
-    values = text.split(",")
-    example = {}
-    i = 0
-    for attribute in attributes:
-        example[attribute] = float(values[i])
-        i = i + 1
-    return example
-
 ### METODOS PRINCIPALES - ATRIBUTOS
 ### ---------------------------------
 

@@ -8,6 +8,7 @@ from .decision_tree import id3Train, id3Classify
 from .decision_forest import id3ForestTrain, id3ForestClassify
 
 import processing.reader as reader
+import processing.parser as parser
 
 from utils.const import ModelOps, ContinuousOps
 
@@ -52,7 +53,7 @@ class Model():
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
-        self.dataset = reader.getFormattedDataset(dataset, self.attributes, continuous)
+        self.dataset = parser.getFormattedDataset(dataset, self.attributes, continuous)
         self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
 
         if self.model == ModelOps.DECISION_TREE:

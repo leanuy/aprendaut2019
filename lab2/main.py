@@ -8,6 +8,7 @@ import time
 from model.model import Model
 
 import processing.reader as reader
+import processing.parser as parser
 
 import utils.gui as gui
 from utils.const import MenuOps, ModelOps, ContinuousOps
@@ -75,7 +76,7 @@ if __name__ == '__main__':
                     print("-> Ingrese un ejemplo a clasificar:")
                     print("ATRIBUTOS: " + str(classifiers[c]['model'].getModelAttributesNames()))
                     example = input()
-                    example = reader.getFormattedExample(example, classifiers[c]['model'].getModelAttributesNames())
+                    example = parser.getFormattedExample(example, classifiers[c]['model'].getModelAttributesNames())
                     (classification, probability) = classifiers[c]['model'].classify(example)
                     print()
                     print("El ejemplo fue clasificado como ", end=" ")
