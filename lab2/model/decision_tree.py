@@ -34,34 +34,24 @@ def id3Train(dataset, attributes, results, continuous):
         newAttributes.remove(attribute)
         options = {}
 
-        print("Atributo elegido: " + str(attributeKey))
-        print("Posibles valores: " + str(values))
-        print("Atributos restantes: " + str(newAttributes))
-        print()
-
-        # 4. Iterar por cada posible valor para el atributo elegido
+        # 3. Iterar por cada posible valor para el atributo elegido
         for value in values:
 
-            # 4.1. Obtener el subconjunto de ejemplos para el valor 'value' del atributo 'attribute'
-            examplesForValue = reader.getExamplesForValue(dataset, attribute, value)
+            # 3.1. Obtener el subconjunto de ejemplos para el valor 'value' del atributo 'attribute'
+            examplesForValue = reader.getExamplesForValue(dataset, attribute, values, value)
 
-            print("Atributo elegido: " + str(attributeKey))
-            print("Valor elegido: " + str(value))
-            print("Dataset: " + str(examplesForValue))
-            print()
-
-            # 4.2. Si no hay ejemplos, devolver hoja con el resultado más frecuente (y su probabilidad)
+            # 3.2. Si no hay ejemplos, devolver hoja con el resultado más frecuente (y su probabilidad)
             if len(examplesForValue) == 0:
                 options[value] = reader.getMostLikelyResult(dataset, results)
 
-            # 4.3. Si hay ejemplos, devolver rama generada recursivamente
+            # 3.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
                 options[value] = id3Train(examplesForValue, newAttributes, results, continuous)
 
-        # 5. Devolver nodo intermedio
+        # 4. Devolver nodo intermedio
         return Node(attribute, options)
 
-def id3Classify(tree, example, continuous):
+def id3Classify(tree, example):
     if type(tree) == Node:
         currentAttribute = tree.attribute
         currentAttributeType = tree.attributeType
@@ -71,7 +61,7 @@ def id3Classify(tree, example, continuous):
                 if branch == example[currentAttribute]:
                     node = tree.options[branch]
                     if type(node) == Node:
-                        return id3Classify(node, example, continuous)
+                        return id3Classify(node, example)
                     else:
                         return node
             else:
@@ -79,7 +69,7 @@ def id3Classify(tree, example, continuous):
                 if branch == 'bigger' or value <= branch:
                     node = tree.options[branch]
                     if type(node) == Node:
-                        return id3Classify(node, example, continuous)
+                        return id3Classify(node, example)
                     else:
                         return node
                     break
@@ -110,7 +100,7 @@ def getGain(dataset, attribute, possibleValues, results):
     
     entropy = 0
     for value in possibleValues:
-        subset = reader.getExamplesForValue(dataset, attribute, value)
+        subset = reader.getExamplesForValue(dataset, attribute, possibleValues, value)
         entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
 
     return (getEntropy(dataset, results) - entropy)

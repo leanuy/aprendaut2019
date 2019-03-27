@@ -16,21 +16,21 @@ from utils.const import AttributeType, ContinuousOps
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3ForestTrain(dataset, attributes, values, results, continuous): 
+def id3ForestTrain(dataset, attributes, results, continuous): 
 
     forest = {}
     for result in results:
         resultDataset = parser.getBooleanDataset(dataset, result)
         resultResults = [True, False]
-        forest[result] = id3Train(resultDataset, attributes, values, resultResults, continuous)
+        forest[result] = id3Train(resultDataset, attributes, resultResults, continuous)
 
     return forest
 
-def id3ForestClassify(forest, example, results, continuous):
+def id3ForestClassify(forest, example, results):
 
     clasification = {}
     for result in results:
-        clasification[result] = id3Classify(forest[result], example, continuous)
+        clasification[result] = id3Classify(forest[result], example)
 
     trueResults = [(key, (value, probability)) for key, (value, probability) in clasification.items() if value == True]
     if len(trueResults) == 1:
@@ -47,6 +47,7 @@ def id3ForestClassify(forest, example, results, continuous):
 
     # Nunca deberia llegar aca
     return (random.choice(results), 0.1)    
+
 ### METODOS AUXILIARES
 ### -------------------
 

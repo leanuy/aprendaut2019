@@ -116,7 +116,7 @@ def printContinuousStrategy():
     print ("")
     print ("-> Elija una estrategia para tratar atributos continuos: ")
     print ("-> DEFAULT: 1")
-    print ("1. Partir en intervalos fijos, por defecto 3")
+    print ("1. Partir en intervalos fijos, por defecto 2")
     print ("2. Partir en intervalos variables, según resultado")
 
     try:
