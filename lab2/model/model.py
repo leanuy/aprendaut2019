@@ -104,10 +104,11 @@ class Model():
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
-        self.dataset = parser.getFormattedDataset(dataset, self.attributes, continuous)
-        self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
+        self.dataset = dataset
+        #self.dataset = parser.getFormattedDataset(dataset, self.attributes, continuous)
+        #self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
 
-        return id3Train(self.dataset, self.attributes, self.values, self.results, continuous)
+        return id3Train(self.dataset, self.attributes, self.results, continuous)
 
     def classifyTree(self, example, continuous):
         return id3Classify(self.classifier, example, continuous)

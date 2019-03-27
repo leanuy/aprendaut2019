@@ -11,7 +11,7 @@ from utils.const import AttributeType, ContinuousOps
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3Train(dataset, attributes, values, results, continuous):
+def id3Train(dataset, attributes, results, continuous):
 
     # Caso Borde: Todos los ejemplos son de una clase
     (result, proportion) = reader.getMostLikelyResult(dataset, results)
@@ -26,7 +26,7 @@ def id3Train(dataset, attributes, values, results, continuous):
     else:
 
         # 1. Obtener atributo con mayor ganancia de información y sus posibles valores
-        attribute = getBestAttribute(dataset, attributes, values, results, continuous)
+        (attribute, values) = getBestAttribute(dataset, attributes, results, continuous)
         (attributeKey, attributeType) = attribute
 
         # 2. Generar lista de atributos nueva y diccionario de hijos
@@ -34,11 +34,21 @@ def id3Train(dataset, attributes, values, results, continuous):
         newAttributes.remove(attribute)
         options = {}
 
+        print("Atributo elegido: " + str(attributeKey))
+        print("Posibles valores: " + str(values))
+        print("Atributos restantes: " + str(newAttributes))
+        print()
+
         # 4. Iterar por cada posible valor para el atributo elegido
-        for value in values[attributeKey]:
+        for value in values:
 
             # 4.1. Obtener el subconjunto de ejemplos para el valor 'value' del atributo 'attribute'
-            examplesForValue = reader.getExamplesForValue(dataset, attribute, values[attributeKey], value)
+            examplesForValue = reader.getExamplesForValue(dataset, attribute, value)
+
+            print("Atributo elegido: " + str(attributeKey))
+            print("Valor elegido: " + str(value))
+            print("Dataset: " + str(examplesForValue))
+            print()
 
             # 4.2. Si no hay ejemplos, devolver hoja con el resultado más frecuente (y su probabilidad)
             if len(examplesForValue) == 0:
@@ -46,7 +56,7 @@ def id3Train(dataset, attributes, values, results, continuous):
 
             # 4.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
-                options[value] = id3Train(examplesForValue, newAttributes, values, results, continuous)
+                options[value] = id3Train(examplesForValue, newAttributes, results, continuous)
 
         # 5. Devolver nodo intermedio
         return Node(attribute, options)
@@ -80,27 +90,27 @@ def id3Classify(tree, example, continuous):
 ### -------------------
 
 # A
-def getBestAttribute(dataset, attributes, values, results, continuous):
+def getBestAttribute(dataset, attributes, results, continuous):
   
     (bestAttribute, bestAttributeType) = attributes[0]
-    bestValues = values[bestAttribute]
+    bestValues = reader.getDiscretePossibleValues(dataset, attributes[0], continuous)
 
     for attribute in attributes[1:]:
         (attributeKey, attributeType) = attribute
-        possibleValues = values[attributeKey]
+        possibleValues = reader.getDiscretePossibleValues(dataset, attribute, continuous)
         if getGain(dataset, attribute, possibleValues, results) > getGain(dataset, (bestAttribute, bestAttributeType), bestValues, results):
             bestAttribute = attributeKey
             bestAttributeType = attributeType
             bestValues = possibleValues
 
-    return (bestAttribute, bestAttributeType)
+    return ((bestAttribute, bestAttributeType), bestValues)
 
 # A
 def getGain(dataset, attribute, possibleValues, results):
     
     entropy = 0
     for value in possibleValues:
-        subset = reader.getExamplesForValue(dataset, attribute, possibleValues, value)
+        subset = reader.getExamplesForValue(dataset, attribute, value)
         entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
 
     return (getEntropy(dataset, results) - entropy)
