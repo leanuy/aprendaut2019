@@ -63,23 +63,23 @@ class Model():
         elif self.model == ModelOps.DECISION_FOREST:
             self.classifier = self.trainForest(dataset, continuous)
 
-    def classify(self, example, continuous = 0):
+    def classify(self, example):
 
         if self.model == ModelOps.DECISION_TREE:
-            return self.classifyTree(example, continuous)
+            return self.classifyTree(example)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            return self.classifyForest(example, continuous)
+            return self.classifyForest(example)
 
     ### METODOS AUXILIARES
     ### -------------------
 
-    def classifySet(self, exampleSet, continuous = 0):
+    def classifySet(self, exampleSet):
         
         results = []
         
         for example in exampleSet:
-            example['class'] = self.classify(example, continuous)
+            example['class'] = self.classify(example)
             results.append(example)
 
         return results
@@ -104,23 +104,21 @@ class Model():
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
-        self.dataset = parser.getFormattedDataset(dataset, self.attributes, continuous)
-        self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
+        self.dataset = dataset
 
-        return id3Train(self.dataset, self.attributes, self.values, self.results, continuous)
+        return id3Train(self.dataset, self.attributes, self.results, continuous)
 
-    def classifyTree(self, example, continuous):
-        return id3Classify(self.classifier, example, continuous)
+    def classifyTree(self, example):
+        return id3Classify(self.classifier, example)
 
     def trainForest(self, dataset, continuous):
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
-        self.dataset = parser.getFormattedDataset(dataset, self.attributes, continuous)
-        self.values = reader.getDatasetPossibleValues(self.dataset, self.attributes)
+        self.dataset = dataset
 
-        return id3ForestTrain(self.dataset, self.attributes, self.values, self.results, continuous)
+        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous)
 
-    def classifyForest(self, example, continuous):
-        return id3ForestClassify(self.classifier, example, self.results, continuous)
+    def classifyForest(self, example):
+        return id3ForestClassify(self.classifier, example, self.results)
 

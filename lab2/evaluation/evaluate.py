@@ -185,14 +185,15 @@ def getAllTrueResultClassification(confusionMatrix):
 ### ---------------------------------
 
 def getPrecision(tp, fp):
-    if tp + fp == 0: return -1
+    if tp + fp == 0: return 0
     return tp/(tp + fp)
 
 def getRecall(tp, fn):
-    if tp + fn == 0: return -1
+    if tp + fn == 0: return 0
     return tp/(tp + fn)
 
 def getFMeasure(precision, recall):
+    if precision + recall == 0: return 0
     return (2*precision*recall)/(precision+recall)
 
 def getAccuracy(tr, total):

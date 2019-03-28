@@ -52,13 +52,11 @@ def getDiscretePossibleValues(dataset, attribute, continuous):
         return values
     
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.FIXED:
-       
-        interval1 = len(values) // 3
-        interval2 = (len(values) // 3) * 2
+
+        median = len(values) // 2
 
         possibleValues = []
-        possibleValues.append(values[interval1 - 1])
-        possibleValues.append(values[interval2 - 1])
+        possibleValues.append(values[median])
         possibleValues.append("bigger")
 
         return possibleValues
@@ -107,8 +105,17 @@ def getDatasetPossibleValues(dataset, attributes):
 # Devuelve el subconjunto de 'dataset' con valor 'value' en el atributo 'attribute'
 def getExamplesForValue(dataset, attribute, values, value):
     (attributeKey, attributeType) = attribute
-    return [x for x in dataset if x[attributeKey] == value]
 
+    if attributeType == AttributeType.CONTINUOUS and value == 'bigger':
+        index = values.index(value)
+        return [x for x in dataset if x[attributeKey] > values[index-1]]
+
+    elif attributeType == AttributeType.CONTINUOUS and value != 'bigger':
+        return [x for x in dataset if x[attributeKey] <= value]
+
+    else:
+        return [x for x in dataset if x[attributeKey] == value]
+        
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------
 
