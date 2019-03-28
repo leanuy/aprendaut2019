@@ -76,8 +76,8 @@ def id3Classify(tree, example):
     else:
         return tree
     
-### METODOS AUXILIARES
-### -------------------
+### METODOS AUXILIARES - MEJOR ATRIBUTO
+### -----------------------------------
 
 # A
 def getBestAttribute(dataset, attributes, results, continuous, measureType):
@@ -105,6 +105,9 @@ def getMeasure(dataset, attribute, possibleValues, results, measureType):
     elif measureType == MeasureType.IMPURITYREDUCTION:
         return getImpurityReduction(dataset, attribute, possibleValues, results)
 
+### METODOS AUXILIARES - GANANCIA
+### -----------------------------
+
 # A
 def getGain(dataset, attribute, possibleValues, results):
     
@@ -114,15 +117,6 @@ def getGain(dataset, attribute, possibleValues, results):
         entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
 
     return (getEntropy(dataset, results) - entropy)
-
-# A
-def getGainRatio(dataset, attribute, possibleValues, results):
-
-    gainRatio = getGain(dataset, attribute, possibleValues, results)
-    if getEntropy(dataset, results) != 0:
-        gainRatio /= getEntropy(dataset, results)
-
-    return gainRatio
 
 # A
 def getEntropy(dataset, results):
@@ -138,14 +132,34 @@ def getEntropy(dataset, results):
 
     return entropy
 
+
+### METODOS AUXILIARES - RATIO DE GANANCIA
+### ----------------------------------------
+
 # A
-def getGini(dataset, results):
+def getGainRatio(dataset, attribute, possibleValues, results):
 
-    props2 = 0
-    for result in results:
-        props2 += reader.proportionExamplesForResult(dataset, result) ** 2
+    gainRatio = getGain(dataset, attribute, possibleValues, results)
+    if getEntropy(dataset, results) != 0:
+        gainRatio /= getSplitInformation(dataset, attribute, possibleValues)
 
-    return 1 - props2
+    return gainRatio
+
+def getSplitInformation(dataset, attribute, possibleValues):
+
+    proportions = []
+    for value in possibleValues:
+        proportions.append(reader.proportionExamplesForValue(dataset, attribute, possibleValues, value))
+
+    splitInfo = 0
+    for p in proportions:
+        if p != 0:
+            splitInfo += -p * math.log(p,2)
+
+    return splitInfo
+
+### METODOS AUXILIARES - REDUCCIÓN DE IMPUREZA
+### ------------------------------------------
 
 # A
 def getImpurityReduction(dataset, attribute, possibleValues, results):
@@ -156,4 +170,15 @@ def getImpurityReduction(dataset, attribute, possibleValues, results):
         entropy += ((len(subset)/len(dataset)) * getGini(subset, results))
 
     return (getGini(dataset, results) - entropy)
+
+# A
+def getGini(dataset, results):
+
+    props2 = 0
+    for result in results:
+        props2 += reader.proportionExamplesForResult(dataset, result) ** 2
+
+    return 1 - props2
+
+
 

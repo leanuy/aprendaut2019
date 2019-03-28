@@ -115,7 +115,14 @@ def getExamplesForValue(dataset, attribute, values, value):
 
     else:
         return [x for x in dataset if x[attributeKey] == value]
-        
+
+# Devuelve la frecuencia de ejemplos en 'dataset' con 'attribute'='value'
+def proportionExamplesForValue(dataset, attribute, values, value):
+    if len(dataset) == 0:
+      return 0
+    examples = getExamplesForValue(dataset, attribute, values, value)
+    return len(examples) / len(dataset)
+
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------
 
