@@ -13,7 +13,7 @@ import processing.parser as parser
 from evaluation.evaluate import normalValidation, crossValidation
 
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps
+from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, MeasureType
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -33,6 +33,7 @@ if __name__ == '__main__':
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
+            measureType = gui.printMeasureTypes()
 
             model = Model(modelType)
             dataset = reader.readDataset(datasetFile)
@@ -41,7 +42,7 @@ if __name__ == '__main__':
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(dataset, continuous)
+            model.train(dataset, continuous, measureType)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")

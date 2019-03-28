@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
+from .const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET, MeasureType
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -84,6 +84,28 @@ def printDataset():
 
     except:
         return IRIS_DATASET
+
+# Imprime las opciones de medidas posibles y lee la opción elegida
+def printMeasureTypes():
+    print ("")
+    print ("-> Elija un tipo de medida: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Gain")
+    print ("2. Gain Ratio")
+    print ("3. Impurity Reduction")
+
+    try:
+        measureType = int( input() )
+        if measureType == 1:
+            return MeasureType.GAIN
+        elif measureType == 2:
+            return MeasureType.GAINRATIO
+        elif measureType == 3:
+            return MeasureType.IMPURITYREDUCTION
+        return MeasureType.GAIN
+
+    except:
+        return MeasureType.GAIN
 
 # Imprime las opciones de tipo de modelo y lee la opción elegida
 def printModelType():

@@ -33,5 +33,11 @@ class AttributeType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
 
+# Tipos de medidas
+class MeasureType(Enum):
+    GAIN = 0
+    GAINRATIO = 1
+    IMPURITYREDUCTION = 2
+
 IRIS_DATASET = 'data/iris.arff'
 COVERTYPE_DATASET = 'data/covertype.arff'
