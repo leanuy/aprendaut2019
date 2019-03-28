@@ -10,7 +10,7 @@ from .decision_forest import id3ForestTrain, id3ForestClassify
 import processing.reader as reader
 import processing.parser as parser
 
-from utils.const import ModelOps, ContinuousOps
+from utils.const import ModelOps, ContinuousOps, MeasureType
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -55,13 +55,13 @@ class Model():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def train(self, dataset, continuous = 0):
+    def train(self, dataset, continuous = 0, measureType = MeasureType.GAIN):
 
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.trainTree(dataset, continuous)
+            self.classifier = self.trainTree(dataset, continuous, measureType)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            self.classifier = self.trainForest(dataset, continuous)
+            self.classifier = self.trainForest(dataset, continuous, measureType)
 
     def classify(self, example):
 
@@ -100,24 +100,24 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, dataset, continuous):
+    def trainTree(self, dataset, continuous, measureType):
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
         self.dataset = dataset
 
-        return id3Train(self.dataset, self.attributes, self.results, continuous)
+        return id3Train(self.dataset, self.attributes, self.results, continuous, measureType)
 
     def classifyTree(self, example):
         return id3Classify(self.classifier, example)
 
-    def trainForest(self, dataset, continuous):
+    def trainForest(self, dataset, continuous, measureType):
 
         self.attributes = reader.getAttributes(dataset)
         self.results = reader.getResults(dataset)
         self.dataset = dataset
 
-        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous)
+        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous, measureType)
 
     def classifyForest(self, example):
         return id3ForestClassify(self.classifier, example, self.results)

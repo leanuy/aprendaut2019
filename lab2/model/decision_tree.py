@@ -6,12 +6,12 @@ import math
 from .node import Node
 
 import processing.reader as reader
-from utils.const import AttributeType, ContinuousOps
+from utils.const import AttributeType, ContinuousOps, MeasureType
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3Train(dataset, attributes, results, continuous):
+def id3Train(dataset, attributes, results, continuous, measureType):
 
     # Caso Borde: Todos los ejemplos son de una clase
     (result, proportion) = reader.getMostLikelyResult(dataset, results)
@@ -26,7 +26,7 @@ def id3Train(dataset, attributes, results, continuous):
     else:
 
         # 1. Obtener atributo con mayor ganancia de información y sus posibles valores
-        (attribute, values) = getBestAttribute(dataset, attributes, results, continuous)
+        (attribute, values) = getBestAttribute(dataset, attributes, results, continuous, measureType)
         (attributeKey, attributeType) = attribute
 
         # 2. Generar lista de atributos nueva y diccionario de hijos
@@ -46,7 +46,7 @@ def id3Train(dataset, attributes, results, continuous):
 
             # 3.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
-                options[value] = id3Train(examplesForValue, newAttributes, results, continuous)
+                options[value] = id3Train(examplesForValue, newAttributes, results, continuous, measureType)
 
         # 4. Devolver nodo intermedio
         return Node(attribute, options)
@@ -80,7 +80,7 @@ def id3Classify(tree, example):
 ### -------------------
 
 # A
-def getBestAttribute(dataset, attributes, results, continuous):
+def getBestAttribute(dataset, attributes, results, continuous, measureType):
   
     (bestAttribute, bestAttributeType) = attributes[0]
     bestValues = reader.getDiscretePossibleValues(dataset, attributes[0], continuous)
@@ -88,12 +88,22 @@ def getBestAttribute(dataset, attributes, results, continuous):
     for attribute in attributes[1:]:
         (attributeKey, attributeType) = attribute
         possibleValues = reader.getDiscretePossibleValues(dataset, attribute, continuous)
-        if getGain(dataset, attribute, possibleValues, results) > getGain(dataset, (bestAttribute, bestAttributeType), bestValues, results):
+        if getMeasure(dataset, attribute, possibleValues, results, measureType) > getMeasure(dataset, (bestAttribute, bestAttributeType), bestValues, results, measureType):
             bestAttribute = attributeKey
             bestAttributeType = attributeType
             bestValues = possibleValues
 
     return ((bestAttribute, bestAttributeType), bestValues)
+
+# A
+def getMeasure(dataset, attribute, possibleValues, results, measureType):
+
+    if measureType == MeasureType.GAIN:
+        return getGain(dataset, attribute, possibleValues, results)
+    elif measureType == MeasureType.GAINRATIO:
+        return getGainRatio(dataset, attribute, possibleValues, results)
+    elif measureType == MeasureType.IMPURITYREDUCTION:
+        return getImpurityReduction(dataset, attribute, possibleValues, results)
 
 # A
 def getGain(dataset, attribute, possibleValues, results):
@@ -104,6 +114,15 @@ def getGain(dataset, attribute, possibleValues, results):
         entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
 
     return (getEntropy(dataset, results) - entropy)
+
+# A
+def getGainRatio(dataset, attribute, possibleValues, results):
+
+    gainRatio = getGain(dataset, attribute, possibleValues, results)
+    if getEntropy(dataset, results) != 0:
+        gainRatio /= getEntropy(dataset, results)
+
+    return gainRatio
 
 # A
 def getEntropy(dataset, results):
@@ -118,3 +137,23 @@ def getEntropy(dataset, results):
         entropy += -p * math.log(p,2)
 
     return entropy
+
+# A
+def getGini(dataset, results):
+
+    props2 = 0
+    for result in results:
+        props2 += reader.proportionExamplesForResult(dataset, result) ** 2
+
+    return 1 - props2
+
+# A
+def getImpurityReduction(dataset, attribute, possibleValues, results):
+    
+    entropy = 0
+    for value in possibleValues:
+        subset = reader.getExamplesForValue(dataset, attribute, possibleValues, value)
+        entropy += ((len(subset)/len(dataset)) * getGini(subset, results))
+
+    return (getGini(dataset, results) - entropy)
+
