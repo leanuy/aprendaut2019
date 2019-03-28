@@ -86,7 +86,7 @@ def printDataset():
         return IRIS_DATASET
 
 # Imprime las opciones de medidas posibles y lee la opción elegida
-def printMeasureTypes():
+def printMeasureType():
     print ("")
     print ("-> Elija un tipo de medida: ")
     print ("-> DEFAULT: 1")

@@ -33,6 +33,14 @@ class Model():
     def getModelType(self):
         return self.model
 
+    def getDataset(self):
+        return self.dataset
+
+    def setDataset(self, dataset):
+        self.dataset = dataset
+        self.attributes = reader.getAttributes(dataset)
+        self.results = reader.getResults(dataset)
+
     def getModelAttributes(self):
         return self.attributes
 
@@ -48,9 +56,6 @@ class Model():
 
     def getClassifier(self):
         return self.classifier
-
-    def getDataset(self):
-        return self.dataset
 
     ### METODOS PRINCIPALES
     ### -------------------

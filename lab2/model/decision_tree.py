@@ -129,12 +129,12 @@ def getEntropy(dataset, results):
 
     proportions = []
     for result in results:
-      proportions.append(reader.proportionExamplesForResult(dataset, result))
+        proportions.append(reader.proportionExamplesForResult(dataset, result))
 
     entropy = 0
     for p in proportions:
-      if p != 0:
-        entropy += -p * math.log(p,2)
+        if p != 0:
+            entropy += -p * math.log(p,2)
 
     return entropy
 

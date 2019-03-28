@@ -33,7 +33,7 @@ if __name__ == '__main__':
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
-            measureType = gui.printMeasureTypes()
+            measureType = gui.printMeasureType()
 
             model = Model(modelType)
             dataset = reader.readDataset(datasetFile)
@@ -96,34 +96,37 @@ if __name__ == '__main__':
 
         elif op == MenuOps.EVALUATE:
 
-            if classifiers == []:
-                print()
-                print ("-> No hay clasificadores, entrene uno para evaluar")
-                input("-> Oprima enter para volver al menú")
+            datasetFile = gui.printDataset()
+            (modelType, modelName) = gui.printModelType()
+            continuous = gui.printContinuousStrategy()
+            measureType = gui.printMeasureType()
 
-            else:
-                gui.printClear()
-                gui.printClassifiers(classifiers)
+            dataset = reader.readDataset(datasetFile)            
+            model = Model(modelType)
+            model.setDataset(dataset)
 
-                c = int( input("-> Elija un clasificador por el índice: ") )
-                c -= 1
+            classifier = {
+                'dataset': dataset,
+                'model': model,
+                'attributes': model.getModelAttributesNames(),
+                'results': model.getModelResults(),
+                'type': modelType,
+                'name': modelName,
+                'continuous': continuous,
+            }
 
-                if c >= 0 and c < len(classifiers):
-                    evalMode = gui.printEvaluationMode()
+            evalMode = gui.printEvaluationMode()
 
-                    if evalMode == EvaluationOps.NORMAL:
-                        (accuracy, eval, confusionMatrix) = normalValidation(classifiers[c]['dataset'], classifiers[c])
-                        gui.printNormalEvaluation(classifiers[c], eval, accuracy, confusionMatrix, len(classifiers[c]['dataset']))
+            if evalMode == EvaluationOps.NORMAL:
+                (accuracy, eval, confusionMatrix) = normalValidation(dataset, classifier)
+                gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset))
 
-                    elif evalMode == EvaluationOps.CROSS:
-                        evalK = gui.printEvaluationK()
-                        (eval, evalMean) = crossValidation(classifiers[c]['dataset'], classifiers[c], evalK)
-                        gui.printCrossEvaluation(classifiers[c], eval, evalMean, len(classifiers[c]['dataset']))
+            elif evalMode == EvaluationOps.CROSS:
+                evalK = gui.printEvaluationK()
+                (eval, evalMean) = crossValidation(dataset, classifier, evalK)
+                gui.printCrossEvaluation(classifier, eval, evalMean, len(dataset))
 
-                    input("-> Oprima enter para volver al menú")
-                else:
-                    print("-> El índice ingresado no corresponde a ningún clasificador")
-                    input("-> Oprima enter para volver al menú")
+            input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.SHOW:
 
