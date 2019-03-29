@@ -149,12 +149,13 @@ def getConfusionMatrix(resultSet, evaluationSet, results):
         classifiedExample = resultSet[i]
         originalExample = evaluationSet[i]
 
-        (classification, probability) = classifiedExample['class']
-        originalClassification = originalExample['class']
+        if classifiedExample['class'] != None and originalExample['class'] != None:
+            (classification, probability) = classifiedExample['class']
+            originalClassification = originalExample['class']
 
-        i = results.index(classification)
-        j = results.index(originalClassification)
-        confusionMatrix[i][j] += 1
+            i = results.index(classification)
+            j = results.index(originalClassification)
+            confusionMatrix[i][j] += 1
 
     return confusionMatrix
 
