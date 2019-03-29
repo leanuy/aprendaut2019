@@ -179,6 +179,3 @@ def getGini(dataset, results):
         props2 += reader.proportionExamplesForResult(dataset, result) ** 2
 
     return 1 - props2
-
-
-
