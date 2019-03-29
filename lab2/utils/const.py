@@ -22,6 +22,7 @@ class ModelOps(Enum):
 class ContinuousOps(Enum):
     FIXED = 1
     VARIABLE = 2
+    C45 = 3
 
 # Estrategias de evaluación
 class EvaluationOps(Enum):

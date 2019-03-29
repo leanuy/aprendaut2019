@@ -140,17 +140,20 @@ def printContinuousStrategy():
     print ("-> DEFAULT: 1")
     print ("1. Partir en intervalos fijos (según mediana, en 2)")
     print ("2. Partir en intervalos variables (según clasificación)")
+    print ("3. Partir en intervalos maximizando ganancia (según C4.5)")
 
     try:
         continuousStrategy = int( input() )
 
-        if continuousStrategy < 1 or continuousStrategy > 2:
+        if continuousStrategy < 1 or continuousStrategy > 3:
             return ContinuousOps.FIXED
         else:
             if continuousStrategy == 1:
                 continuousStrategy = ContinuousOps.FIXED
             elif continuousStrategy == 2:
                 continuousStrategy = ContinuousOps.VARIABLE
+            elif continuousStrategy == 3:
+                continuousStrategy = ContinuousOps.C45
 
         return continuousStrategy
 
