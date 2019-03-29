@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import math
 import copy
 import operator
 import pandas as pd
@@ -43,7 +44,7 @@ def getPossibleValues(dataset, attribute):
 
 # Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
 def getDiscretePossibleValues(dataset, attribute, continuous):
-    
+
     (attributeKey, attributeType) = attribute
     sortedDataset = sorted(dataset, key=operator.itemgetter(attributeKey))
     values = getPossibleValues(sortedDataset, attribute)
@@ -77,6 +78,29 @@ def getDiscretePossibleValues(dataset, attribute, continuous):
         possibleValues.append("bigger")
 
         return possibleValues
+    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.C45:
+        possibleValues = []
+        lastRes = None
+        lastExample = None
+
+        # Iterate through sorted training examples, adding a new value to whenever the answer changes
+        # adding the median value between the current value and the previous one
+        for example in sortedDataset:
+            if lastRes != None and example['class'] != lastRes:
+                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
+            lastRes = example['class']
+            lastExample = example[attributeKey]
+
+        bestGain = 0
+        bestThreshold = None
+        results = getResults(dataset)
+        for value in possibleValues:
+            valueThreshold = [value, 'bigger']
+            gain = getGain(dataset, attribute, valueThreshold, results)
+            if gain > bestGain:
+                bestGain = gain
+                bestThreshold = value
+        return [bestThreshold, 'bigger']
 
 # Devuelve la lista de posibles valores discretos en 'dataset' para 'attribute'
 def getAllPossibleValues(dataset, attribute):
@@ -115,7 +139,14 @@ def getExamplesForValue(dataset, attribute, values, value):
 
     else:
         return [x for x in dataset if x[attributeKey] == value]
-        
+
+# Devuelve la frecuencia de ejemplos en 'dataset' con 'attribute'='value'
+def proportionExamplesForValue(dataset, attribute, values, value):
+    if len(dataset) == 0:
+      return 0
+    examples = getExamplesForValue(dataset, attribute, values, value)
+    return len(examples) / len(dataset)
+
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------
 
@@ -164,3 +195,31 @@ def checkAttributeType(possibleValues):
         else:
           return AttributeType.CONTINUOUS
 
+### METODOS AUXILIARES - C4.5
+### -----------------------------
+### HACK: No se puede importar nada de decision_tree por la dependencia circular, por lo que hay que duplicar el codigo
+### La resolución de la dependencia no es trivial dado que la implementación en decision_tree de estas funciones usa el reader.
+
+# A
+def getGain(dataset, attribute, possibleValues, results):
+    
+    entropy = 0
+    for value in possibleValues:
+        subset = getExamplesForValue(dataset, attribute, possibleValues, value)
+        entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
+
+    return (getEntropy(dataset, results) - entropy)
+
+# A
+def getEntropy(dataset, results):
+
+    proportions = []
+    for result in results:
+        proportions.append(proportionExamplesForResult(dataset, result))
+
+    entropy = 0
+    for p in proportions:
+        if p != 0:
+            entropy += -p * math.log(p,2)
+
+    return entropy
