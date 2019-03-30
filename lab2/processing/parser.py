@@ -6,7 +6,7 @@ import operator
 import pandas as pd
 from scipy.io import arff
 
-from .reader import getDiscretePossibleValues
+from .calculator import getDiscretePossibleValues
 
 from utils.const import AttributeType, ContinuousOps
 

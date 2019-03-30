@@ -5,7 +5,6 @@ import math
 
 from .node import Node
 
-import processing.reader as reader
 import processing.calculator as calculator
 from utils.const import AttributeType, ContinuousOps, MeasureType
 
@@ -15,7 +14,7 @@ from utils.const import AttributeType, ContinuousOps, MeasureType
 def id3Train(dataset, attributes, results, continuous, measureType):
 
     # Caso Borde: Todos los ejemplos son de una clase
-    (result, proportion) = reader.getMostLikelyResult(dataset, results)
+    (result, proportion) = calculator.getMostLikelyResult(dataset, results)
     if proportion == 1:
         return (result, proportion)
 
@@ -39,11 +38,11 @@ def id3Train(dataset, attributes, results, continuous, measureType):
         for value in values:
 
             # 3.1. Obtener el subconjunto de ejemplos para el valor 'value' del atributo 'attribute'
-            examplesForValue = reader.getExamplesForValue(dataset, attribute, values, value)
+            examplesForValue = calculator.getExamplesForValue(dataset, attribute, values, value)
 
             # 3.2. Si no hay ejemplos, devolver hoja con el resultado más frecuente (y su probabilidad)
             if len(examplesForValue) == 0:
-                options[value] = reader.getMostLikelyResult(dataset, results)
+                options[value] = calculator.getMostLikelyResult(dataset, results)
 
             # 3.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
