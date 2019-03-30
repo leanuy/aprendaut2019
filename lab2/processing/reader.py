@@ -93,10 +93,9 @@ def getDiscretePossibleValues(dataset, attribute, continuous):
 
         bestGain = 0
         bestThreshold = None
-        results = getResults(dataset)
         for value in possibleValues:
             valueThreshold = [value, 'bigger']
-            gain = getGain(dataset, attribute, valueThreshold, results)
+            gain = getGain(dataset, attribute, valueThreshold)
             if gain > bestGain:
                 bestGain = gain
                 bestThreshold = value
@@ -160,14 +159,15 @@ def getResults(dataset):
 # Devuelve el resultado de 'results' más frecuente en 'dataset'
 def getMostLikelyResult(dataset, results):
 
-    mostLikelyResult = results[0]
-    mostLikelyProportion = proportionExamplesForResult(dataset, results[0])
+    proportions = readAllProportionExamplesForResults(dataset)
+    
+    mostLikelyResult = None
+    mostLikelyProportion = 0
 
-    for result in results[1:]:
-        proportion = proportionExamplesForResult(dataset, result)
-        if proportion >= mostLikelyProportion:
-            mostLikelyResult = result
-            mostLikelyProportion = proportion
+    for p in proportions.values():
+        if p >= mostLikelyProportion:
+            mostLikelyResult = proportions.values().index(p)
+            mostLikelyProportion = p
 
     return (mostLikelyResult, mostLikelyProportion)
 
@@ -177,6 +177,18 @@ def proportionExamplesForResult(dataset, result):
       return 0
     examples = [x for x in dataset if x['class'] == result]
     return len(examples) / len(dataset)
+
+def readAllProportionExamplesForResults(dataset):
+    results = getResults(dataset)
+    resultsHash = {}
+    for result in results:
+        resultsHash[result] = []
+    for x in dataset:
+        resultsHash[x['class']].append(x)
+    proportions = {}
+    for result in results:
+        proportions[result] = len(resultsHash[result]) / len(dataset)
+    return proportions
 
 ### METODOS PRINCIPALES - CONTINUIDAD
 ### ---------------------------------
@@ -201,24 +213,22 @@ def checkAttributeType(possibleValues):
 ### La resolución de la dependencia no es trivial dado que la implementación en decision_tree de estas funciones usa el reader.
 
 # A
-def getGain(dataset, attribute, possibleValues, results):
+def getGain(dataset, attribute, possibleValues):
     
     entropy = 0
     for value in possibleValues:
         subset = getExamplesForValue(dataset, attribute, possibleValues, value)
-        entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
+        entropy += ((len(subset)/len(dataset)) * getEntropy(subset))
 
-    return (getEntropy(dataset, results) - entropy)
+    return (getEntropy(dataset) - entropy)
 
 # A
-def getEntropy(dataset, results):
+def getEntropy(dataset):
 
-    proportions = []
-    for result in results:
-        proportions.append(proportionExamplesForResult(dataset, result))
+    proportions = readAllProportionExamplesForResults(dataset)
 
     entropy = 0
-    for p in proportions:
+    for p in proportions.values():
         if p != 0:
             entropy += -p * math.log(p,2)
 
