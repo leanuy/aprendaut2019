@@ -35,8 +35,13 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy()
             measureType = gui.printMeasureType()
 
+            print()
+            print("-> COMIENZO DE LA LECTURA")
+
             model = Model(modelType)
             dataset = reader.readDataset(datasetFile)
+
+            print("-> FIN DE LA LECTURA")
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
@@ -101,9 +106,14 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy()
             measureType = gui.printMeasureType()
 
-            dataset = reader.readDataset(datasetFile)            
+            print()
+            print("-> COMIENZO DE LA LECTURA")
+
+            dataset = reader.readDataset(datasetFile)
             model = Model(modelType)
             model.setDataset(dataset)
+            
+            print("-> FIN DE LA LECTURA")
 
             classifier = {
                 'dataset': dataset,
@@ -113,6 +123,7 @@ if __name__ == '__main__':
                 'type': modelType,
                 'name': modelName,
                 'continuous': continuous,
+                'measureType': measureType,
             }
 
             evalMode = gui.printEvaluationMode()

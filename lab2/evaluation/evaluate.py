@@ -21,10 +21,22 @@ def normalValidation(dataset, classifier):
         d.pop('class', None)
         evalSet.append(d)
 
-    classifier['model'].train(trainingSet, classifier['continuous'])
-    resultSet = classifier['model'].classifySet(evalSet)
+    print()
+    print("-> COMIENZO DEL ENTRENAMIENTO")
+    classifier['model'].train(trainingSet, classifier['continuous'], classifier['measureType'])    
+    print("-> FIN DEL ENTRENAMIENTO")
 
-    return getEvaluation(resultSet, evaluationSet, classifier['model'].getModelResults())
+    print()
+    print("-> COMIENZO DE LA CLASIFICACION")
+    resultSet = classifier['model'].classifySet(evalSet)    
+    print("-> FIN DE LA CLASIFICACION")
+
+    print()
+    print("-> COMIENZO DE LA EVALUACION")
+    evaluation = getEvaluation(resultSet, evaluationSet, classifier['model'].getModelResults())
+    print("-> FIN DE LA EVALUACION")
+
+    return evaluation
 
 def crossValidation(dataset, classifier, k):
 
@@ -57,11 +69,25 @@ def crossValidation(dataset, classifier, k):
             d.pop('class', None)
             evalSet.append(d)
 
-        classifier['model'].train(trainingSet, classifier['continuous'])
-        resultSet = classifier['model'].classifySet(evalSet)
+        print()
+        print("-> COMIENZO DEL ENTRENAMIENTO N° " + str(i))
+        classifier['model'].train(trainingSet, classifier['continuous'], classifier['measureType'])    
+        print("-> FIN DEL ENTRENAMIENTO N° " + str(i))
+
+        print()
+        print("-> COMIENZO DE LA CLASIFICACION N° " + str(i))
+        resultSet = classifier['model'].classifySet(evalSet)    
+        print("-> FIN DE LA CLASIFICACION N° " + str(i))
+
+        print()
+        print("-> COMIENZO DE LA EVALUACION N° " + str(i))
+        evaluation = getEvaluation(resultSet, evaluationSet, results)
+        print("-> FIN DE LA EVALUACION N° " + str(i))
+        print()
+        print("--------------------------------------------")
 
         # Evaluar el modelo entrenado
-        evaluations.append(getEvaluation(resultSet, evaluationSet, results))
+        evaluations.append(evaluation)
 
     # Generar promedio de las 'k' evaluaciones
     for evaluation in evaluations:

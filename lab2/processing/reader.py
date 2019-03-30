@@ -7,6 +7,7 @@ import operator
 import pandas as pd
 from scipy.io import arff
 
+import .calculator as calculator
 from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
@@ -96,7 +97,7 @@ def getDiscretePossibleValues(dataset, attribute, continuous):
         results = getResults(dataset)
         for value in possibleValues:
             valueThreshold = [value, 'bigger']
-            gain = getGain(dataset, attribute, valueThreshold, results)
+            gain = calculator.getGain(dataset, attribute, valueThreshold, results)
             if gain > bestGain:
                 bestGain = gain
                 bestThreshold = value
@@ -194,32 +195,3 @@ def checkAttributeType(possibleValues):
           return AttributeType.DISCRETE
         else:
           return AttributeType.CONTINUOUS
-
-### METODOS AUXILIARES - C4.5
-### -----------------------------
-### HACK: No se puede importar nada de decision_tree por la dependencia circular, por lo que hay que duplicar el codigo
-### La resolución de la dependencia no es trivial dado que la implementación en decision_tree de estas funciones usa el reader.
-
-# A
-def getGain(dataset, attribute, possibleValues, results):
-    
-    entropy = 0
-    for value in possibleValues:
-        subset = getExamplesForValue(dataset, attribute, possibleValues, value)
-        entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
-
-    return (getEntropy(dataset, results) - entropy)
-
-# A
-def getEntropy(dataset, results):
-
-    proportions = []
-    for result in results:
-        proportions.append(proportionExamplesForResult(dataset, result))
-
-    entropy = 0
-    for p in proportions:
-        if p != 0:
-            entropy += -p * math.log(p,2)
-
-    return entropy
