@@ -23,7 +23,7 @@ def normalValidation(dataset, classifier):
 
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
-    classifier['model'].train(trainingSet, classifier['continuous'], classifier['measureType'])    
+    classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])    
     print("-> FIN DEL ENTRENAMIENTO")
 
     print()
@@ -71,7 +71,7 @@ def crossValidation(dataset, classifier, k):
 
         print()
         print("-> COMIENZO DEL ENTRENAMIENTO N° " + str(i))
-        classifier['model'].train(trainingSet, classifier['continuous'], classifier['measureType'])    
+        classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])  
         print("-> FIN DEL ENTRENAMIENTO N° " + str(i))
 
         print()

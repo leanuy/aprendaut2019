@@ -8,41 +8,33 @@ import pandas as pd
 from scipy.io import arff
 
 from . import calculator
-from utils.const import AttributeType, ContinuousOps
+from utils.const import AttributeType
 
 ### METODOS PRINCIPALES
 ### -------------------
 
 # Lee 'dsFile' y lo devuelve como un diccionario (atributo, valor)
 def readDataset(filename):
-    ds = arff.loadarff(filename)
-    #print(ds)
-    df = pd.DataFrame(ds[0])
-    ds = df.to_dict('records')
-    return ds
+    data, meta = arff.loadarff(filename)
+    df = pd.DataFrame(data)
+
+    attributes = getAttributes(meta)
+    results = getResults(df)
+
+    data = df.to_dict('records')
+    return (data, attributes, results)
 
 ### METODOS PRINCIPALES - ATRIBUTOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles atributos y su tipo en 'dataset'
-def getAttributes(dataset):
-    attributes = set()
-    example = dataset[0]
-    for key in list(example.keys()):
-        if key != 'class':
-            attribute = str(key)
-            attributeType = calculator.checkAttributeType(calculator.getAllPossibleValues(dataset, attribute))
-            attributes.add((attribute, attributeType))
-    return list(attributes)
-
+def getAttributes(meta):
+    return list(zip(meta.names()[:-1], [ AttributeType.CONTINUOUS if x == 'numeric' else AttributeType.DISCRETE for x in meta.types()[:-1] ] ))
 
 ### METODOS PRINCIPALES - RESULTADOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles clasificaciones en 'dataset'
-def getResults(dataset):
-    results = set()
-    for x in dataset:
-        results.add(x['class'])
-    return sorted(list(results))
+def getResults(data):
+    return sorted(list(set(data['class'])))
   

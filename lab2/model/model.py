@@ -36,11 +36,6 @@ class Model():
     def getDataset(self):
         return self.dataset
 
-    def setDataset(self, dataset):
-        self.dataset = dataset
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-
     def getModelAttributes(self):
         return self.attributes
 
@@ -60,13 +55,17 @@ class Model():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def train(self, dataset, continuous = 0, measureType = MeasureType.GAIN):
+    def train(self, dataset, attributes, results, continuous = 0, measureType = MeasureType.GAIN):
+
+        self.dataset = dataset
+        self.attributes = attributes
+        self.results = results
 
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.trainTree(dataset, continuous, measureType)
+            self.classifier = self.trainTree(continuous, measureType)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            self.classifier = self.trainForest(dataset, continuous, measureType)
+            self.classifier = self.trainForest(continuous, measureType)
 
     def classify(self, example):
 
@@ -105,23 +104,13 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, dataset, continuous, measureType):
-
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-        self.dataset = dataset
-
+    def trainTree(self, continuous, measureType):
         return id3Train(self.dataset, self.attributes, self.results, continuous, measureType)
 
     def classifyTree(self, example):
         return id3Classify(self.classifier, example)
 
-    def trainForest(self, dataset, continuous, measureType):
-
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-        self.dataset = dataset
-
+    def trainForest(self, continuous, measureType):
         return id3ForestTrain(self.dataset, self.attributes, self.results, continuous, measureType)
 
     def classifyForest(self, example):
