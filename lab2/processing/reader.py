@@ -164,10 +164,10 @@ def getMostLikelyResult(dataset, results):
     mostLikelyResult = None
     mostLikelyProportion = 0
 
-    for p in proportions.values():
-        if p >= mostLikelyProportion:
-            mostLikelyResult = proportions.values().index(p)
-            mostLikelyProportion = p
+    for key, value in proportions.items():
+        if value >= mostLikelyProportion:
+            mostLikelyResult = key
+            mostLikelyProportion = value
 
     return (mostLikelyResult, mostLikelyProportion)
 
