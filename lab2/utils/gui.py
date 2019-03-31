@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET, MeasureType
+from .const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -97,15 +97,15 @@ def printMeasureType():
     try:
         measureType = int( input() )
         if measureType == 1:
-            return MeasureType.GAIN
+            return MeasureOps.GAIN
         elif measureType == 2:
-            return MeasureType.GAINRATIO
+            return MeasureOps.GAINRATIO
         elif measureType == 3:
-            return MeasureType.IMPURITYREDUCTION
-        return MeasureType.GAIN
+            return MeasureOps.IMPURITYREDUCTION
+        return MeasureOps.GAIN
 
     except:
-        return MeasureType.GAIN
+        return MeasureOps.GAIN
 
 # Imprime las opciones de tipo de modelo y lee la opción elegida
 def printModelType():
@@ -171,7 +171,10 @@ def printTrainedClassifier(classifier):
     print("segundos")
 
     print("--> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+
+    print("--> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
 
     print()
 
@@ -266,7 +269,9 @@ def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLengt
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
     print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+    print("-> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
     print()
     print("EVALUACIÓN NORMAL (80/20):")
     print()
@@ -286,7 +291,9 @@ def printCrossEvaluation(classifier, eval, evalMean, dataLength):
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
     print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+    print("-> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
     print()
     print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
     print()

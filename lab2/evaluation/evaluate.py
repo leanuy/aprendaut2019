@@ -21,10 +21,10 @@ def normalValidation(dataset, classifier):
         d.pop('class', None)
         evalSet.append(d)
 
-    classifier['model'].train(trainingSet, classifier['continuous'])
+    classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
     resultSet = classifier['model'].classifySet(evalSet)
 
-    return getEvaluation(resultSet, evaluationSet, classifier['model'].getModelResults())
+    return getEvaluation(resultSet, evaluationSet, classifier['results'])
 
 def crossValidation(dataset, classifier, k):
 
@@ -33,7 +33,7 @@ def crossValidation(dataset, classifier, k):
     random.shuffle(validator)
 
     partitions = [validator[i::k] for i in range(0,k)]
-    results = classifier['model'].getModelResults()
+    results = classifier['results']
     evaluations = []
 
     metricsMean = {}
@@ -57,7 +57,7 @@ def crossValidation(dataset, classifier, k):
             d.pop('class', None)
             evalSet.append(d)
 
-        classifier['model'].train(trainingSet, classifier['continuous'])
+        classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
         resultSet = classifier['model'].classifySet(evalSet)
 
         # Evaluar el modelo entrenado

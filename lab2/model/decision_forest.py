@@ -11,18 +11,18 @@ from .decision_tree import id3Train, id3Classify
 import processing.reader as reader
 import processing.parser as parser
 
-from utils.const import AttributeType, ContinuousOps, MeasureType
+from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3ForestTrain(dataset, attributes, results, continuous, measureType):
+def id3ForestTrain(dataset, attributes, results, options):
 
     forest = {}
     for result in results:
         resultDataset = parser.getBooleanDataset(dataset, result)
         resultResults = [True, False]
-        forest[result] = id3Train(resultDataset, attributes, resultResults, continuous, measureType)
+        forest[result] = id3Train(resultDataset, attributes, resultResults, options)
 
     return forest
 
@@ -47,7 +47,3 @@ def id3ForestClassify(forest, example, results):
 
     # Nunca deberia llegar aca
     return (random.choice(results), 0.1)
-
-### METODOS AUXILIARES
-### -------------------
-
