@@ -2,8 +2,10 @@
 ### ------------------
 
 import math
+import copy
 import random
 from operator import itemgetter
+import pandas as pd
 
 from .node import Node
 from .decision_tree import id3Train, id3Classify
@@ -16,13 +18,18 @@ from utils.const import AttributeType, ContinuousOps, MeasureType
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3ForestTrain(dataset, attributes, results, continuous, measureType):
+def id3ForestTrain(processor):
 
+    originalProcessor = copy.deepcopy(processor)
+    print('.', end="")
     forest = {}
-    for result in results:
-        resultDataset = parser.getBooleanDataset(dataset, result)
+    for result in originalProcessor.getResults():
+        resultDataset = parser.getBooleanDataset(originalProcessor.getDataset(), result)
         resultResults = [True, False]
-        forest[result] = id3Train(resultDataset, attributes, resultResults, continuous, measureType)
+        newProcessor = copy.deepcopy(processor)
+        newProcessor.setDataset((resultDataset, pd.DataFrame(resultDataset)))
+        newProcessor.setResults(resultResults)
+        forest[result] = id3Train(newProcessor)
 
     return forest
 
