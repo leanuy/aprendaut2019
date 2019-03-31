@@ -7,8 +7,7 @@ import random
 from .decision_tree import id3Train, id3Classify
 from .decision_forest import id3ForestTrain, id3ForestClassify
 
-import processing.reader as reader
-import processing.parser as parser
+from processing.processor import Processor
 
 from utils.const import ModelOps, ContinuousOps, MeasureType
 
@@ -36,11 +35,6 @@ class Model():
     def getDataset(self):
         return self.dataset
 
-    def setDataset(self, dataset):
-        self.dataset = dataset
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-
     def getModelAttributes(self):
         return self.attributes
 
@@ -60,13 +54,17 @@ class Model():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def train(self, dataset, continuous = 0, measureType = MeasureType.GAIN):
+    def train(self, dataset, attributes, results, continuous = 0, measureType = MeasureType.GAIN):
+
+        (self.dataset, self.df) = dataset 
+        self.attributes = attributes
+        self.results = results
 
         if self.model == ModelOps.DECISION_TREE:
-            self.classifier = self.trainTree(dataset, continuous, measureType)
+            self.classifier = self.trainTree(continuous, measureType)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            self.classifier = self.trainForest(dataset, continuous, measureType)
+            self.classifier = self.trainForest(continuous, measureType)
 
     def classify(self, example):
 
@@ -105,24 +103,14 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, dataset, continuous, measureType):
-
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-        self.dataset = dataset
-
-        return id3Train(self.dataset, self.attributes, self.results, continuous, measureType)
+    def trainTree(self, continuous, measure):
+        return id3Train(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)), 0)
 
     def classifyTree(self, example):
         return id3Classify(self.classifier, example)
 
-    def trainForest(self, dataset, continuous, measureType):
-
-        self.attributes = reader.getAttributes(dataset)
-        self.results = reader.getResults(dataset)
-        self.dataset = dataset
-
-        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous, measureType)
+    def trainForest(self, continuous, measure):
+        return id3ForestTrain(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)))
 
     def classifyForest(self, example):
         return id3ForestClassify(self.classifier, example, self.results)

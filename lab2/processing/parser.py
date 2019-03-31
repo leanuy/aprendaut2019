@@ -2,35 +2,11 @@
 ### ------------------
 
 import copy
-import operator
-import pandas as pd
-from scipy.io import arff
-
-from .reader import getDiscretePossibleValues
 
 from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
 ### -------------------
-
-# A
-def getFormattedDataset(dataset, attributes, continuous):
-    
-    formattedDataset = copy.deepcopy(dataset)
-    
-    for attribute in attributes:
-
-        (attributeKey, attributeType) = attribute
-        values = getDiscretePossibleValues(formattedDataset, attribute, continuous)
-
-        for example in formattedDataset:
-            if attributeType == AttributeType.CONTINUOUS:
-                for value in values:
-                    if value == 'bigger' or example[attributeKey] <= value:
-                        example[attributeKey] = value
-                        break
-
-    return formattedDataset
 
 # A
 def getFormattedExample(text, attributes):
@@ -44,11 +20,24 @@ def getFormattedExample(text, attributes):
 
 # A 
 def getBooleanDataset(dataset, result):
-    
     formattedDataset = copy.deepcopy(dataset)
-    
     for example in formattedDataset:
         classification = example['class']
         example['class'] = classification == result
-
     return formattedDataset
+
+### METODOS AUXILIARES
+### -------------------
+
+# A
+def getDiscreteValue(intervals, rawValue):
+    value = None
+    for interval in intervals[:-1]:
+        if rawValue < interval:
+            value = interval
+            break
+    if value == None:
+        value = intervals[-1]
+    return value
+
+

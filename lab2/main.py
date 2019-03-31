@@ -35,14 +35,19 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy()
             measureType = gui.printMeasureType()
 
+            print()
+            print("-> COMIENZO DE LA LECTURA")
+
             model = Model(modelType)
-            dataset = reader.readDataset(datasetFile)
+            (dataset, attributes, results) = reader.readDataset(datasetFile)
+
+            print("-> FIN DE LA LECTURA")
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(dataset, continuous, measureType)
+            model.train(dataset, attributes, results, continuous, measureType)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
@@ -51,8 +56,8 @@ if __name__ == '__main__':
             classifier = {
                 'dataset': dataset,
                 'model': model,
-                'attributes': model.getModelAttributesNames(),
-                'results': model.getModelResults(),
+                'attributes': attributes, 
+                'results': results,
                 'type': modelType,
                 'name': modelName,
                 'time': toc-tic,
@@ -101,15 +106,19 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy()
             measureType = gui.printMeasureType()
 
-            dataset = reader.readDataset(datasetFile)            
+            print()
+            print("-> COMIENZO DE LA LECTURA")
+
+            ((dataset, df), attributes, results) = reader.readDataset(datasetFile)
             model = Model(modelType)
-            model.setDataset(dataset)
+            
+            print("-> FIN DE LA LECTURA")
 
             classifier = {
                 'dataset': dataset,
                 'model': model,
-                'attributes': model.getModelAttributesNames(),
-                'results': model.getModelResults(),
+                'attributes': attributes,
+                'results': results,
                 'type': modelType,
                 'name': modelName,
                 'continuous': continuous,
