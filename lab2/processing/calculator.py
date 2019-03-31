@@ -18,18 +18,20 @@ def getBestAttribute(datasetLength, attributes, examplesForValue, proportionsFor
     bestExamples = examplesForValue[bestAttribute]
     bestProportions = proportionsForValue[bestAttribute]
     bestValues = list(bestExamples.keys())
-    bestValues.remove('bigger')
-    bestValues.sort()
-    bestValues.append('bigger')
+    if 'bigger' in bestValues:
+        bestValues.remove('bigger')
+        bestValues.sort()
+        bestValues.append('bigger')
 
     for attribute in attributes[1:]:
         (attributeKey, attributeType) = attribute
         examples = examplesForValue[attributeKey]
         proportions = proportionsForValue[attributeKey]
         values = list(examples.keys())
-        values.remove('bigger')
-        values.sort()
-        values.append('bigger')
+        if 'bigger' in values:
+            values.remove('bigger')
+            values.sort()
+            values.append('bigger')
         if getMeasure(datasetLength, examples, proportions, proportionsForResult, measure) > getMeasure(datasetLength, bestExamples, bestProportions, proportionsForResult, measure):
             bestAttribute = attributeKey
             bestAttributeType = attributeType
