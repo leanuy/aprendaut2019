@@ -19,6 +19,7 @@ def getPossibleValues(dataset, attribute):
           values.append(row[attributeKey])
     return values
 
+
 # Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
 def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
