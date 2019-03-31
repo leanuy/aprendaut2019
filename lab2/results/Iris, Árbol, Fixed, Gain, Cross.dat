@@ -1,0 +1,332 @@
+
+MODELO:
+
+-> Modelo Entrenado: Árbol
+-> Estrategia de atributos continuos: ContinuousOps.FIXED
+
+EVALUACIÓN CRUZADA (10 particiones):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 135
+-> Ejemplos de evaluación: 15
+
+
+--- Partición N° 1 ---
+
+-> Accuracy: 0.9333333333333333
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             4               1        
+
+b'Iris-virginica'       0             0               4        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.8
+--> F-Measure: 0.888888888888889
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8
+--> Recall: 1.0
+--> F-Measure: 0.888888888888889
+
+
+--- Partición N° 2 ---
+
+-> Accuracy: 0.8
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             4               3        
+
+b'Iris-virginica'       0             0               2        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.5714285714285714
+--> F-Measure: 0.7272727272727273
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.4
+--> Recall: 1.0
+--> F-Measure: 0.5714285714285715
+
+
+--- Partición N° 3 ---
+
+-> Accuracy: 1.0
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          5             0               0        
+
+b'Iris-versicolor'      0             2               0        
+
+b'Iris-virginica'       0             0               8        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+
+--- Partición N° 4 ---
+
+-> Accuracy: 1.0
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             7               0        
+
+b'Iris-virginica'       0             0               2        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+
+--- Partición N° 5 ---
+
+-> Accuracy: 0.8
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          4             0               0        
+
+b'Iris-versicolor'      0             5               0        
+
+b'Iris-virginica'       0             3               3        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.625
+--> Recall: 1.0
+--> F-Measure: 0.7692307692307693
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 0.5
+--> F-Measure: 0.6666666666666666
+
+
+--- Partición N° 6 ---
+
+-> Accuracy: 0.6666666666666666
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          5             0               0        
+
+b'Iris-versicolor'      0             4               5        
+
+b'Iris-virginica'       0             0               1        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.4444444444444444
+--> F-Measure: 0.6153846153846153
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.16666666666666666
+--> Recall: 1.0
+--> F-Measure: 0.2857142857142857
+
+
+--- Partición N° 7 ---
+
+-> Accuracy: 0.6
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          1             1               0        
+
+b'Iris-versicolor'      0             4               4        
+
+b'Iris-virginica'       0             1               4        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 0.5
+--> F-Measure: 0.6666666666666666
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.6666666666666666
+--> Recall: 0.5
+--> F-Measure: 0.5714285714285715
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.5
+--> Recall: 0.8
+--> F-Measure: 0.6153846153846154
+
+
+--- Partición N° 8 ---
+
+-> Accuracy: 0.4666666666666667
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          2             0               0        
+
+b'Iris-versicolor'      3             3               2        
+
+b'Iris-virginica'       0             3               2        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 0.4
+--> Recall: 1.0
+--> F-Measure: 0.5714285714285715
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.5
+--> Recall: 0.375
+--> F-Measure: 0.42857142857142855
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.5
+--> Recall: 0.4
+--> F-Measure: 0.4444444444444445
+
+
+--- Partición N° 9 ---
+
+-> Accuracy: 0.7333333333333333
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             2               0        
+
+b'Iris-versicolor'      0             4               2        
+
+b'Iris-virginica'       0             0               1        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 0.75
+--> F-Measure: 0.8571428571428571
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.6666666666666666
+--> Recall: 0.6666666666666666
+--> F-Measure: 0.6666666666666666
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.3333333333333333
+--> Recall: 1.0
+--> F-Measure: 0.5
+
+
+--- Partición N° 10 ---
+
+-> Accuracy: 0.8
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             1               0        
+
+b'Iris-versicolor'      0             1               1        
+
+b'Iris-virginica'       0             1               5        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 0.8571428571428571
+--> F-Measure: 0.923076923076923
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.3333333333333333
+--> Recall: 0.5
+--> F-Measure: 0.4
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8333333333333334
+--> Recall: 0.8333333333333334
+--> F-Measure: 0.8333333333333334
+
+
+--- Promedio de Evaluación ---
+
+-> Accuracy: 0.78
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 0.9400000000000001
+--> Recall: 0.9107142857142858
+--> F-Measure: 0.9018315018315018
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.7791666666666667
+--> Recall: 0.6857539682539684
+--> F-Measure: 0.7067443667443668
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.6533333333333333
+--> Recall: 0.8533333333333333
+--> F-Measure: 0.6805860805860806
+

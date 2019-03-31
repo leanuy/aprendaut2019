@@ -1,0 +1,39 @@
+
+MODELO:
+
+-> Modelo Entrenado: Árbol
+-> Estrategia de atributos continuos: ContinuousOps.FIXED
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 120
+-> Ejemplos de evaluación: 30
+
+-> Accuracy: 0.7666666666666667
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          11             1               0        
+
+b'Iris-versicolor'      0             7               6        
+
+b'Iris-virginica'       0             0               5        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 0.9166666666666666
+--> F-Measure: 0.9565217391304348
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.875
+--> Recall: 0.5384615384615384
+--> F-Measure: 0.6666666666666667
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.45454545454545453
+--> Recall: 1.0
+--> F-Measure: 0.625
+

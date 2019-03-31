@@ -19,6 +19,8 @@ def id3Train(processor):
     # 0. Recorrer dataset y generar datos necesarios
     processor.processNode()
 
+    print('-', end="")
+
     # Caso Borde: Todos los ejemplos son de una clase o no hay atributos a evaluar
     if processor.isMostLikelyResult():
         #print("Es hoja, nivel " + str(lvl))

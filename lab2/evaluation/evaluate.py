@@ -28,7 +28,7 @@ def normalValidation(dataset, classifier):
     print()
     print("-> FIN DEL ENTRENAMIENTO")
 
-    classifier['model'].printClassifier()
+    # classifier['model'].printClassifier()
     
     print()
     print("-> COMIENZO DE LA CLASIFICACION")

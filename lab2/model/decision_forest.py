@@ -21,7 +21,7 @@ from utils.const import AttributeType, ContinuousOps, MeasureType
 def id3ForestTrain(processor):
 
     originalProcessor = copy.deepcopy(processor)
-    print('.', end="")
+    print('-', end="")
     forest = {}
     for result in originalProcessor.getResults():
         resultDataset = parser.getBooleanDataset(originalProcessor.getDataset(), result)
