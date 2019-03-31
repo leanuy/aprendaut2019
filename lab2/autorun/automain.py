@@ -15,7 +15,7 @@ import processing.parser as parser
 from evaluation.evaluate import normalValidation, crossValidation
 
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, MeasureType, IRIS_DATASET, COVERTYPE_DATASET
+from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, MeasureOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -40,13 +40,13 @@ if __name__ == '__main__':
             continuousOut = 'Fixed'
         
         if int(sys.argv[4]) == 2:
-            measureType = MeasureType.GAINRATIO
+            measureType = MeasureOps.GAINRATIO
             measureTypeOut = 'GainRatio'
         elif int(sys.argv[4]) == 3:
-            measureType = MeasureType.IMPURITYREDUCTION
+            measureType = MeasureOps.IMPURITYREDUCTION
             measureTypeOut = 'ImpurityReduction'
         else:
-            measureType = MeasureType.GAIN
+            measureType = MeasureOps.GAIN
             measureTypeOut = 'Gain'
         
         evalMode = EvaluationOps.CROSS if int(sys.argv[5]) == 2 else EvaluationOps.NORMAL
@@ -60,32 +60,37 @@ if __name__ == '__main__':
 
     dataset = reader.readDataset(datasetFile) 
     model = Model(modelType)
-    model.setDataset(dataset)
+
+    options = {
+    'continuous': continuous,
+    'measure': measureType
+    }
+
+    (dataset, attributes, results) = reader.readDataset(datasetFile)            
+    model = Model(modelType)
+
+    classifier = {
+        'model': model,
+        'attributes': attributes,
+        'results': results,
+        'type': modelType,
+        'name': modelName,
+        'options': options,
+    }
     
     print()
     print("-> FIN DE LA LECTURA")
-
-    classifier = {
-        'dataset': dataset,
-        'model': model,
-        'attributes': model.getModelAttributesNames(),
-        'results': model.getModelResults(),
-        'type': modelType,
-        'name': modelName,
-        'continuous': continuous,
-        'measureType': measureType,
-    }
 
     resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
     print()
     print("-> COMIENZO DE LA EVALUACIÓN")
     if evalMode == EvaluationOps.NORMAL:
-        (accuracy, eval, confusionMatrix) = normalValidation(dataset, classifier)
+        (accuracy, eval, confusionMatrix, trainingTime) = normalValidation(dataset, classifier)
         print()
         print("-> FIN DE LA EVALUACIÓN")
 
         sys.stdout = open(resultFileName, 'w')
-        gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset))
+        gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset), trainingTime)
 
     elif evalMode == EvaluationOps.CROSS:
         evalK = 10 # Cambiar si se desean menos
