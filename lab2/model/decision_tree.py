@@ -121,12 +121,10 @@ def getGain(dataset, attribute, possibleValues, results):
 # A
 def getEntropy(dataset, results):
 
-    proportions = []
-    for result in results:
-        proportions.append(reader.proportionExamplesForResult(dataset, result))
+    proportions = reader.readAllProportionExamplesForResults(dataset)
 
     entropy = 0
-    for p in proportions:
+    for p in proportions.values():
         if p != 0:
             entropy += -p * math.log(p,2)
 
@@ -175,7 +173,9 @@ def getImpurityReduction(dataset, attribute, possibleValues, results):
 def getGini(dataset, results):
 
     props2 = 0
-    for result in results:
-        props2 += reader.proportionExamplesForResult(dataset, result) ** 2
+    proportions = reader.readAllProportionExamplesForResults(dataset)
+
+    for p in proportions.values():
+        props2 += p ** 2
 
     return 1 - props2
