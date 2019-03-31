@@ -25,6 +25,7 @@ def normalValidation(dataset, classifier):
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
     classifier['model'].train((trainingSet, pd.DataFrame(trainingSet)), classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])    
+    print()
     print("-> FIN DEL ENTRENAMIENTO")
 
     classifier['model'].printClassifier()

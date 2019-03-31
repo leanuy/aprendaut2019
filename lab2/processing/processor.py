@@ -37,6 +37,9 @@ class Processor():
     ### GETTERS & SETTERS
     ### -------------------
 
+    def getDataset(self):
+        return self.dataset
+
     def getAttributes(self):
         return self.attributes
 
@@ -54,6 +57,9 @@ class Processor():
 
     def setDataset(self, dataset):
         (self.dataset, self.df) = dataset
+
+    def setResults(self, results):
+        self.results = results
 
     def setNewAttributes(self, newAttributes):
         self.newAttributes = newAttributes
