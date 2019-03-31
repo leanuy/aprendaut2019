@@ -24,16 +24,6 @@ def getBooleanDataset(dataset, result):
 
     return formattedDataset
 
-def getDecodedDataset(dataset, attributes, results):
-    
-    formattedDataset = copy.deepcopy(dataset)
-    
-    for example in formattedDataset:
-        classification = example['class']
-        example['class'] = classification == result
-
-    return formattedDataset
-
 ### METODOS PRINCIPALES - EJEMPLOS
 ### ------------------------------
 

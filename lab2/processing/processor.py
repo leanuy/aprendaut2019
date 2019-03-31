@@ -23,6 +23,7 @@ def getPossibleValues(dataset, attribute):
 def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
     (attributeKey, attributeType) = attribute
+    # print(dataset.columns)
     sortedDataset = dataset.sort_values(by=[attributeKey])
     values = getPossibleValues(sortedDataset, attribute)
 
