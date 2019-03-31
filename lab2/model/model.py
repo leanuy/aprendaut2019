@@ -7,8 +7,7 @@ import random
 from .decision_tree import id3Train, id3Classify
 from .decision_forest import id3ForestTrain, id3ForestClassify
 
-import processing.reader as reader
-import processing.parser as parser
+from processing.processor import Processor
 
 from utils.const import ModelOps, ContinuousOps, MeasureType
 
@@ -57,7 +56,7 @@ class Model():
 
     def train(self, dataset, attributes, results, continuous = 0, measureType = MeasureType.GAIN):
 
-        self.dataset = dataset
+        (self.dataset, self.df) = dataset 
         self.attributes = attributes
         self.results = results
 
@@ -104,14 +103,14 @@ class Model():
     ### METODOS INTERNOS
     ### -------------------
 
-    def trainTree(self, continuous, measureType):
-        return id3Train(self.dataset, self.attributes, self.results, continuous, measureType)
+    def trainTree(self, continuous, measure):
+        return id3Train(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)), 0)
 
     def classifyTree(self, example):
         return id3Classify(self.classifier, example)
 
-    def trainForest(self, continuous, measureType):
-        return id3ForestTrain(self.dataset, self.attributes, self.results, continuous, measureType)
+    def trainForest(self, continuous, measure):
+        return id3ForestTrain(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)))
 
     def classifyForest(self, example):
         return id3ForestClassify(self.classifier, example, self.results)

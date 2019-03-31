@@ -109,7 +109,7 @@ if __name__ == '__main__':
             print()
             print("-> COMIENZO DE LA LECTURA")
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile)
+            ((dataset, df), attributes, results) = reader.readDataset(datasetFile)
             model = Model(modelType)
             
             print("-> FIN DE LA LECTURA")

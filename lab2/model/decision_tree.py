@@ -2,51 +2,64 @@
 ### ------------------
 
 import math
+import copy
+import pandas as pd
 
 from .node import Node
 
 import processing.calculator as calculator
+from processing.processor import Processor
 from utils.const import AttributeType, ContinuousOps, MeasureType
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3Train(dataset, attributes, results, continuous, measureType):
+def id3Train(processor, lvl):
 
-    # Caso Borde: Todos los ejemplos son de una clase
-    (result, proportion) = calculator.getMostLikelyResult(dataset, results)
-    if proportion == 1:
-        return (result, proportion)
+    # 0. Recorrer dataset y generar datos necesarios
+    processor.processNode()
 
-    # Caso Borde: No hay más atributos a evaluar
-    elif len(attributes) == 0:
-        return (result, proportion)
+    # Caso Borde: Todos los ejemplos son de una clase o no hay atributos a evaluar
+    if processor.isMostLikelyResult():
+        #print("Es hoja, nivel " + str(lvl))
+        #print(processor.getMostLikelyResult())
+        #print()
+        return processor.getMostLikelyResult()
 
-    # No hay caso borde
+    # Caso Normal    
     else:
 
         # 1. Obtener atributo con mayor ganancia de información y sus posibles valores
-        (attribute, values) = calculator.getBestAttribute(dataset, attributes, results, continuous, measureType)
+        (attribute, values) = processor.getBestAttribute()
         (attributeKey, attributeType) = attribute
 
-        # 2. Generar lista de atributos nueva y diccionario de hijos
-        newAttributes = list(attributes)
-        newAttributes.remove(attribute)
+        # 2. Generar diccionario de hijos
+        newAttributes = processor.getNewAttributes((attributeKey, attributeType))
         options = {}
 
-        # 3. Iterar por cada posible valor para el atributo elegido
+        #print("Es rama, nivel " + str(lvl))
+        #print("Mejor atributo: " + str(attribute))
+        #print("Intervalos: " + str(processor.getIntervals()))
+        #print("Valores: " + str(values))
+        #print("Nuevos atributos: " + str(newAttributes))
+        #print()
+
+        # 3. Iterar por cada posible valor para el atributo elegido 
         for value in values:
 
             # 3.1. Obtener el subconjunto de ejemplos para el valor 'value' del atributo 'attribute'
-            examplesForValue = calculator.getExamplesForValue(dataset, attribute, values, value)
+            examplesForValue = processor.getExamplesForValue(attributeKey, value)
 
             # 3.2. Si no hay ejemplos, devolver hoja con el resultado más frecuente (y su probabilidad)
             if len(examplesForValue) == 0:
-                options[value] = calculator.getMostLikelyResult(dataset, results)
+                options[value] = processor.getMostLikelyResult()
 
             # 3.3. Si hay ejemplos, devolver rama generada recursivamente
             else:
-                options[value] = id3Train(examplesForValue, newAttributes, results, continuous, measureType)
+                newProcessor = copy.deepcopy(processor)
+                newProcessor.setDataset((examplesForValue, pd.DataFrame(examplesForValue)))
+                newProcessor.setNewAttributes(newAttributes)
+                options[value] = id3Train(newProcessor, lvl+1)
 
         # 4. Devolver nodo intermedio
         return Node(attribute, options)
@@ -72,7 +85,6 @@ def id3Classify(tree, example):
                         return id3Classify(node, example)
                     else:
                         return node
-                    break
     else:
         return tree
     

@@ -4,6 +4,7 @@
 import math
 import random
 import numpy as np
+import pandas as pd
 
 import processing.reader as reader
 from utils.const import AttributeType, ContinuousOps
@@ -23,9 +24,11 @@ def normalValidation(dataset, classifier):
 
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
-    classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])    
+    classifier['model'].train((trainingSet, pd.DataFrame(trainingSet)), classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])    
     print("-> FIN DEL ENTRENAMIENTO")
 
+    classifier['model'].printClassifier()
+    
     print()
     print("-> COMIENZO DE LA CLASIFICACION")
     resultSet = classifier['model'].classifySet(evalSet)    
@@ -33,7 +36,7 @@ def normalValidation(dataset, classifier):
 
     print()
     print("-> COMIENZO DE LA EVALUACION")
-    evaluation = getEvaluation(resultSet, evaluationSet, classifier['model'].getModelResults())
+    evaluation = getEvaluation(resultSet, evaluationSet, classifier['results'])
     print("-> FIN DE LA EVALUACION")
 
     return evaluation
@@ -45,7 +48,7 @@ def crossValidation(dataset, classifier, k):
     random.shuffle(validator)
 
     partitions = [validator[i::k] for i in range(0,k)]
-    results = classifier['model'].getModelResults()
+    results = classifier['results']
     evaluations = []
 
     metricsMean = {}
@@ -71,7 +74,7 @@ def crossValidation(dataset, classifier, k):
 
         print()
         print("-> COMIENZO DEL ENTRENAMIENTO N° " + str(i))
-        classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])  
+        classifier['model'].train((trainingSet, pd.DataFrame(trainingSet)), classifier['attributes'], classifier['results'], classifier['continuous'], classifier['measureType'])  
         print("-> FIN DEL ENTRENAMIENTO N° " + str(i))
 
         print()

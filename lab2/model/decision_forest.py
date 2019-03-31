@@ -47,7 +47,3 @@ def id3ForestClassify(forest, example, results):
 
     # Nunca deberia llegar aca
     return (random.choice(results), 0.1)
-
-### METODOS AUXILIARES
-### -------------------
-

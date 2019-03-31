@@ -22,7 +22,7 @@ def readDataset(filename):
     results = getResults(df)
 
     data = df.to_dict('records')
-    return (data, attributes, results)
+    return ((data, df), attributes, results)
 
 ### METODOS PRINCIPALES - ATRIBUTOS
 ### ---------------------------------
