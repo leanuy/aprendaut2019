@@ -104,7 +104,7 @@ class Model():
     ### -------------------
 
     def trainTree(self, continuous, measure):
-        return id3Train(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)), 0)
+        return id3Train(Processor((self.dataset, self.df), self.attributes, self.results, self.attributes, continuous, measure, len(self.dataset)))
 
     def classifyTree(self, example):
         return id3Classify(self.classifier, example)

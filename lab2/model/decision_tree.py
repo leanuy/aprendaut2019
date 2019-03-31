@@ -14,7 +14,7 @@ from utils.const import AttributeType, ContinuousOps, MeasureType
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3Train(processor, lvl):
+def id3Train(processor):
 
     # 0. Recorrer dataset y generar datos necesarios
     processor.processNode()
@@ -59,7 +59,7 @@ def id3Train(processor, lvl):
                 newProcessor = copy.deepcopy(processor)
                 newProcessor.setDataset((examplesForValue, pd.DataFrame(examplesForValue)))
                 newProcessor.setNewAttributes(newAttributes)
-                options[value] = id3Train(newProcessor, lvl+1)
+                options[value] = id3Train(newProcessor)
 
         # 4. Devolver nodo intermedio
         return Node(attribute, options)
