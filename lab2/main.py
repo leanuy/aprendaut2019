@@ -123,8 +123,8 @@ if __name__ == '__main__':
             evalMode = gui.printEvaluationMode()
 
             if evalMode == EvaluationOps.NORMAL:
-                (accuracy, eval, confusionMatrix) = normalValidation(dataset, classifier)
-                gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset))
+                (accuracy, eval, confusionMatrix, trainingTime) = normalValidation(dataset, classifier)
+                gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset), trainingTime)
 
             elif evalMode == EvaluationOps.CROSS:
                 evalK = gui.printEvaluationK()

@@ -54,27 +54,41 @@ def id3Train(dataset, attributes, results, options):
         return Node(attribute, branches)
 
 def id3Classify(tree, example):
+
     if type(tree) == Node:
+
+        classification = None
         currentAttribute = tree.attribute
         currentAttributeType = tree.attributeType
         currentBranches = list(tree.options.keys())
-        for branch in currentBranches:
+
+        index = 0
+        found = False
+        while not found and index < len(currentBranches):
+            branch = currentBranches[index]
+            index += 1
+            
             if currentAttributeType == AttributeType.DISCRETE:
                 if branch == example[currentAttribute]:
+                    found = True
                     node = tree.options[branch]
                     if type(node) == Node:
-                        return id3Classify(node, example)
+                        classification = id3Classify(node, example)
                     else:
-                        return node
+                        classification = node
+                    break
+            
             else:
                 value = example[currentAttribute]
                 if branch == 'bigger' or value <= branch:
+                    found = True
                     node = tree.options[branch]
                     if type(node) == Node:
-                        return id3Classify(node, example)
+                        classification = id3Classify(node, example)
                     else:
-                        return node
+                        classification = node
                     break
+        return classification
     else:
         return tree
 
@@ -93,7 +107,7 @@ def getBestAttribute(dataset, attributes, results, options):
     for attribute in attributes:
         (attributeKey, attributeType) = attribute
         possibleValues = processor.getDiscretePossibleValues(dataset, attribute, results, continuous, calculator.getGain)
-        
+
         if bestAttributeKey != None:
             thisMeasure = getMeasure(dataset, attribute, possibleValues, results, options)
             bestMeasure = getMeasure(dataset, (bestAttributeKey, bestAttributeType), bestValues, results, options)

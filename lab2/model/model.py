@@ -85,13 +85,14 @@ class Model():
 
     def classifySet(self, exampleSet):
         
-        results = []
+        resultsSet = exampleSet.copy()
         
-        for example in exampleSet:
-            example['class'] = self.classify(example)
-            results.append(example)
-
-        return results
+        i = 0
+        for index, example in exampleSet.iterrows():
+            (classification, p) = self.classify(example)
+            resultsSet.iloc[i, resultsSet.columns.get_loc('class')] = classification
+        
+        return resultsSet
 
     def printClassifier(self):
 

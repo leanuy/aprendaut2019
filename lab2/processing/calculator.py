@@ -16,7 +16,7 @@ def getGain(dataset, attribute, possibleValues, results):
     entropy = 0
     for value in possibleValues:
         subset = processor.getExamplesForValue(dataset, attribute, possibleValues, value)
-        entropy += ((len(subset)/len(dataset)) * getEntropy(subset, results))
+        entropy += ((len(subset.index)/len(dataset.index)) * getEntropy(subset, results))
 
     return (getEntropy(dataset, results) - entropy)
 
@@ -57,6 +57,9 @@ def getSplitInformation(dataset, attribute, possibleValues):
         if p != 0:
             splitInfo += -p * math.log(p,2)
 
+    if splitInfo == 0:
+        splitInfo = 1
+
     return splitInfo
 
 ### METODOS AUXILIARES - REDUCCIÓN DE IMPUREZA
@@ -68,7 +71,7 @@ def getImpurityReduction(dataset, attribute, possibleValues, results):
     entropy = 0
     for value in possibleValues:
         subset = processor.getExamplesForValue(dataset, attribute, possibleValues, value)
-        entropy += ((len(subset)/len(dataset)) * getGini(subset, results))
+        entropy += ((len(subset.index)/len(dataset.index)) * getGini(subset, results))
 
     return (getGini(dataset, results) - entropy)
 

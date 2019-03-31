@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import time
 import math
 import random
 import numpy as np
@@ -13,59 +14,67 @@ from utils.const import AttributeType, ContinuousOps
 
 def normalValidation(dataset, classifier):
 
-    (trainingSet, evaluationSet) = splitDataset(dataset, 20, 0.8)
+    shuffled = randomDataset(dataset)
+    (trainingSet, evaluationSet) = splitDataset(shuffled, 0.8)
     
-    evalSet = []
-    for example in evaluationSet:
-        d = dict(example)
-        d.pop('class', None)
-        evalSet.append(d)
-
+    print()
+    print("-> COMIENZO DEL ENTRENAMIENTO")
+    tic = time.time()
     classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
-    resultSet = classifier['model'].classifySet(evalSet)
+    toc = time.time()
+    print("-> FIN DEL ENTRENAMIENTO")
+    print()
 
-    return getEvaluation(resultSet, evaluationSet, classifier['results'])
+    print("-> COMIENZO DE LA CLASIFICACIÓN")
+    resultSet = classifier['model'].classifySet(evaluationSet)
+    print("-> FIN DE LA CLASIFICACIÓN")
+    print()
+
+    print("-> COMIENZO DE LA EVALUACIÓN")
+    evaluation = getEvaluation(resultSet, evaluationSet, classifier['results'], toc-tic)
+    print("-> FIN DE LA EVALUACIÓN")
+    print()
+
+    return evaluation
 
 def crossValidation(dataset, classifier, k):
 
-    validator = list(dataset)
-    random.seed(20)
-    random.shuffle(validator)
-
-    partitions = [validator[i::k] for i in range(0,k)]
     results = classifier['results']
+    partitions = []    
     evaluations = []
 
     metricsMean = {}
     for result in results:
         metricsMean[result] = (0, 0, 0)
     evaluationsMean = (0, metricsMean)
+    
+    shuffled = randomDataset(dataset)
+
+    # Generar 'k' particiones
+    for i in range(0,k):
+        (trainingDataset, evaluationDataset) = splitDataset(shuffled, 1 // k)
+        partitions.append((trainingDataset, evaluationDataset))
 
     # Generar 'k' evaluaciones
     for i in range(0,k):
 
         # Generar conjunto de entrenamiento y evaluación para la iteración 'i'
-        trainingSet = []
-        evaluationSet = partitions[i]
-        for idx, partition in enumerate(partitions):
-            if idx != i:
-                trainingSet.extend(partition)
+        (trainingSet, evaluationSet) = partitions[i]
 
-        evalSet = []
-        for example in evaluationSet:
-            d = dict(example)
-            d.pop('class', None)
-            evalSet.append(d)
-
+        print()
+        print("-> COMIENZO DEL ENTRENAMIENTO N° " + str(i))
         classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
-        resultSet = classifier['model'].classifySet(evalSet)
+        print("-> FIN DEL ENTRENAMIENTO N° " + str(i))
+        print()
+
+        resultSet = classifier['model'].classifySet(evaluationSet)
 
         # Evaluar el modelo entrenado
-        evaluations.append(getEvaluation(resultSet, evaluationSet, results))
+        evaluations.append(getEvaluation(resultSet, evaluationSet, results, 0))
 
     # Generar promedio de las 'k' evaluaciones
     for evaluation in evaluations:
-        (accuracy, metrics, confusionMatrix) = evaluation
+        (accuracy, metrics, confusionMatrix, trainingTime) = evaluation
         (accuracyMean, metricsMean) = evaluationsMean
         accuracyMean += accuracy
         for result in metrics:
@@ -92,21 +101,18 @@ def crossValidation(dataset, classifier, k):
 ### METODOS AUXILIARES - CONJUNTOS
 ### --------------------------------
 
-def splitDataset(dataset, randSeed, percentage):
+def randomDataset(dataset):
+    return dataset.sample(frac=1)
 
-    shuffled = list(dataset)
-
-    random.seed(randSeed)
-    random.shuffle(shuffled)
-
-    length = len(shuffled)
+def splitDataset(dataset, percentage):
+    length = len(dataset.index)
     cutPoint = math.floor(percentage * length)
-    return (shuffled[:cutPoint], shuffled[cutPoint:])
+    return (dataset.iloc[:cutPoint], dataset.iloc[cutPoint:])
 
 ### METODOS AUXILIARES - EVALUACIONES
 ### ---------------------------------
 
-def getEvaluation(resultSet, evaluationSet, results):
+def getEvaluation(resultSet, evaluationSet, results, trainingTime):
 
     # Generar matriz de confusión de largo len(results)
     confusionMatrix = getConfusionMatrix(resultSet, evaluationSet, results)
@@ -135,7 +141,7 @@ def getEvaluation(resultSet, evaluationSet, results):
     correctTotal = getAllTrueResultClassification(confusionMatrix)
     accuracy = getAccuracy(correctTotal, len(resultSet))
 
-    return (accuracy, evaluation, confusionMatrix)
+    return (accuracy, evaluation, confusionMatrix, trainingTime)
 
 ### METODOS AUXILIARES - MATRIZ DE CONFUSION
 ### ----------------------------------------
@@ -144,18 +150,14 @@ def getConfusionMatrix(resultSet, evaluationSet, results):
     classes = len(results)
     confusionMatrix = np.zeros((classes, classes), dtype=object)
 
-    for i in range(len(resultSet)):
+    evaluationSet['class2'] = resultSet['class']
 
-        classifiedExample = resultSet[i]
-        originalExample = evaluationSet[i]
+    for index, example in evaluationSet.iterrows():
 
-        if classifiedExample['class'] != None and originalExample['class'] != None:
-            (classification, probability) = classifiedExample['class']
-            originalClassification = originalExample['class']
-
-            i = results.index(classification)
-            j = results.index(originalClassification)
-            confusionMatrix[i][j] += 1
+        if example['class'] != None and example['class2'] != None:
+            x = results.index(example['class'])
+            y = results.index(example['class2'])
+            confusionMatrix[x][y] += 1
 
     return confusionMatrix
 

@@ -262,7 +262,7 @@ def printConfusionMatrix(confusionMatrix, results):
         print()
 
 # A
-def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLength):
+def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLength, trainingTime):
     print()
     print("MODELO:")
     print()
@@ -272,6 +272,8 @@ def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLengt
     print(classifier['options']['continuous'])
     print("-> Estrategia de medida: ", end="")
     print(classifier['options']['measure'])
+    print("-> Tiempo de entrenamiento: ", end="")
+    print(trainingTime)
     print()
     print("EVALUACIÓN NORMAL (80/20):")
     print()
