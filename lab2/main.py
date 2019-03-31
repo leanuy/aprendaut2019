@@ -113,6 +113,7 @@ if __name__ == '__main__':
                 'type': modelType,
                 'name': modelName,
                 'continuous': continuous,
+                'measureType': measureType,
             }
 
             evalMode = gui.printEvaluationMode()
