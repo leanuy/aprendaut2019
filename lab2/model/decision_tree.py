@@ -67,27 +67,30 @@ def id3Classify(tree, example):
         while not found and index < len(currentBranches):
             branch = currentBranches[index]
             index += 1
+
+            if branch != None:
             
-            if currentAttributeType == AttributeType.DISCRETE:
-                if branch == example[currentAttribute]:
-                    found = True
-                    node = tree.options[branch]
-                    if type(node) == Node:
-                        classification = id3Classify(node, example)
-                    else:
-                        classification = node
-                    break
-            
-            else:
-                value = example[currentAttribute]
-                if branch == 'bigger' or value <= branch:
-                    found = True
-                    node = tree.options[branch]
-                    if type(node) == Node:
-                        classification = id3Classify(node, example)
-                    else:
-                        classification = node
-                    break
+                if currentAttributeType == AttributeType.DISCRETE:
+                    if branch == example[currentAttribute]:
+                        found = True
+                        node = tree.options[branch]
+                        if type(node) == Node:
+                            classification = id3Classify(node, example)
+                        else:
+                            classification = node
+                        break
+                
+                else:
+                    value = example[currentAttribute]
+                    if branch == 'bigger' or value <= branch:
+                        found = True
+                        node = tree.options[branch]
+                        if type(node) == Node:
+                            classification = id3Classify(node, example)
+                        else:
+                            classification = node
+                        break
+                        
         return classification
     else:
         return tree

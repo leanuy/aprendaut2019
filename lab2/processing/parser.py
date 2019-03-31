@@ -15,12 +15,7 @@ from utils.const import AttributeType, ContinuousOps
 def getBooleanDataset(dataset, result):
     
     formattedDataset = dataset.copy()
-
-    i = 0
-    for index, example in formattedDataset.iterrows():
-        classification = example['class']
-        formattedDataset.iloc[i, formattedDataset.columns.get_loc('class')] = classification == result
-        i += 1
+    formattedDataset['class'] = formattedDataset['class'].apply(changeResult, args=(result,))
 
     return formattedDataset
 
@@ -36,4 +31,11 @@ def getFormattedExample(text, attributes):
         example[attribute] = float(values[i])
         i = i + 1
     return example
+
+### METODOS AUXILIARES
+### ------------------------------
+
+def changeResult(value, result):
+    return value == result
+    
 
