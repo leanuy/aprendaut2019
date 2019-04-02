@@ -6,14 +6,11 @@ import os
 import time
 
 from model.model import Model
-
 import processing.reader as reader
 import processing.parser as parser
-
 from evaluation.evaluate import normalValidation, crossValidation
-
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, MeasureType
+from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, COVERTYPE_DATASET
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -33,30 +30,33 @@ if __name__ == '__main__':
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
-            measureType = gui.printMeasureType()
+            measure = gui.printMeasureType()
 
             model = Model(modelType)
-            dataset = reader.readDataset(datasetFile)
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
+            options = {
+              'continuous': continuous,
+              'measure': measure
+            }
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
 
             tic = time.time()
-            model.train(dataset, continuous, measureType)
+            model.train(dataset, attributes, results, options)
             toc = time.time()
 
             print("-> FIN DEL ENTRENAMIENTO")
             print()
 
             classifier = {
-                'dataset': dataset,
                 'model': model,
-                'attributes': model.getModelAttributesNames(),
-                'results': model.getModelResults(),
+                'attributes': attributes,
+                'results': results,
                 'type': modelType,
                 'name': modelName,
                 'time': toc-tic,
-                'continuous': continuous,
+                'options': options,
             }
             classifiers.append(classifier)
 
@@ -99,28 +99,29 @@ if __name__ == '__main__':
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
             continuous = gui.printContinuousStrategy()
-            measureType = gui.printMeasureType()
+            measure = gui.printMeasureType()
+            options = {
+              'continuous': continuous,
+              'measure': measure
+            }
 
-            dataset = reader.readDataset(datasetFile)            
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
             model = Model(modelType)
-            model.setDataset(dataset)
 
             classifier = {
-                'dataset': dataset,
                 'model': model,
-                'attributes': model.getModelAttributesNames(),
-                'results': model.getModelResults(),
+                'attributes': attributes,
+                'results': results,
                 'type': modelType,
                 'name': modelName,
-                'continuous': continuous,
-                'measureType': measureType,
+                'options': options,
             }
 
             evalMode = gui.printEvaluationMode()
 
             if evalMode == EvaluationOps.NORMAL:
-                (accuracy, eval, confusionMatrix) = normalValidation(dataset, classifier)
-                gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset))
+                (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
+                gui.printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, len(dataset))
 
             elif evalMode == EvaluationOps.CROSS:
                 evalK = gui.printEvaluationK()

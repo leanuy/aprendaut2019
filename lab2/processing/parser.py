@@ -1,38 +1,31 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import csv
 import copy
 import operator
 import pandas as pd
 from scipy.io import arff
 
-from .reader import getDiscretePossibleValues
-
 from utils.const import AttributeType, ContinuousOps
 
-### METODOS PRINCIPALES
-### -------------------
+### METODOS PRINCIPALES - DATASET
+### -----------------------------
 
-# A
-def getFormattedDataset(dataset, attributes, continuous):
+# Formatea 'dataset' sustituyendo la clasificación 
+# para 'result' por True y todas las demás por False
+def getBooleanDataset(dataset, result):
     
-    formattedDataset = copy.deepcopy(dataset)
-    
-    for attribute in attributes:
-
-        (attributeKey, attributeType) = attribute
-        values = getDiscretePossibleValues(formattedDataset, attribute, continuous)
-
-        for example in formattedDataset:
-            if attributeType == AttributeType.CONTINUOUS:
-                for value in values:
-                    if value == 'bigger' or example[attributeKey] <= value:
-                        example[attributeKey] = value
-                        break
+    formattedDataset = dataset.copy()
+    formattedDataset['class'] = formattedDataset['class'].apply(changeResult, args=(result,))
 
     return formattedDataset
 
-# A
+### METODOS PRINCIPALES - EJEMPLOS
+### ------------------------------
+
+# Formatea un 'text' basandose en 'attributes' para
+# devolver un ejemplo interpretable por un clasificador
 def getFormattedExample(text, attributes):
     values = text.split(",")
     example = {}
@@ -42,13 +35,31 @@ def getFormattedExample(text, attributes):
         i = i + 1
     return example
 
-# A 
-def getBooleanDataset(dataset, result):
-    
-    formattedDataset = copy.deepcopy(dataset)
-    
-    for example in formattedDataset:
-        classification = example['class']
-        example['class'] = classification == result
+### METODOS PRINCIPALES - ARCHIVOS
+### ------------------------------
 
-    return formattedDataset
+# Formatea una evaluación generando un CSV para el notebook
+def getEvaluationCSV(filename, accuracy, means, wMeans, evals, confusionMatrix = None):
+    with open(filename, 'w') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow([accuracy])
+        filewriter.writerow(means)
+        filewriter.writerow(wMeans)
+
+        for eval in evals:
+          filewriter.writerow(evals[eval])
+
+        if confusionMatrix is not None:
+            for i in range(0, len(confusionMatrix)):
+                filewriter.writerow(confusionMatrix[i])
+
+### METODOS AUXILIARES
+### ------------------------------
+
+# Función a aplicar en pandas dataframe, obtiene el número
+# de atributo para 'wilderness_area' y 'soil_type'
+def changeResult(value, result):
+    return value == result
+    
+

@@ -7,229 +7,115 @@ import operator
 import pandas as pd
 from scipy.io import arff
 
-from utils.const import AttributeType, ContinuousOps
+from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-# Lee 'dsFile' y lo devuelve como un diccionario (atributo, valor)
-def readDataset(filename):
-    ds = arff.loadarff(filename)
-    df = pd.DataFrame(ds[0])
-    ds = df.to_dict('records')
-    return ds
+# Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
+# Si el dataset es CoverType, deshace el one hot encoding de sus atributos
+def readDataset(filename, isCovertype = False):
 
-### METODOS PRINCIPALES - ATRIBUTOS
+    if not isCovertype:
+        data, meta = arff.loadarff(filename)
+        data = pd.DataFrame(data)
+
+        attributes = getAttributes(meta)
+        results = getResults(data)
+
+        # Optimización de float
+        dataFloat = data.select_dtypes(include=['float'])
+        convertedFloat = dataFloat.apply(pd.to_numeric,downcast='float')
+
+        # Optimización de int
+        dataObject = data.select_dtypes(include=['object']).copy()
+        dataObject = dataObject.drop(columns=['class'])
+        convertedObject = pd.DataFrame()
+        for col in dataObject.columns:
+            convertedObject.loc[:,col] = dataObject[col].astype('int')
+        convertedObject = dataObject.apply(pd.to_numeric,downcast='unsigned')
+
+        # Optimización de category
+        dataClassification = data['class']
+        convertedClassification = dataClassification.astype('category')
+
+        optimizedData = data.copy()
+        optimizedData[convertedFloat.columns] = convertedFloat
+        optimizedData[convertedObject.columns] = convertedObject
+        optimizedData['class'] = convertedClassification
+
+        return (optimizedData, attributes, results)
+
+    else:
+        data, meta = arff.loadarff(filename)
+        data = pd.DataFrame(data)
+
+        optimizedData = pd.DataFrame()
+
+        # Optimización de float
+        dataFloat = data.select_dtypes(include=['float'])
+        convertedFloat = dataFloat.apply(pd.to_numeric,downcast='float')
+        optimizedData[convertedFloat.columns] = convertedFloat
+
+        # Optimización de int
+        dataObject = data.select_dtypes(include=['object']).copy()
+        dataObject = dataObject.drop(columns=['class'])
+        convertedObject = pd.DataFrame()
+        for col in dataObject.columns:
+            convertedObject.loc[:,col] = dataObject[col].astype('int')
+        convertedObject = dataObject.apply(pd.to_numeric,downcast='unsigned')
+
+        # Optimización de one hot encoding
+        attribute1 = convertedObject.iloc[:, :4]
+        attribute2 = convertedObject.iloc[:, 4:]
+
+        attribute1 = attribute1[attribute1==1].stack().reset_index().drop(0,1)
+        attribute1 = attribute1['level_1']
+        attribute1 = attribute1.apply(getColumnValue).astype('uint8')
+        attribute1 = attribute1.astype('uint8')
+        optimizedData['wilderness_area'] = attribute1
+
+        attribute2 = attribute2[attribute2==1].stack().reset_index().drop(0,1)
+        attribute2 = attribute2['level_1']
+        attribute2 = attribute2.apply(getColumnValue)
+        attribute2 = attribute2.astype('uint8')
+        optimizedData['soil_type'] = attribute2
+
+        # Optimización de category
+        dataClassification = data['class']
+        convertedClassification = dataClassification.astype('category')
+        optimizedData['class'] = convertedClassification
+
+        attributes = getAttributesDecoded(optimizedData.columns)
+        results = getResults(data)
+
+        return (optimizedData, attributes, results)
+
+### METODOS AUXILIARES - ATRIBUTOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles atributos y su tipo en 'dataset'
-def getAttributes(dataset):
-    attributes = set()
-    example = dataset[0]
-    for key in list(example.keys()):
-        if key != 'class':
-            attribute = str(key)
-            attributeType = checkAttributeType(getAllPossibleValues(dataset, attribute))
-            attributes.add((attribute, attributeType))
-    return list(attributes)
+def getAttributes(meta):
+    return list(zip(meta.names()[:-1], [ AttributeType.CONTINUOUS if x == 'numeric' else AttributeType.DISCRETE for x in meta.types()[:-1] ] ))
 
-# Devuelve la lista de posibles valores en 'dataset' para 'attribute'
-def getPossibleValues(dataset, attribute):
-    (attributeKey, attributeType) = attribute
-    values = []
-    for x in dataset:
-        if x[attributeKey] not in values:
-          values.append(x[attributeKey])
-    return values
+# Devuelve la lista de posibles atributos y su tipo en 'dataset'
+# para CoverType sin one hot encoding
+def getAttributesDecoded(columns):
+    attributes = list(columns)[:-1]
+    return list(zip(attributes, [ AttributeType.CONTINUOUS for x in columns ] ))
 
-# Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
-def getDiscretePossibleValues(dataset, attribute, continuous):
-
-    (attributeKey, attributeType) = attribute
-    sortedDataset = sorted(dataset, key=operator.itemgetter(attributeKey))
-    values = getPossibleValues(sortedDataset, attribute)
-
-    if attributeType == AttributeType.DISCRETE:
-        return values
-    
-    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.FIXED:
-
-        median = len(values) // 2
-
-        possibleValues = []
-        possibleValues.append(values[median])
-        possibleValues.append("bigger")
-
-        return possibleValues
-
-    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
-
-        possibleValues = []
-        lastRes = None
-        lastExample = None
-
-        # Iterate through sorted training examples, adding a new value to whenever the answer changes
-        # adding the median value between the current value and the previous one
-        for example in sortedDataset:
-            if lastRes != None and example['class'] != lastRes:
-                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = example['class']
-            lastExample = example[attributeKey]
-        possibleValues.append("bigger")
-
-        return possibleValues
-    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.C45:
-        possibleValues = []
-        lastRes = None
-        lastExample = None
-
-        # Iterate through sorted training examples, adding a new value to whenever the answer changes
-        # adding the median value between the current value and the previous one
-        for example in sortedDataset:
-            if lastRes != None and example['class'] != lastRes:
-                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = example['class']
-            lastExample = example[attributeKey]
-
-        bestGain = 0
-        bestThreshold = None
-        for value in possibleValues:
-            valueThreshold = [value, 'bigger']
-            gain = getGain(dataset, attribute, valueThreshold)
-            if gain > bestGain:
-                bestGain = gain
-                bestThreshold = value
-        return [bestThreshold, 'bigger']
-
-# Devuelve la lista de posibles valores discretos en 'dataset' para 'attribute'
-def getAllPossibleValues(dataset, attribute):
-    possibleValues = set()
-    for x in dataset:
-        possibleValues.add(x[attribute])
-    return list(possibleValues)
-
-# Devuelve la lista de posibles valores para todos los atributos dde 'dataset'
-def getDatasetPossibleValues(dataset, attributes):
-    values = {}
-    for attribute in attributes:
-        (attributeKey, attributeType) = attribute
-        attributeValues = getPossibleValues(dataset, attribute)
-        # Si es un atributo continuo, ordena la lista de atributos
-        if attributeType == AttributeType.CONTINUOUS:
-            attributeValues = sorted([str(x) for x in attributeValues])
-            attributeValues = [float(x) for x in attributeValues if x != 'bigger']
-            attributeValues.append('bigger')
-        values[attributeKey] = attributeValues
-    return values
-
-### METODOS PRINCIPALES - EJEMPLOS
-### ---------------------------------
-
-# Devuelve el subconjunto de 'dataset' con valor 'value' en el atributo 'attribute'
-def getExamplesForValue(dataset, attribute, values, value):
-    (attributeKey, attributeType) = attribute
-
-    if attributeType == AttributeType.CONTINUOUS and value == 'bigger':
-        index = values.index(value)
-        return [x for x in dataset if x[attributeKey] > values[index-1]]
-
-    elif attributeType == AttributeType.CONTINUOUS and value != 'bigger':
-        return [x for x in dataset if x[attributeKey] <= value]
-
-    else:
-        return [x for x in dataset if x[attributeKey] == value]
-
-# Devuelve la frecuencia de ejemplos en 'dataset' con 'attribute'='value'
-def proportionExamplesForValue(dataset, attribute, values, value):
-    if len(dataset) == 0:
-      return 0
-    examples = getExamplesForValue(dataset, attribute, values, value)
-    return len(examples) / len(dataset)
-
-### METODOS PRINCIPALES - RESULTADOS
+### METODOS AUXILIARES - RESULTADOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles clasificaciones en 'dataset'
-def getResults(dataset):
-    results = set()
-    for x in dataset:
-        results.add(x['class'])
-    return sorted(list(results))
-  
-# Devuelve el resultado de 'results' más frecuente en 'dataset'
-def getMostLikelyResult(dataset, results):
+def getResults(data):
+    return sorted(list(set(data['class'])))
 
-    proportions = readAllProportionExamplesForResults(dataset)
-    
-    mostLikelyResult = None
-    mostLikelyProportion = 0
-
-    for key, value in proportions.items():
-        if value >= mostLikelyProportion:
-            mostLikelyResult = key
-            mostLikelyProportion = value
-
-    return (mostLikelyResult, mostLikelyProportion)
-
-# Devuelve la frecuencia de ejemplos en 'dataset' clasificados como 'result'
-def proportionExamplesForResult(dataset, result):
-    if len(dataset) == 0:
-      return 0
-    examples = [x for x in dataset if x['class'] == result]
-    return len(examples) / len(dataset)
-
-def readAllProportionExamplesForResults(dataset):
-    results = getResults(dataset)
-    resultsHash = {}
-    for result in results:
-        resultsHash[result] = []
-    for x in dataset:
-        resultsHash[x['class']].append(x)
-    proportions = {}
-    for result in results:
-        proportions[result] = len(resultsHash[result]) / len(dataset)
-    return proportions
-
-### METODOS PRINCIPALES - CONTINUIDAD
+### METODOS AUXILIARES - OPTIMIZACIÓN
 ### ---------------------------------
 
-# Devuelve el tipo de atributo basado en sus posibles valores
-def checkAttributeType(possibleValues):
-
-    example = possibleValues[0]
-    if type(example) != int and type(example) != float:
-        return AttributeType.DISCRETE
-    else:
-        booleanSet = {0, 1}
-        valuesSet = set(possibleValues)
-        if booleanSet == valuesSet:
-          return AttributeType.DISCRETE
-        else:
-          return AttributeType.CONTINUOUS
-
-### METODOS AUXILIARES - C4.5
-### -----------------------------
-### HACK: No se puede importar nada de decision_tree por la dependencia circular, por lo que hay que duplicar el codigo
-### La resolución de la dependencia no es trivial dado que la implementación en decision_tree de estas funciones usa el reader.
-
-# A
-def getGain(dataset, attribute, possibleValues):
-    
-    entropy = 0
-    for value in possibleValues:
-        subset = getExamplesForValue(dataset, attribute, possibleValues, value)
-        entropy += ((len(subset)/len(dataset)) * getEntropy(subset))
-
-    return (getEntropy(dataset) - entropy)
-
-# A
-def getEntropy(dataset):
-
-    proportions = readAllProportionExamplesForResults(dataset)
-
-    entropy = 0
-    for p in proportions.values():
-        if p != 0:
-            entropy += -p * math.log(p,2)
-
-    return entropy
+# Función a aplicar en pandas dataframe, obtiene el número
+# de atributo para 'wilderness_area' y 'soil_type'
+def getColumnValue(column):
+    values = column.split('_')
+    return int(values[2])
