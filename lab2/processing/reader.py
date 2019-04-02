@@ -14,8 +14,7 @@ from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 
 # Lee 'dsFile' y lo devuelve como un diccionario (atributo, valor)
 def readDataset(filename):
-
-    if filename != COVERTYPE_DATASET:
+    if filename != COVERTYPE_DATASET and filename != '../' + COVERTYPE_DATASET:
         data, meta = arff.loadarff(filename)
         data = pd.DataFrame(data)
 

@@ -107,6 +107,8 @@ def randomDataset(dataset):
 def splitDataset(dataset, percentage):
     length = len(dataset.index)
     cutPoint = math.floor(percentage * length)
+    print(len(dataset.iloc[:cutPoint]))
+    print(len(dataset.iloc[cutPoint:]))
     return (dataset.iloc[:cutPoint], dataset.iloc[cutPoint:])
 
 ### METODOS AUXILIARES - EVALUACIONES
@@ -151,14 +153,18 @@ def getConfusionMatrix(resultSet, evaluationSet, results):
     confusionMatrix = np.zeros((classes, classes), dtype=object)
 
     evaluationSet['class2'] = resultSet['class']
+    print(evaluationSet['class2'])
 
-    for index, example in evaluationSet.iterrows():
+    print('SADASDASD')
+    print(evaluationSet['class'])
 
-        if example['class'] != None and example['class2'] != None:
-            x = results.index(example['class'])
-            y = results.index(example['class2'])
+    for index in evaluationSet.index:
+        class1 = evaluationSet.at[index,'class']
+        class2 = evaluationSet.at[index,'class2']
+        if class1 != None and class2 != None:
+            x = results.index(class1)
+            y = results.index(class2)
             confusionMatrix[x][y] += 1
-
     return confusionMatrix
 
 def getTrueResultClassification(confusionMatrix, results, result):

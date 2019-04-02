@@ -13,21 +13,16 @@ from utils.const import AttributeType, ContinuousOps
 # Devuelve la lista de posibles valores en 'dataset' para 'attribute'
 def getPossibleValues(dataset, attribute):
     (attributeKey, attributeType) = attribute
-    values = []
-    for index, row in dataset.iterrows():
-        if row[attributeKey] not in values:
-          values.append(row[attributeKey])
-    return values
+    return dataset[attributeKey].unique().tolist()
 
 
-# Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
+# Devuelve la lista de posibles valores (discretiz
+# ados) en 'dataset' para 'attribute'
 def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
     (attributeKey, attributeType) = attribute
-    # print(dataset.columns)
     sortedDataset = dataset.sort_values(by=[attributeKey])
     values = getPossibleValues(sortedDataset, attribute)
-
     if attributeType == AttributeType.DISCRETE:
         return values
     
@@ -38,7 +33,6 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
         possibleValues = []
         possibleValues.append(values[median])
         possibleValues.append("bigger")
-
         return possibleValues
 
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
@@ -47,11 +41,13 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
         lastRes = None
         lastExample = None
 
-        for index, example in sortedDataset.iterrows():
-            if lastRes != None and example['class'] != lastRes:
-                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = example['class']
-            lastExample = example[attributeKey]
+        for index in sortedDataset.index:
+            exampleClass = sortedDataset.at[index,'class']
+            exampleAtributeKey = sortedDataset.at[index,attributeKey]
+            if lastRes != None and exampleClass != lastRes:
+                possibleValues.append(((float(exampleAtributeKey) - float(lastExample)) / 2) + float(lastExample))
+            lastRes = exampleClass
+            lastExample = exampleAtributeKey
         possibleValues.append("bigger")
 
         return possibleValues
@@ -60,11 +56,13 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
         lastRes = None
         lastExample = None
 
-        for index, example in sortedDataset.iterrows():
-            if lastRes != None and example['class'] != lastRes:
-                possibleValues.append(((float(example[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = example['class']
-            lastExample = example[attributeKey]
+        for index in sortedDataset.index:
+            exampleClass = sortedDataset.at[index,'class']
+            exampleAtributeKey = sortedDataset.at[index,attributeKey]
+            if lastRes != None and exampleClass != lastRes:
+                possibleValues.append(((float(exampleAtributeKey) - float(lastExample)) / 2) + float(lastExample))
+            lastRes = exampleClass
+            lastExample = exampleAtributeKey
 
         bestGain = 0
         bestThreshold = None
@@ -133,10 +131,10 @@ def getProportionExamplesForResult(dataset, result):
 def getAllProportionExamplesForResults(dataset, results):
     resultsHash = {}
     for result in results:
-        resultsHash[result] = []
-    for index, row in dataset.iterrows():
-        resultsHash[row['class']].append(row)
+        resultsHash[result] = 0
+    for index in dataset.index:
+        resultsHash[dataset.at[index,'class']] += 1
     proportions = {}
     for result in results:
-        proportions[result] = len(resultsHash[result]) / len(dataset.index)
+        proportions[result] = resultsHash[result] / len(dataset.index)
     return proportions

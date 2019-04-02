@@ -12,7 +12,6 @@ from utils.const import MeasureOps
 
 # A
 def getGain(dataset, attribute, possibleValues, results):
-    
     entropy = 0
     for value in possibleValues:
         subset = processor.getExamplesForValue(dataset, attribute, possibleValues, value)

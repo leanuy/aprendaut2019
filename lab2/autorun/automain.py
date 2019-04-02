@@ -58,15 +58,13 @@ if __name__ == '__main__':
     print()
     print("-> COMIENZO DE LA LECTURA")
 
-    dataset = reader.readDataset(datasetFile) 
-    model = Model(modelType)
-
     options = {
     'continuous': continuous,
     'measure': measureType
     }
 
-    (dataset, attributes, results) = reader.readDataset(datasetFile)            
+    (dataset, attributes, results) = reader.readDataset(datasetFile)
+    print(attributes) 
     model = Model(modelType)
 
     classifier = {

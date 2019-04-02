@@ -14,7 +14,6 @@ from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, ME
 ### -------------------
 
 def id3Train(dataset, attributes, results, options):
-
     # Caso Borde: Todos los ejemplos son de una clase
     (result, proportion) = processor.getMostLikelyResult(dataset, results)
     if proportion == 1:
@@ -100,7 +99,6 @@ def id3Classify(tree, example):
 
 # A
 def getBestAttribute(dataset, attributes, results, options):
-
     continuous = options[CONTINUOUS]
 
     bestAttributeKey = None
@@ -110,7 +108,6 @@ def getBestAttribute(dataset, attributes, results, options):
     for attribute in attributes:
         (attributeKey, attributeType) = attribute
         possibleValues = processor.getDiscretePossibleValues(dataset, attribute, results, continuous, calculator.getGain)
-
         if bestAttributeKey != None:
             thisMeasure = getMeasure(dataset, attribute, possibleValues, results, options)
             bestMeasure = getMeasure(dataset, (bestAttributeKey, bestAttributeType), bestValues, results, options)
