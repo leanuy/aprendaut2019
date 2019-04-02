@@ -63,7 +63,7 @@ if __name__ == '__main__':
     'measure': measureType
     }
 
-    (dataset, attributes, results) = reader.readDataset(datasetFile)
+    (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == '../' + COVERTYPE_DATASET)
     print(attributes) 
     model = Model(modelType)
 

@@ -16,7 +16,8 @@ def normalValidation(dataset, classifier):
 
     shuffled = randomDataset(dataset)
     (trainingSet, evaluationSet) = splitDataset(shuffled, 0.8)
-    
+    evaluationSet.drop(columns=['class'])
+
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
     tic = time.time()
@@ -107,8 +108,6 @@ def randomDataset(dataset):
 def splitDataset(dataset, percentage):
     length = len(dataset.index)
     cutPoint = math.floor(percentage * length)
-    print(len(dataset.iloc[:cutPoint]))
-    print(len(dataset.iloc[cutPoint:]))
     return (dataset.iloc[:cutPoint], dataset.iloc[cutPoint:])
 
 ### METODOS AUXILIARES - EVALUACIONES
@@ -153,11 +152,7 @@ def getConfusionMatrix(resultSet, evaluationSet, results):
     confusionMatrix = np.zeros((classes, classes), dtype=object)
 
     evaluationSet['class2'] = resultSet['class']
-    print(evaluationSet['class2'])
-
-    print('SADASDASD')
-    print(evaluationSet['class'])
-
+    
     for index in evaluationSet.index:
         class1 = evaluationSet.at[index,'class']
         class2 = evaluationSet.at[index,'class2']

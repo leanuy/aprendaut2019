@@ -13,7 +13,7 @@ import processing.parser as parser
 from evaluation.evaluate import normalValidation, crossValidation
 
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps 
+from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -36,7 +36,7 @@ if __name__ == '__main__':
             measure = gui.printMeasureType()
 
             model = Model(modelType)
-            (dataset, attributes, results) = reader.readDataset(datasetFile)
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
             options = {
               'continuous': continuous,
               'measure': measure
@@ -108,7 +108,7 @@ if __name__ == '__main__':
               'measure': measure
             }
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile)            
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
             model = Model(modelType)
 
             classifier = {

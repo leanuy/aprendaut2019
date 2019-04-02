@@ -15,9 +15,7 @@ def getPossibleValues(dataset, attribute):
     (attributeKey, attributeType) = attribute
     return dataset[attributeKey].unique().tolist()
 
-
-# Devuelve la lista de posibles valores (discretiz
-# ados) en 'dataset' para 'attribute'
+# Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
 def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
     (attributeKey, attributeType) = attribute

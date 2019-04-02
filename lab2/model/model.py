@@ -72,13 +72,21 @@ class Model():
         elif self.model == ModelOps.DECISION_FOREST:
             self.classifier = self.trainForest(dataset)
 
-    def classify(self, example):
+    def classify(self, example, noProb = False):
 
         if self.model == ModelOps.DECISION_TREE:
-            return self.classifyTree(example)
+            if noProb:
+                (classification, p) = self.classifyTree(example)
+                return classification
+            else:
+                return self.classifyTree(example)
 
         elif self.model == ModelOps.DECISION_FOREST:
-            return self.classifyForest(example)
+            if noProb:
+                (classification, p) = self.classifyForest(example)
+                return classification
+            else:
+                return self.classifyForest(example)
 
     ### METODOS AUXILIARES
     ### -------------------
@@ -86,11 +94,13 @@ class Model():
     def classifySet(self, exampleSet):
         
         resultsSet = exampleSet.copy()
-        
-        i = 0
-        for index, example in exampleSet.iterrows():
-            (classification, p) = self.classify(example)
-            resultsSet.iloc[i, resultsSet.columns.get_loc('class')] = classification
+
+        classification = lambda x : self.classify(x, True)
+        resultsSet['class'] = resultsSet.apply(classification, axis=1)
+        #i = 0
+        #for index, example in exampleSet.iterrows():
+        #    (classification, p) = self.classify(example)
+        #    resultsSet.iloc[i, resultsSet.columns.get_loc('class')] = classification
         
         return resultsSet
 
@@ -121,4 +131,5 @@ class Model():
 
     def classifyForest(self, example):
         return id3ForestClassify(self.classifier, example, self.results)
+
 
