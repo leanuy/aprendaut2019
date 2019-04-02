@@ -4,16 +4,15 @@
 import math
 
 from .node import Node
-
 import processing.processor as processor
 import processing.calculator as calculator
-
 from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, MEASURE
 
 ### METODOS PRINCIPALES
 ### -------------------
 
 def id3Train(dataset, attributes, results, options):
+
     # Caso Borde: Todos los ejemplos son de una clase
     (result, proportion) = processor.getMostLikelyResult(dataset, results)
     if proportion == 1:
@@ -28,7 +27,6 @@ def id3Train(dataset, attributes, results, options):
 
         # 1. Obtener atributo con mayor ganancia de información y sus posibles valores
         (attribute, values) = getBestAttribute(dataset, attributes, results, options)
-        (attributeKey, attributeType) = attribute
 
         # 2. Generar lista de atributos nueva y diccionario de hijos
         newAttributes = list(attributes)
@@ -97,7 +95,7 @@ def id3Classify(tree, example):
 ### METODOS AUXILIARES - MEJOR ATRIBUTO
 ### -----------------------------------
 
-# A
+# Devuelve el atributo con mejor ganancia de información en 'dataset'
 def getBestAttribute(dataset, attributes, results, options):
     continuous = options[CONTINUOUS]
 
@@ -119,7 +117,7 @@ def getBestAttribute(dataset, attributes, results, options):
     
     return ((bestAttributeKey, bestAttributeType), bestValues)
 
-# A
+# Devuelve la medida de ganancia determinada en 'options' para 'attribute' en 'dataset'
 def getMeasure(dataset, attribute, possibleValues, results, options):
     measure = options[MEASURE]
     if measure == MeasureOps.GAIN:

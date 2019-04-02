@@ -8,12 +8,9 @@ import time
 sys.path.append('..')
 
 from model.model import Model
-
 import processing.reader as reader
 import processing.parser as parser
-
 from evaluation.evaluate import normalValidation, crossValidation
-
 import utils.gui as gui
 from utils.const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, MeasureOps, IRIS_DATASET, COVERTYPE_DATASET
 
@@ -24,14 +21,16 @@ if __name__ == '__main__':
     
     try:
         if len(sys.argv) != 6:
-            raise Exception('Insufficient amount of arguments')
+            raise Exception('Cantidad de argumentos insuficiente')
         datasetFile = COVERTYPE_DATASET if int(sys.argv[1]) == 2 else IRIS_DATASET
         datasetOut = 'Covertype' if int(sys.argv[1]) == 2 else 'Iris'
         datasetFile = '../' + datasetFile
         (modelType, modelName) = (ModelOps.DECISION_FOREST, 'Bosque') if int(sys.argv[2]) == 2 else (ModelOps.DECISION_TREE, 'Árbol')
+        
         if int(sys.argv[3]) == 2:
             continuous = ContinuousOps.VARIABLE
             continuousOut = 'Variable'
+        
         elif int(sys.argv[3]) == 3:
             continuous = ContinuousOps.C45
             continuousOut = 'C45'
@@ -51,6 +50,7 @@ if __name__ == '__main__':
         
         evalMode = EvaluationOps.CROSS if int(sys.argv[5]) == 2 else EvaluationOps.NORMAL
         evalModeOut = 'Cross' if int(sys.argv[5]) == 2 else 'Normal'
+
     except Exception as error:
         print('Caught this error: ' + repr(error))
         sys.exit(1)
@@ -64,7 +64,6 @@ if __name__ == '__main__':
     }
 
     (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == '../' + COVERTYPE_DATASET)
-    print(attributes) 
     model = Model(modelType)
 
     classifier = {
@@ -80,22 +79,14 @@ if __name__ == '__main__':
     print("-> FIN DE LA LECTURA")
 
     resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
-    print()
-    print("-> COMIENZO DE LA EVALUACIÓN")
     if evalMode == EvaluationOps.NORMAL:
-        (accuracy, eval, confusionMatrix, trainingTime) = normalValidation(dataset, classifier)
-        print()
-        print("-> FIN DE LA EVALUACIÓN")
-
+        (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
         sys.stdout = open(resultFileName, 'w')
-        gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset), trainingTime)
+        gui.printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, len(dataset))
 
     elif evalMode == EvaluationOps.CROSS:
         evalK = 10 # Cambiar si se desean menos
         (eval, evalMean) = crossValidation(dataset, classifier, evalK)
-        print()
-        print("-> FIN DE LA EVALUACIÓN")
-
         sys.stdout = open(resultFileName, 'w')
         gui.printCrossEvaluation(classifier, eval, evalMean, len(dataset))
 

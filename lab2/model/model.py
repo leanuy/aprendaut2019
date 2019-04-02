@@ -6,10 +6,8 @@ import random
 
 from .decision_tree import id3Train, id3Classify
 from .decision_forest import id3ForestTrain, id3ForestClassify
-
 import processing.reader as reader
 import processing.parser as parser
-
 from utils.const import ModelOps
 
 ### CLASE PRINCIPAL

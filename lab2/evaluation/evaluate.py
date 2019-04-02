@@ -6,7 +6,7 @@ import math
 import random
 import numpy as np
 
-import processing.reader as reader
+from processing.processor import getAllProportionExamplesForResults
 from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
@@ -44,17 +44,15 @@ def crossValidation(dataset, classifier, k):
     partitions = []    
     evaluations = []
 
+    accuracyMean = 0
+    meansMean = (0, 0, 0, 0)
+    wMeansMean = (0, 0, 0, 0)
     metricsMean = {}
     for result in results:
-        metricsMean[result] = (0, 0, 0)
-    evaluationsMean = (0, metricsMean)
+        metricsMean[result] = (0, 0, 0, 0)
     
     shuffled = randomDataset(dataset)
-
-    # Generar 'k' particiones
-    for i in range(0,k):
-        (trainingDataset, evaluationDataset) = splitDataset(shuffled, 1 // k)
-        partitions.append((trainingDataset, evaluationDataset))
+    partitions = splitDatasetK(shuffled, k)
 
     # Generar 'k' evaluaciones
     for i in range(0,k):
@@ -75,27 +73,69 @@ def crossValidation(dataset, classifier, k):
 
     # Generar promedio de las 'k' evaluaciones
     for evaluation in evaluations:
-        (accuracy, metrics, confusionMatrix, trainingTime) = evaluation
-        (accuracyMean, metricsMean) = evaluationsMean
+        (trainingTime, accuracy, means, wMeans, metrics, confusionMatrix) = evaluation
+
+        # Promedio de accuracy
         accuracyMean += accuracy
+
+        # Promedio de promedios generales
+        (generalPrecision, generalRecall, generalFalloff, generalFmeasure) = means
+        (generalPrecisionMean, generalRecallMean, generalFalloffMean, generalFmeasureMean) = meansMean
+
+        generalPrecisionMean += generalPrecision
+        generalRecallMean += generalRecall
+        generalFalloffMean += generalFalloff
+        generalFmeasureMean += generalFmeasure
+        meansMean = (generalPrecisionMean, generalRecallMean, generalFalloffMean, generalFmeasureMean)
+
+        # Promedio de promedios ponderados
+        (weightedPrecision, weightedRecall, weightedFalloff, weightedFmeasure) = wMeans
+        (weightedPrecisionMean, weightedRecallMean, weightedFalloffMean, weightedFmeasureMean) = wMeansMean
+        weightedPrecisionMean += weightedPrecision
+        weightedRecallMean += weightedRecall
+        weightedFalloffMean +=weightedFalloff
+        weightedFmeasureMean += weightedFmeasure
+        wMeansMean = (weightedPrecisionMean, weightedRecallMean, weightedFalloffMean, weightedFmeasureMean)
+
+        # Promedio de métricas para cada clase
         for result in metrics:
-            (precision, recall, Fmeasure) = metrics[result]
-            (precisionMean, recallMean, FmeasureMean) = metricsMean[result]
+            (precision, recall, falloff, Fmeasure) = metrics[result]
+            (precisionMean, recallMean, falloffMean, FmeasureMean) = metricsMean[result]
             precisionMean += precision
             recallMean += recall
+            falloffMean += falloff
             FmeasureMean += Fmeasure
-            metricsMean[result] = (precisionMean, recallMean, FmeasureMean)
-        evaluationsMean = (accuracyMean, metricsMean)
+            metricsMean[result] = (precisionMean, recallMean, falloffMean, FmeasureMean)
 
-    (accuracyMean, metricsMean) = evaluationsMean
-    accuracyMean = accuracyMean / k
+    # Promedio de accuracy
+    accuracyMean /= k
+
+    # Promedio de promedios generales
+    (generalPrecisionMean, generalRecallMean, generalFalloffMean, generalFmeasureMean) = meansMean
+    generalPrecisionMean /= k
+    generalRecallMean /= k
+    generalFalloffMean /= k
+    generalFmeasureMean /= k
+    meansMean = (generalPrecisionMean, generalRecallMean, generalFalloffMean, generalFmeasureMean)
+
+    # Promedio de promedios ponderados
+    (weightedPrecisionMean, weightedRecallMean, weightedFalloffMean, weightedFmeasureMean) = wMeansMean
+    weightedPrecisionMean /= k
+    weightedRecallMean /= k
+    weightedFalloffMean /= k
+    weightedFmeasureMean /= k
+    wMeansMean = (weightedPrecisionMean, weightedRecallMean, weightedFalloffMean, weightedFmeasureMean)
+
+    # Promedio de métricas para cada clase
     for result in metricsMean:
-        (precisionMean, recallMean, FmeasureMean) = metricsMean[result]
+        (precisionMean, recallMean, falloffMean, FmeasureMean) = metricsMean[result]
         precisionMean = precisionMean / k
         recallMean = recallMean / k
+        falloffMean = falloffMean / k
         FmeasureMean = FmeasureMean / k
-        metricsMean[result] = (precisionMean, recallMean, FmeasureMean)
-    evaluationsMean = (accuracyMean, metricsMean)
+        metricsMean[result] = (precisionMean, recallMean, falloffMean, FmeasureMean)
+    
+    evaluationsMean = (accuracyMean, meansMean, wMeansMean, metricsMean)
             
     return (evaluations, evaluationsMean)
 
@@ -113,17 +153,15 @@ def splitDataset(dataset, percentage):
 def splitDatasetK(dataset, k):
     partitions = []
     length = len(dataset.index)
-    
-    for i in range(0, k):
-        cutFrom = math.floor(i * 1 // k * length)
-        cutTo = math.floor((i+1) * 1 // k * length)
 
-        #trainingSet = None
-        #evaluationSet = None
+    for i in range(0, k):
+        cutFrom = math.floor(i * (1 / k) * length)
+        cutTo = math.floor((i+1) * (1 / k) * length)
         
-        #evaluationSet = dataset.iloc[cutFrom:cutTo]
-            
-        #partitions.append((dataset.iloc[:cutPoint], dataset.iloc[cutPoint:]))
+        evaluationSet = dataset.iloc[cutFrom:cutTo]
+        trainingSet = dataset.iloc[:cutFrom].append(dataset.iloc[cutTo:])
+
+        partitions.append((trainingSet, evaluationSet))
     
     return partitions
 
@@ -135,31 +173,72 @@ def getEvaluation(resultSet, evaluationSet, results, trainingTime):
     # Generar matriz de confusión de largo len(results)
     confusionMatrix = getConfusionMatrix(resultSet, evaluationSet, results)
 
-    # Generar diccionario con resultados de evaluación, almacenando 3 resultados:
+    # Generar diccionario con resultados de evaluación, almacenando 5¿4 resultados:
     # 1. Precision
     # 2. Recall
-    # 3. Medida F
+    # 3. Fall-off
+    # 4. Medida F
     evaluation = {}
+
+    # Inicializar promedio de cada medida
+    precisionMean = 0
+    recallMean = 0
+    falloffMean = 0
+    FmeasureMean = 0
+
+    # Inicializar promedio ponderado de cada medida
+    precisionWeightedMean = 0
+    recallWeightedMean = 0
+    falloffWeightedMean = 0
+    FmeasureWeightedMean = 0
+
+    # Obtener proporciones de ejemplos en el conjunto de evaluación
+    proportions = getAllProportionExamplesForResults(evaluationSet, results)
 
     # Generar dichas medidas para cada posible clase 'result'
     for result in results:
 
-        # Obtener primero
+        # Obtener primero los valores TP, FP, TN, FN
         trueResult = getTrueResultClassification(confusionMatrix, results, result)
         falseResult = getFalseResultClassification(confusionMatrix, results, result)
+        trueNotResult = getTrueNotResultClassification(confusionMatrix, results, result)
         falseNotResult = getFalseNotResultClassification(confusionMatrix, results, result)
 
-        # Generasr medidas y cargarlas en el diccionario para 'result'
+        # Generar medidas y cargarlas en el diccionario para 'result'
         precision = getPrecision(trueResult, falseResult)
         recall = getRecall(trueResult, falseNotResult)
+        falloff = getFalloff(falseResult, trueNotResult)
         Fmeasure = getFMeasure(precision, recall)
-        evaluation[result] = (precision, recall, Fmeasure)
+        evaluation[result] = (precision, recall, falloff, Fmeasure)
 
+        # Sumar a los promedios
+        precisionMean += precision
+        recallMean += recall
+        falloffMean += falloff
+        FmeasureMean += Fmeasure
+
+        # Sumar a los promedios ponderados
+        precisionWeightedMean += precision * proportions[result]
+        recallWeightedMean += recall * proportions[result]
+        falloffWeightedMean += falloff * proportions[result]
+        FmeasureWeightedMean += Fmeasure * proportions[result]
+
+    # Obtener promedio de cada medida
+    resultsLength = len(results)
+    precisionMean /= resultsLength
+    recallMean /= resultsLength
+    falloffMean /= resultsLength
+    FmeasureMean /= resultsLength
+    means = (precisionMean, recallMean, falloffMean, FmeasureMean)
+    
+    # Obtener promedio ponderado de cada medida
+    weightedMeans = (precisionWeightedMean, recallWeightedMean, falloffWeightedMean, FmeasureWeightedMean)
+    
     # Obtener accuracy total
     correctTotal = getAllTrueResultClassification(confusionMatrix)
     accuracy = getAccuracy(correctTotal, len(resultSet))
 
-    return (accuracy, evaluation, confusionMatrix, trainingTime)
+    return (trainingTime, accuracy, means, weightedMeans, evaluation, confusionMatrix)
 
 ### METODOS AUXILIARES - MATRIZ DE CONFUSION
 ### ----------------------------------------
@@ -191,6 +270,11 @@ def getFalseResultClassification(confusionMatrix, results, result):
             res += confusionMatrix[i][j]
     return res
 
+def getTrueNotResultClassification(confusionMatrix, results, result):
+    withoutRow = np.delete(confusionMatrix, (results.index(result)), axis=0)
+    withoutColumn = np.delete(confusionMatrix, (results.index(result)), axis=1)
+    return withoutColumn.sum()
+
 def getFalseNotResultClassification(confusionMatrix, results, result):
     res = 0
     i = results.index(result)
@@ -212,6 +296,10 @@ def getPrecision(tp, fp):
 def getRecall(tp, fn):
     if tp + fn == 0: return 0
     return tp/(tp + fn)
+
+def getFalloff(fp, tn):
+    if fp + tn == 0: return 0
+    return fp/(fp + tn)
 
 def getFMeasure(precision, recall):
     if precision + recall == 0: return 0

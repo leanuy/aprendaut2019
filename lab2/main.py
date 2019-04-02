@@ -6,14 +6,11 @@ import os
 import time
 
 from model.model import Model
-
 import processing.reader as reader
 import processing.parser as parser
-
 from evaluation.evaluate import normalValidation, crossValidation
-
 import utils.gui as gui
-from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
+from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, COVERTYPE_DATASET
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -123,8 +120,8 @@ if __name__ == '__main__':
             evalMode = gui.printEvaluationMode()
 
             if evalMode == EvaluationOps.NORMAL:
-                (accuracy, eval, confusionMatrix, trainingTime) = normalValidation(dataset, classifier)
-                gui.printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, len(dataset), trainingTime)
+                (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
+                gui.printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, len(dataset))
 
             elif evalMode == EvaluationOps.CROSS:
                 evalK = gui.printEvaluationK()

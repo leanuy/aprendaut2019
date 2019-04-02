@@ -4,13 +4,12 @@
 import math
 
 from . import processor
-
 from utils.const import MeasureOps
 
 ### METODOS AUXILIARES - GANANCIA
 ### -----------------------------
 
-# A
+# Obtener ganancia de 'attribute' en 'dataset'
 def getGain(dataset, attribute, possibleValues, results):
     entropy = 0
     for value in possibleValues:
@@ -19,7 +18,7 @@ def getGain(dataset, attribute, possibleValues, results):
 
     return (getEntropy(dataset, results) - entropy)
 
-# A
+# Obtener entropía de 'dataset'
 def getEntropy(dataset, results):
 
     proportions = []
@@ -36,7 +35,7 @@ def getEntropy(dataset, results):
 ### METODOS AUXILIARES - RATIO DE GANANCIA
 ### ----------------------------------------
 
-# A
+# Obtener ratio de ganancia de 'attribute' en 'dataset'
 def getGainRatio(dataset, attribute, possibleValues, results):
 
     gainRatio = getGain(dataset, attribute, possibleValues, results)
@@ -45,6 +44,7 @@ def getGainRatio(dataset, attribute, possibleValues, results):
 
     return gainRatio
 
+# Obtener métrica auxiliar para ratio de ganancia en 'dataset'
 def getSplitInformation(dataset, attribute, possibleValues):
 
     proportions = []
@@ -64,7 +64,7 @@ def getSplitInformation(dataset, attribute, possibleValues):
 ### METODOS AUXILIARES - REDUCCIÓN DE IMPUREZA
 ### ------------------------------------------
 
-# A
+# Obtener reducción de impureza de 'attribute' en 'dataset'
 def getImpurityReduction(dataset, attribute, possibleValues, results):
     
     entropy = 0
@@ -74,7 +74,7 @@ def getImpurityReduction(dataset, attribute, possibleValues, results):
 
     return (getGini(dataset, results) - entropy)
 
-# A
+# Obtener métrica auxiliar para reducción de impureza en 'dataset'
 def getGini(dataset, results):
 
     props2 = 0

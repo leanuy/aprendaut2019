@@ -12,7 +12,8 @@ from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 ### METODOS PRINCIPALES
 ### -------------------
 
-# Lee 'dsFile' y lo devuelve como un diccionario (atributo, valor)
+# Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
+# Si el dataset es CoverType, deshace el one hot encoding de sus atributos
 def readDataset(filename, isCovertype = False):
 
     if not isCovertype:
@@ -85,35 +86,36 @@ def readDataset(filename, isCovertype = False):
         convertedClassification = dataClassification.astype('category')
         optimizedData['class'] = convertedClassification
 
-        #print(optimizedData)
-        #print(optimizedData.info(memory_usage='deep'))
-
         attributes = getAttributesDecoded(optimizedData.columns)
         results = getResults(data)
 
         return (optimizedData, attributes, results)
 
-### METODOS PRINCIPALES - ATRIBUTOS
+### METODOS AUXILIARES - ATRIBUTOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles atributos y su tipo en 'dataset'
 def getAttributes(meta):
     return list(zip(meta.names()[:-1], [ AttributeType.CONTINUOUS if x == 'numeric' else AttributeType.DISCRETE for x in meta.types()[:-1] ] ))
 
+# Devuelve la lista de posibles atributos y su tipo en 'dataset'
+# para CoverType sin one hot encoding
 def getAttributesDecoded(columns):
     attributes = list(columns)[:-1]
     return list(zip(attributes, [ AttributeType.CONTINUOUS for x in columns ] ))
 
-### METODOS PRINCIPALES - RESULTADOS
+### METODOS AUXILIARES - RESULTADOS
 ### ---------------------------------
 
 # Devuelve la lista de posibles clasificaciones en 'dataset'
 def getResults(data):
     return sorted(list(set(data['class'])))
 
-### METODOS AUXILIARES - RESULTADOS
+### METODOS AUXILIARES - OPTIMIZACIÓN
 ### ---------------------------------
 
+# Función a aplicar en pandas dataframe, obtiene el número
+# de atributo para 'wilderness_area' y 'soil_type'
 def getColumnValue(column):
     values = column.split('_')
     return int(values[2])
