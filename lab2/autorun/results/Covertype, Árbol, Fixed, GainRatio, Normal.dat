@@ -1,0 +1,69 @@
+
+MODELO:
+
+-> Modelo Entrenado: Árbol
+-> Estrategia de atributos continuos: ContinuousOps.FIXED
+-> Estrategia de medida: MeasureOps.GAINRATIO
+-> Tiempo de entrenamiento: 242.54685282707214
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 581012
+-> Ejemplos de entrenamiento: 464808
+-> Ejemplos de evaluación: 116202
+
+-> Accuracy: 0.6840356961524229
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 28751 13197 1 0 24 4 187 
+
+b'2' 11084 44911 529 5 43 162 47 
+
+b'3' 0 2878 3824 106 0 369 0 
+
+b'4' 0 13 240 285 0 40 0 
+
+b'5' 6 1776 17 0 93 4 0 
+
+b'6' 13 1407 1113 32 0 888 0 
+
+b'7' 3329 89 0 0 1 0 735 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.6657944098372045
+--> Recall: 0.6818850203965469
+--> F-Measure: 0.6737436582422347
+
+-> Evaluación para b'2': 
+--> Precision: 0.6987754975027617
+--> Recall: 0.790951198464275
+--> F-Measure: 0.7420116974523345
+
+-> Evaluación para b'3': 
+--> Precision: 0.6680642907058001
+--> Recall: 0.5328131531280479
+--> F-Measure: 0.5928222618401673
+
+-> Evaluación para b'4': 
+--> Precision: 0.6658878504672897
+--> Recall: 0.4930795847750865
+--> F-Measure: 0.5666003976143141
+
+-> Evaluación para b'5': 
+--> Precision: 0.577639751552795
+--> Recall: 0.0490506329113924
+--> F-Measure: 0.0904229460379193
+
+-> Evaluación para b'6': 
+--> Precision: 0.6053169734151329
+--> Recall: 0.2571676802780191
+--> F-Measure: 0.36097560975609755
+
+-> Evaluación para b'7': 
+--> Precision: 0.7585139318885449
+--> Recall: 0.1769378911892152
+--> F-Measure: 0.2869412453640445
+

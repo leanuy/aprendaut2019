@@ -15,6 +15,27 @@ def getPossibleValues(dataset, attribute):
     (attributeKey, attributeType) = attribute
     return dataset[attributeKey].unique().tolist()
 
+# A
+def getChangingValues(dataset, attribute):
+    
+    possibleValues = []
+    lastResult = None
+    lastExample = None
+        
+    for index in dataset.index:
+        currentResult = dataset.at[index,'class']
+        currentExample = dataset.at[index,attribute]
+        if lastResult != None and currentResult != lastResult and currentExample not in possibleValues:
+            possibleValues.append(currentExample)
+        lastResult = currentResult
+
+    totalValues = len(possibleValues)
+    maxValues = 10
+    if totalValues > maxValues:
+        possibleValues = [x for x in possibleValues if possibleValues.index(x) % (totalValues // maxValues) == 0]
+
+    return possibleValues
+
 # Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
 def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
@@ -35,32 +56,13 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
 
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
 
-        possibleValues = []
-        lastRes = None
-        lastExample = None
-
-        for index in sortedDataset.index:
-            exampleClass = sortedDataset.at[index,'class']
-            exampleAtributeKey = sortedDataset.at[index,attributeKey]
-            if lastRes != None and exampleClass != lastRes:
-                possibleValues.append(((float(exampleAtributeKey) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = exampleClass
-            lastExample = exampleAtributeKey
+        possibleValues = getChangingValues(sortedDataset, attributeKey)
         possibleValues.append("bigger")
-
         return possibleValues
+        
     elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.C45:
-        possibleValues = []
-        lastRes = None
-        lastExample = None
-
-        for index in sortedDataset.index:
-            exampleClass = sortedDataset.at[index,'class']
-            exampleAtributeKey = sortedDataset.at[index,attributeKey]
-            if lastRes != None and exampleClass != lastRes:
-                possibleValues.append(((float(exampleAtributeKey) - float(lastExample)) / 2) + float(lastExample))
-            lastRes = exampleClass
-            lastExample = exampleAtributeKey
+        
+        possibleValues = getChangingValues(sortedDataset, attributeKey)
 
         bestGain = 0
         bestThreshold = None
@@ -70,6 +72,7 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
             if gain > bestGain:
                 bestGain = gain
                 bestThreshold = value
+                
         return [bestThreshold, 'bigger']
 
 ### METODOS PRINCIPALES - EJEMPLOS

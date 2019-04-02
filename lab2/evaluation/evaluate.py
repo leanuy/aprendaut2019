@@ -110,6 +110,23 @@ def splitDataset(dataset, percentage):
     cutPoint = math.floor(percentage * length)
     return (dataset.iloc[:cutPoint], dataset.iloc[cutPoint:])
 
+def splitDatasetK(dataset, k):
+    partitions = []
+    length = len(dataset.index)
+    
+    for i in range(0, k):
+        cutFrom = math.floor(i * 1 // k * length)
+        cutTo = math.floor((i+1) * 1 // k * length)
+
+        #trainingSet = None
+        #evaluationSet = None
+        
+        #evaluationSet = dataset.iloc[cutFrom:cutTo]
+            
+        #partitions.append((dataset.iloc[:cutPoint], dataset.iloc[cutPoint:]))
+    
+    return partitions
+
 ### METODOS AUXILIARES - EVALUACIONES
 ### ---------------------------------
 

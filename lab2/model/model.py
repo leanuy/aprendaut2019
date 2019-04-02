@@ -97,10 +97,6 @@ class Model():
 
         classification = lambda x : self.classify(x, True)
         resultsSet['class'] = resultsSet.apply(classification, axis=1)
-        #i = 0
-        #for index, example in exampleSet.iterrows():
-        #    (classification, p) = self.classify(example)
-        #    resultsSet.iloc[i, resultsSet.columns.get_loc('class')] = classification
         
         return resultsSet
 
