@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import csv
 import copy
 import operator
 import pandas as pd
@@ -33,6 +34,25 @@ def getFormattedExample(text, attributes):
         example[attribute] = float(values[i])
         i = i + 1
     return example
+
+### METODOS PRINCIPALES - ARCHIVOS
+### ------------------------------
+
+# Formatea una evaluación generando un CSV para el notebook
+def getEvaluationCSV(filename, accuracy, means, wMeans, evals, confusionMatrix = None):
+    with open(filename, 'w') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow([accuracy])
+        filewriter.writerow(means)
+        filewriter.writerow(wMeans)
+
+        for eval in evals:
+          filewriter.writerow(evals[eval])
+
+        if confusionMatrix is not None:
+            for i in range(0, len(confusionMatrix)):
+                filewriter.writerow(confusionMatrix[i])
 
 ### METODOS AUXILIARES
 ### ------------------------------

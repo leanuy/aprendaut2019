@@ -9,7 +9,6 @@ measure = 1..3
 validation = 1..2
 :EndComment
 
-python automain.py 1 1 1 1 2
 python automain.py 1 1 1 2 2
 python automain.py 1 1 1 3 2
 python automain.py 1 1 2 1 2

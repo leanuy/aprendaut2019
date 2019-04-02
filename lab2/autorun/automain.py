@@ -79,14 +79,18 @@ if __name__ == '__main__':
     print("-> FIN DE LA LECTURA")
 
     resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
+    resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".csv"
     if evalMode == EvaluationOps.NORMAL:
         (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
+        parser.getEvaluationCSV(resultCSVName, accuracy, means, weightedMeans, eval, confusionMatrix)
         sys.stdout = open(resultFileName, 'w')
         gui.printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, len(dataset))
 
     elif evalMode == EvaluationOps.CROSS:
         evalK = 10 # Cambiar si se desean menos
         (eval, evalMean) = crossValidation(dataset, classifier, evalK)
+        (accuracy, means, weightedMeans, evals) = evalMean
+        parser.getEvaluationCSV(resultCSVName, accuracy, means, weightedMeans, evals)
         sys.stdout = open(resultFileName, 'w')
         gui.printCrossEvaluation(classifier, eval, evalMean, len(dataset))
 
