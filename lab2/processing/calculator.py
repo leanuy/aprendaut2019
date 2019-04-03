@@ -1,86 +1,55 @@
 ### DEPENDENCIAS
-### ------------------
-
-import math
-import copy
-import operator
-
-from utils.const import AttributeType, ContinuousOps, MeasureType
-
-
-### METODOS AUXILIARES - MEJOR ATRIBUTO
 ### -----------------------------------
 
-# A
-def getBestAttribute(datasetLength, attributes, examplesForValue, proportionsForValue, proportionsForResult, continuous, measure):
-  
-    (bestAttribute, bestAttributeType) = attributes[0]
-    bestExamples = examplesForValue[bestAttribute]
-    bestProportions = proportionsForValue[bestAttribute]
-    bestValues = list(bestExamples.keys())
-    if 'bigger' in bestValues:
-        bestValues.remove('bigger')
-        bestValues.sort()
-        bestValues.append('bigger')
+import math
 
-    for attribute in attributes[1:]:
-        (attributeKey, attributeType) = attribute
-        examples = examplesForValue[attributeKey]
-        proportions = proportionsForValue[attributeKey]
-        values = list(examples.keys())
-        if 'bigger' in values:
-            values.remove('bigger')
-            values.sort()
-            values.append('bigger')
-        if getMeasure(datasetLength, examples, proportions, proportionsForResult, measure) > getMeasure(datasetLength, bestExamples, bestProportions, proportionsForResult, measure):
-            bestAttribute = attributeKey
-            bestAttributeType = attributeType
-            bestValues = values
-
-    return ((bestAttribute, bestAttributeType), bestValues)
-
-# A
-def getMeasure(datasetLength, examplesForValue, proportionsForValue, proportionsForResult, measure):
-
-    if measure == MeasureType.GAIN:
-        return getGain(datasetLength, examplesForValue, proportionsForValue, proportionsForResult)
-    elif measure == MeasureType.GAINRATIO:
-        return getGainRatio(datasetLength, examplesForValue, proportionsForValue, proportionsForResult)
-    elif measure == MeasureType.IMPURITYREDUCTION:
-        return getImpurityReduction(datasetLength, examplesForValue, proportionsForValue, proportionsForResult)
+from . import processor
+from utils.const import MeasureOps
 
 ### METODOS AUXILIARES - GANANCIA
 ### -----------------------------
 
-# A
-def getGain(datasetLength, examplesForValue, proportionsForValue, proportionsForResult):
+# Obtener ganancia de 'attribute' en 'dataset'
+def getGain(dataset, attribute, possibleValues, results):
     entropy = 0
-    for value in examplesForValue:
-        entropy += ((len(examplesForValue[value]) / datasetLength) * getEntropy(proportionsForValue[value]))
-    return (getEntropy(proportionsForResult) - entropy)
+    for value in possibleValues:
+        subset = processor.getExamplesForValue(dataset, attribute, possibleValues, value)
+        entropy += ((len(subset.index)/len(dataset.index)) * getEntropy(subset, results))
 
-# A
-def getEntropy(proportionsForResult):
+    return (getEntropy(dataset, results) - entropy)
+
+# Obtener entropía de 'dataset'
+def getEntropy(dataset, results):
+
+    proportions = []
+    for result in results:
+        proportions.append(processor.getProportionExamplesForResult(dataset, result))
+
     entropy = 0
-    for p in proportionsForResult:
-        if proportionsForResult[p] != 0:
-            entropy += -proportionsForResult[p] * math.log(proportionsForResult[p],2)
+    for p in proportions:
+        if p != 0:
+            entropy += -p * math.log(p,2)
+
     return entropy
-
 
 ### METODOS AUXILIARES - RATIO DE GANANCIA
 ### ----------------------------------------
 
-# A
-def getGainRatio(datasetLength, examplesForValue, proportionsForValue, proportionsForResult):
-    gainRatio = getGain(datasetLength, examplesForValue, proportionsForValue, proportionsForResult)
-    return gainRatio / getSplitInformation(datasetLength, examplesForValue)
+# Obtener ratio de ganancia de 'attribute' en 'dataset'
+def getGainRatio(dataset, attribute, possibleValues, results):
 
-def getSplitInformation(datasetLength, examplesForValue):
+    gainRatio = getGain(dataset, attribute, possibleValues, results)
+    if getEntropy(dataset, results) != 0:
+        gainRatio /= getSplitInformation(dataset, attribute, possibleValues)
+
+    return gainRatio
+
+# Obtener métrica auxiliar para ratio de ganancia en 'dataset'
+def getSplitInformation(dataset, attribute, possibleValues):
 
     proportions = []
-    for value in examplesForValue:
-        proportions.append(len(examplesForValue[value]) / datasetLength)
+    for value in possibleValues:
+        proportions.append(processor.getProportionExamplesForValue(dataset, attribute, possibleValues, value))
 
     splitInfo = 0
     for p in proportions:
@@ -88,23 +57,28 @@ def getSplitInformation(datasetLength, examplesForValue):
             splitInfo += -p * math.log(p,2)
 
     if splitInfo == 0:
-        return 1
-    else:
-        return splitInfo
+        splitInfo = 1
+
+    return splitInfo
 
 ### METODOS AUXILIARES - REDUCCIÓN DE IMPUREZA
 ### ------------------------------------------
 
-# A
-def getImpurityReduction(datasetLength, examplesForValue, proportionsForValue, proportionsForResult):
+# Obtener reducción de impureza de 'attribute' en 'dataset'
+def getImpurityReduction(dataset, attribute, possibleValues, results):
+    
     entropy = 0
-    for value in examplesForValue:
-        entropy += ((len(examplesForValue[value]) / datasetLength) * getGini(proportionsForValue[value]))
-    return (getGini(proportionsForResult) - entropy)
+    for value in possibleValues:
+        subset = processor.getExamplesForValue(dataset, attribute, possibleValues, value)
+        entropy += ((len(subset.index)/len(dataset.index)) * getGini(subset, results))
 
-# A
-def getGini(proportionsForValue):
+    return (getGini(dataset, results) - entropy)
+
+# Obtener métrica auxiliar para reducción de impureza en 'dataset'
+def getGini(dataset, results):
+
     props2 = 0
-    for result in proportionsForValue:
-        props2 += proportionsForValue[result] ** 2
+    for result in results:
+        props2 += processor.getProportionExamplesForResult(dataset, result) ** 2
+
     return 1 - props2

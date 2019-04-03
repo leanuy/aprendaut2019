@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, ModelOps, ContinuousOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET, MeasureType
+from .const import MenuOps, ModelOps, ContinuousOps, MeasureOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -97,15 +97,15 @@ def printMeasureType():
     try:
         measureType = int( input() )
         if measureType == 1:
-            return MeasureType.GAIN
+            return MeasureOps.GAIN
         elif measureType == 2:
-            return MeasureType.GAINRATIO
+            return MeasureOps.GAINRATIO
         elif measureType == 3:
-            return MeasureType.IMPURITYREDUCTION
-        return MeasureType.GAIN
+            return MeasureOps.IMPURITYREDUCTION
+        return MeasureOps.GAIN
 
     except:
-        return MeasureType.GAIN
+        return MeasureOps.GAIN
 
 # Imprime las opciones de tipo de modelo y lee la opción elegida
 def printModelType():
@@ -171,7 +171,10 @@ def printTrainedClassifier(classifier):
     print("segundos")
 
     print("--> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+
+    print("--> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
 
     print()
 
@@ -204,10 +207,37 @@ def printEvaluationK():
     except:
         return 10
 
-# A
-def printEvaluation(classifier, eval, accuracy, confusionMatrix):
+# Imprime datos de evaluación
+def printEvaluation(classifier, accuracy, means, weightedMeans, eval, confusionMatrix):
+    
     print("-> Accuracy: ", end="")
     print(accuracy)
+    print()
+
+    print("-> Promedio general de métricas: ")
+    (precisionMean, recallMean, falloffMean, FmeasureMean) = means
+    print("--> Precision promediada: ", end="")
+    print(precisionMean)
+    print("--> Recall promediada: ", end="")
+    print(recallMean)        
+    print("--> Fall-off promediada: ", end="")
+    print(falloffMean)
+    print("--> F-Measure promediada: ", end="")
+    print(FmeasureMean)
+    print()
+
+    print("-> Promedio ponderado de métricas: ")
+    (precisionWMean, recallWMean, falloffWMean, FmeasureWMean) = weightedMeans
+    print("--> Precision ponderada: ", end="")
+    print(precisionWMean)
+    print("--> Recall ponderada: ", end="")
+    print(recallWMean)        
+    print("--> Fall-off ponderada: ", end="")
+    print(falloffWMean)
+    print("--> F-Measure ponderada: ", end="")
+    print(FmeasureWMean)
+    print()
+
     print("-> Confusion Matrix: ")
     print()
     printConfusionMatrix(confusionMatrix, classifier['results'])
@@ -217,11 +247,14 @@ def printEvaluation(classifier, eval, accuracy, confusionMatrix):
         print("-> Evaluación para ", end="")
         print(result, end=": ")
         print()
-        (precision, recall, Fmeasure) = eval[result]
+
+        (precision, recall, falloff, Fmeasure) = eval[result]
         print("--> Precision: ", end="")
         print(precision)
         print("--> Recall: ", end="")
         print(recall)        
+        print("--> Fall-off: ", end="")
+        print(falloff)
         print("--> F-Measure: ", end="")
         print(Fmeasure)
         
@@ -258,15 +291,19 @@ def printConfusionMatrix(confusionMatrix, results):
         print()
         print()
 
-# A
-def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLength):
+# Imprime datos genéricos de evaluación normal y llama a printEvaluation
+def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
     print()
     print("MODELO:")
     print()
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
     print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+    print("-> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
+    print("-> Tiempo de entrenamiento: ", end="")
+    print(trainingTime)
     print()
     print("EVALUACIÓN NORMAL (80/20):")
     print()
@@ -276,9 +313,9 @@ def printNormalEvaluation(classifier, eval, accuracy, confusionMatrix, dataLengt
     print("-> Ejemplos de entrenamiento: " + str(trainingLength))
     print("-> Ejemplos de evaluación: " + str(evaluationLength))
     print()
-    printEvaluation(classifier, eval, accuracy, confusionMatrix)
+    printEvaluation(classifier, accuracy, means, weightedMeans, eval, confusionMatrix)
 
-# A
+# Imprime datos genéricos de evaluación cruzada y llama a printEvaluation para cada iteración
 def printCrossEvaluation(classifier, eval, evalMean, dataLength):
     print()
     print("MODELO:")
@@ -286,7 +323,9 @@ def printCrossEvaluation(classifier, eval, evalMean, dataLength):
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
     print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['continuous'])
+    print(classifier['options']['continuous'])
+    print("-> Estrategia de medida: ", end="")
+    print(classifier['options']['measure'])
     print()
     print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
     print()
@@ -300,24 +339,54 @@ def printCrossEvaluation(classifier, eval, evalMean, dataLength):
         print()
         print("--- Partición N° " + str(i+1) + " ---")
         print()
-        (accuracyK, evalK, confusionMatrixK) = eval[i]
-        printEvaluation(classifier, evalK, accuracyK, confusionMatrixK)
+        (trainingTime, accuracyK, meansK, wMeansK, evalK, confusionMatrixK) = eval[i]
+        printEvaluation(classifier, accuracyK, meansK, wMeansK, evalK, confusionMatrixK)
+    
     print()
     print("--- Promedio de Evaluación ---")
     print()
-    (accuracy, metricsMean) = evalMean
+    
+    (accuracy, meansMean, wMeansMean, metricsMean) = evalMean
     print("-> Accuracy: ", end="")
     print(accuracy)
+    print()
+
+    print("-> Promedio de métricas promediadas: ")
+    (precisionMean, recallMean, falloffMean, FmeasureMean) = meansMean
+    print("--> Precision general promediada: ", end="")
+    print(precisionMean)
+    print("--> Recall general promediada: ", end="")
+    print(recallMean)        
+    print("--> Fall-off general promediada: ", end="")
+    print(falloffMean)
+    print("--> F-Measure general promediada: ", end="")
+    print(FmeasureMean)
+    print()
+
+    print("-> Promedio de métricas ponderadas: ")
+    (precisionWMean, recallWMean, falloffWMean, FmeasureWMean) = wMeansMean
+    print("--> Precision general ponderada: ", end="")
+    print(precisionWMean)
+    print("--> Recall general ponderada: ", end="")
+    print(recallWMean)        
+    print("--> Fall-off general ponderada: ", end="")
+    print(falloffWMean)
+    print("--> F-Measure general ponderada: ", end="")
+    print(FmeasureWMean)
+    print()
+
     for result in metricsMean:
         print()
         print("-> Evaluación para ", end="")
         print(result, end=": ")
         print()
-        (precision, recall, Fmeasure) = metricsMean[result]
+        (precision, recall, falloff, Fmeasure) = metricsMean[result]
         print("--> Precision: ", end="")
         print(precision)
         print("--> Recall: ", end="")
-        print(recall)        
+        print(recall)   
+        print("--> Fall-off: ", end="")
+        print(falloff)        
         print("--> F-Measure: ", end="")
         print(Fmeasure)
     print()

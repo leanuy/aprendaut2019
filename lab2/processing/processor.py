@@ -1,213 +1,141 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import math
 import copy
-
-from . import parser
-from . import calculator
+import operator
 
 from utils.const import AttributeType, ContinuousOps
 
-### CLASE PRINCIPAL
-### ------------------
+### METODOS PRINCIPALES - ATRIBUTOS
+### ---------------------------------
 
-class Processor():
+# Devuelve la lista de posibles valores en 'dataset' para 'attribute'
+def getPossibleValues(dataset, attribute):
+    (attributeKey, attributeType) = attribute
+    return dataset[attributeKey].unique().tolist()
 
-    ### CONSTRUCTOR
-    ### -------------------
-
-    def __init__(self, dataset, attributes, results, newAttributes, continuous, measure, datasetLength):
-        (self.dataset, self.df) = dataset
-        self.attributes = attributes
-        self.results = results
-        self.newAttributes = newAttributes
-  
-        self.continuous = continuous
-        self.measure = measure
-
-        self.datasetLength = 0
-        self.isBorderCase = False
-        self.mostLikelyResult = None
-
-        self.intervals = {}
-        self.examplesForValue = {}
-        self.proportionsForValue = {}
-        self.proportionsForResult = {}
-
-    ### GETTERS & SETTERS
-    ### -------------------
-
-    def getDataset(self):
-        return self.dataset
-
-    def getAttributes(self):
-        return self.attributes
-
-    def getResults(self):
-        return self.results
-
-    def getContinuous(self):
-        return self.continuous
-
-    def getMeasure(self):
-        return self.measure
-
-    def getDatasetLength(self):
-        return self.datasetLength
-
-    def setDataset(self, dataset):
-        (self.dataset, self.df) = dataset
-
-    def setResults(self, results):
-        self.results = results
-
-    def setNewAttributes(self, newAttributes):
-        self.newAttributes = newAttributes
-
-    def getIntervals(self):
-        return self.intervals
-
-    ### METODOS PRINCIPALES
-    ### -------------------
-
-    def processNode(self):
-
-        # Reiniciar todo
-        self.datasetLength = len(self.dataset)
-        self.intervals = {}
-        self.examplesForValue = {}
-        self.proportionsForValue = {}
-        self.proportionsForResult = {}
-
-        # Comprobar si es caso borde (ya no hay atributos)
-        if len(self.newAttributes) == 0 or self.datasetLength <= 1:
-            self.isBorderCase = True
-        
-        # Recorrer cada atributo
-        for attributeKey, attributeType in self.attributes:
-
-            # Para generar diccionario de posibles valores para un atributo
-            self.examplesForValue[attributeKey] = {}
-            self.proportionsForValue[attributeKey] = {}
-
-            if attributeType == AttributeType.CONTINUOUS:
-
-                values = self.df[[attributeKey,'class']].sort_values(attributeKey)
-
-                if self.continuous == ContinuousOps.FIXED:
-
-                    median = len(values) // 2
-
-                    self.intervals[attributeKey] = []
-                    self.intervals[attributeKey].append(values[attributeKey][median])
-                    self.intervals[attributeKey].append("bigger")
-
-                elif self.continuous == ContinuousOps.VARIABLE:
-
-                    self.intervals[attributeKey] = []
-                    lastRes = None
-                    lastExample = None
-
-                    for index, value in values.iterrows():
-                        if lastRes != None and value['class'] != lastRes:
-                            self.intervals[attributeKey].append(((float(value[attributeKey]) - float(lastExample)) / 2) + float(lastExample))
-                        lastRes = value['class']
-                        lastExample = value[attributeKey]
-                    self.intervals[attributeKey].append("bigger")
-
-        # Recorrer cada ejemplo del dataset
-        for example in self.dataset:
-
-            # Obtener clasificación en 'example'
-            result = example['class']
-            
-            # Para generar diccionario de proporciones para cada resultado
-            # Si no existe: Generar proporción
-            # Si existe: Sumar 1 a proporción
-            if result not in self.proportionsForResult:
-                self.proportionsForResult[result] = 0
-            self.proportionsForResult[result] += 1
-
-            if not self.isBorderCase:
-              
-                # Recorrer cada entrada del ejemplo
-                for attributeKey, attributeType in self.attributes:
-
-                    # Obtener valor para 'attribute' en 'example'
-                    rawValue = example[attributeKey]
-
-                    # Obtener valor procesado
-                    if attributeType == AttributeType.DISCRETE:
-                        value = rawValue
-                    else:
-                        value = parser.getDiscreteValue(self.intervals[attributeKey], rawValue)
-
-                    # Para generar subsets de ejemplos por valor de un atributo
-                    # Si no existe: Generar lista de ejemplos para 'attribute'='value'
-                    # Si existe: Agregar 'example' a la lista para 'attribute'='value'
-                    if value not in self.examplesForValue[attributeKey]:
-                        self.examplesForValue[attributeKey][value] = []
-                    self.examplesForValue[attributeKey][value].append(example)
-
-                    if value not in self.proportionsForValue[attributeKey]:
-                        self.proportionsForValue[attributeKey][value] = {}
-                    if result not in self.proportionsForValue[attributeKey][value]:
-                        self.proportionsForValue[attributeKey][value][result] = 0
-                    self.proportionsForValue[attributeKey][value][result] += 1
-
-        # Recorrer cada subconjunto y sus proporciones 
-        for attribute in self.proportionsForValue:
-            for value in self.proportionsForValue[attribute]:
-                for result in self.proportionsForValue[attribute][value]:
-                    self.proportionsForValue[attribute][value][result] /= len(self.examplesForValue[attribute][value])
-
-        # Recorrer cada resultado y sus proporciones 
-        for result in self.proportionsForResult:
-            # Dividir conteo sobre largo del dataset para obtener proporción
-            self.proportionsForResult[result] /= self.datasetLength
-
-        # Recorrer cada resultado y sus proporciones 
-        for result in self.proportionsForResult:
-
-            # Comprobar si la clasificación es 1, lo cual implica un caso borde
-            if self.proportionsForResult[result] == 1:
-                self.isBorderCase = True
-                self.mostLikelyResult = (result, self.proportionsForResult[result])
-                break
-
-            # Si no, obtener clasificación más probable
-            else:
-              if self.mostLikelyResult == None:
-                  self.mostLikelyResult = (result, self.proportionsForResult[result])
-              else:
-                  (bestResult, proportion) = self.mostLikelyResult
-                  if proportion < self.proportionsForResult[result]:
-                      self.mostLikelyResult = (result, self.proportionsForResult[result])
-
-    ### METODOS AUXILIARES - ATRIBUTOS
-    ### --------------------------------
-
-    def getBestAttribute(self):
-        return calculator.getBestAttribute(self.datasetLength, self.newAttributes, self.examplesForValue, self.proportionsForValue, self.proportionsForResult, self.continuous, self.measure)
-
-    def getNewAttributes(self, attribute):
-        newAttributes = copy.deepcopy(self.newAttributes)
-        newAttributes.remove(attribute)
-        return newAttributes
-
-    ### METODOS AUXILIARES - EJEMPLOS
-    ### --------------------------------
-
-    def getExamplesForValue(self, attribute, value):
-        return self.examplesForValue[attribute][value]
-
-    ### METODOS AUXILIARES - RESULTADOS
-    ### --------------------------------
-
-    def isMostLikelyResult(self):
-        return self.isBorderCase
-
-    def getMostLikelyResult(self):
-        return self.mostLikelyResult
-
+# A
+def getChangingValues(dataset, attribute):
     
+    possibleValues = []
+    lastResult = None
+    lastExample = None
+        
+    for index in dataset.index:
+        currentResult = dataset.at[index,'class']
+        currentExample = dataset.at[index,attribute]
+        if lastResult != None and currentResult != lastResult and currentExample not in possibleValues:
+            possibleValues.append(currentExample)
+        lastResult = currentResult
+
+    totalValues = len(possibleValues)
+    maxValues = 10
+    if totalValues > maxValues:
+        possibleValues = [x for x in possibleValues if possibleValues.index(x) % (totalValues // maxValues) == 0]
+
+    return possibleValues
+
+# Devuelve la lista de posibles valores (discretizados) en 'dataset' para 'attribute'
+def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
+
+    (attributeKey, attributeType) = attribute
+    sortedDataset = dataset.sort_values(by=[attributeKey])
+    values = getPossibleValues(sortedDataset, attribute)
+    if attributeType == AttributeType.DISCRETE:
+        return values
+    
+    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.FIXED:
+
+        median = len(values) // 2
+
+        possibleValues = []
+        possibleValues.append(values[median])
+        possibleValues.append("bigger")
+        return possibleValues
+
+    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.VARIABLE:
+
+        possibleValues = getChangingValues(sortedDataset, attributeKey)
+        possibleValues.append("bigger")
+        return possibleValues
+        
+    elif attributeType == AttributeType.CONTINUOUS and continuous == ContinuousOps.C45:
+        
+        possibleValues = getChangingValues(sortedDataset, attributeKey)
+
+        bestGain = 0
+        bestThreshold = None
+        for value in possibleValues:
+            valueThreshold = [value, 'bigger']
+            gain = getGain(dataset, attribute, valueThreshold, results)
+            if gain > bestGain:
+                bestGain = gain
+                bestThreshold = value
+                
+        return [bestThreshold, 'bigger']
+
+### METODOS PRINCIPALES - EJEMPLOS
+### ---------------------------------
+
+# Devuelve el subconjunto de 'dataset' con valor 'value' en el atributo 'attribute'
+def getExamplesForValue(dataset, attribute, values, value):
+    (attributeKey, attributeType) = attribute
+
+    if attributeType == AttributeType.CONTINUOUS and value == 'bigger':
+        index = values.index(value)
+        condition = dataset[attributeKey] > values[index-1]
+        return dataset[condition]
+
+    elif attributeType == AttributeType.CONTINUOUS and value != 'bigger':
+        condition = dataset[attributeKey] <= value
+        return dataset[condition]
+
+    else:
+        condition = dataset[attributeKey] == value
+        return dataset[condition]
+
+# Devuelve la frecuencia de ejemplos en 'dataset' con 'attribute'='value'
+def getProportionExamplesForValue(dataset, attribute, values, value):
+    if len(dataset.index) == 0:
+      return 0
+    examples = getExamplesForValue(dataset, attribute, values, value)
+    return len(examples.index) / len(dataset.index)
+
+### METODOS PRINCIPALES - RESULTADOS
+### ---------------------------------
+  
+# Devuelve el resultado de 'results' más frecuente en 'dataset'
+def getMostLikelyResult(dataset, results):
+
+    proportions = getAllProportionExamplesForResults(dataset, results)
+    
+    mostLikelyResult = None
+    mostLikelyProportion = 0
+
+    for key, value in proportions.items():
+        if value >= mostLikelyProportion:
+            mostLikelyResult = key
+            mostLikelyProportion = value
+
+    return (mostLikelyResult, mostLikelyProportion)
+
+# Devuelve la frecuencia de ejemplos en 'dataset' clasificados como 'result'
+def getProportionExamplesForResult(dataset, result):
+    if len(dataset) == 0:
+      return 0
+    condition = dataset['class'] == result
+    examples = dataset[condition]
+    return len(examples) / len(dataset)
+
+# Devuelve las frecuencias de ejemplos en 'dataset' para todos los resultados en 'results'
+def getAllProportionExamplesForResults(dataset, results):
+    resultsHash = {}
+    for result in results:
+        resultsHash[result] = 0
+    for index in dataset.index:
+        resultsHash[dataset.at[index,'class']] += 1
+    proportions = {}
+    for result in results:
+        proportions[result] = resultsHash[result] / len(dataset.index)
+    return proportions

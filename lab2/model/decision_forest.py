@@ -2,55 +2,48 @@
 ### ------------------
 
 import math
-import copy
 import random
 from operator import itemgetter
-import pandas as pd
 
 from .node import Node
 from .decision_tree import id3Train, id3Classify
-
 import processing.reader as reader
 import processing.parser as parser
-
-from utils.const import AttributeType, ContinuousOps, MeasureType
+from utils.const import AttributeType, ContinuousOps
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def id3ForestTrain(processor):
+def id3ForestTrain(dataset, attributes, results, options):
 
-    originalProcessor = copy.deepcopy(processor)
-    print('-', end="")
     forest = {}
-    for result in originalProcessor.getResults():
-        resultDataset = parser.getBooleanDataset(originalProcessor.getDataset(), result)
+    for result in results:
+        resultDataset = parser.getBooleanDataset(dataset, result)
         resultResults = [True, False]
-        newProcessor = copy.deepcopy(processor)
-        newProcessor.setDataset((resultDataset, pd.DataFrame(resultDataset)))
-        newProcessor.setResults(resultResults)
-        forest[result] = id3Train(newProcessor)
+        forest[result] = id3Train(resultDataset, attributes, resultResults, options)
 
     return forest
 
 def id3ForestClassify(forest, example, results):
 
-    clasification = {}
+    classification = {}
     for result in results:
-        clasification[result] = id3Classify(forest[result], example)
+        classification[result] = id3Classify(forest[result], example)
 
-    trueResults = [(key, (value, probability)) for key, (value, probability) in clasification.items() if value == True]
+    trueResults = [(key, (value, probability)) for key, (value, probability) in classification.items() if value == True]
+    
     if len(trueResults) == 1:
         (key, (value, probability)) = trueResults[0]
         return (key, probability)
+    
     elif len(trueResults) > 1:
         (bestKey, (bestValue, bestProbability)) =  max(trueResults,key=itemgetter(1))
-        bestResults = [(key, (value, probability)) for key, (value, probability) in clasification.items() if probability == bestProbability]
+        bestResults = [(key, (value, probability)) for key, (value, probability) in classification.items() if probability == bestProbability]
         if len(bestResults) == 1:
             (key, (value, probability)) = bestResults[0]
         elif len(bestResults) > 1:
             (key, (value, probability)) = random.choice(bestResults)
         return (key, probability)
 
-    # Nunca deberia llegar aca
+    # En el caso de no poder clasificar, elige una clasificación aleatoria pero con baja probabilidad
     return (random.choice(results), 0.1)

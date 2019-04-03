@@ -24,6 +24,12 @@ class ContinuousOps(Enum):
     VARIABLE = 2
     C45 = 3
 
+# Tipos de medidas
+class MeasureOps(Enum):
+    GAIN = 1
+    GAINRATIO = 2
+    IMPURITYREDUCTION = 3
+
 # Estrategias de evaluación
 class EvaluationOps(Enum):
     NORMAL = 1
@@ -34,11 +40,10 @@ class AttributeType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
 
-# Tipos de medidas
-class MeasureType(Enum):
-    GAIN = 0
-    GAINRATIO = 1
-    IMPURITYREDUCTION = 2
+# Configuraciones paramétricas de entrenamiento
+CONTINUOUS = 'continuous'
+MEASURE = 'measure'
 
+# Datasets y sus ubicaciones
 IRIS_DATASET = 'data/iris.arff'
 COVERTYPE_DATASET = 'data/covertype.arff'
