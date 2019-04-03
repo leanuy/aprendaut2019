@@ -6,15 +6,15 @@ from IPython.display import display, clear_output, HTML
 import tabulate
 from ipywidgets import Button, Box, Layout
 
-descriptions_iris = ['Arbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada .',
-  'Arbol del conjunto Iris, GainRatio como medida, trata atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Arbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Arbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Arbol del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Arbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Arbol del conjunto Iris, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Arbol del conjunto Iris, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Arbol del conjunto Iris, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
+descriptions_iris = ['Árbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada .',
+  'Árbol del conjunto Iris, GainRatio como medida, trata atributos continuos partiendo en intervalos fijos. Validación cruzada ',
+  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
+  'Árbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
+  'Árbol del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
+  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
+  'Árbol del conjunto Iris, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
+  'Árbol del conjunto Iris, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
+  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
   'Bosque del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
   'Bosque del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
   'Bosque del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
@@ -26,12 +26,12 @@ descriptions_iris = ['Arbol del conjunto Iris, Ganancia como medida, atributos c
   'Bosque del conjunto Iris, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
   ]
 
-descriptions_covertye = ['Arbol del conjunto CoverType, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20.',
-  'Arbol del conjunto CoverType, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Arbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Arbol del conjunto CoverType, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Arbol del conjunto CoverType, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Arbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
+descriptions_covertye = ['Árbol del conjunto CoverType, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20.',
+  'Árbol del conjunto CoverType, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
+  'Árbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
+  'Árbol del conjunto CoverType, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
+  'Árbol del conjunto CoverType, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
+  'Árbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
   'Bosque del conjunto CoverType, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
   'Bosque del conjunto CoverType, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
   'Bosque del conjunto CoverType, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
@@ -79,8 +79,6 @@ def printIrisData(filename, file_number):
     print()
     print('Descripción: ', end='')
     print(descriptions_iris[file_number - 1])
-    print()
-    display(HTML('<p><strong>Accuracy</strong>: ' + accuracy + '</p>'))
 
     prffm = ' \
         <div> \
@@ -92,12 +90,14 @@ def printIrisData(filename, file_number):
           </style> \
           <table class="tg"> \
             <tr> \
-              <th class="tg-0pky"><strong>Precision mean</strong></th> \
-              <th class="tg-0pky"><strong>Recall mean</strong></th> \
-              <th class="tg-0pky"><strong>Fall-off mean</strong></th> \
-              <th class="tg-0pky"><strong>F-Measure mean</strong></th> \
+              <th class="tg-0pky"><strong>Accuracy</strong></th> \
+              <th class="tg-0pky"><strong>Precision promediada</strong></th> \
+              <th class="tg-0pky"><strong>Recall promediada</strong></th> \
+              <th class="tg-0pky"><strong>Fall-off promediada</strong></th> \
+              <th class="tg-0pky"><strong>F-Measure promediada</strong></th> \
             </tr> \
             <tr> \
+              <td class="tg-0pky">' + accuracy + '</td> \
               <td class="tg-0pky">' + precision + '</td> \
               <td class="tg-0pky">' + recall + '</td> \
               <td class="tg-0pky">' + falloff + '</td> \
@@ -117,10 +117,10 @@ def printIrisData(filename, file_number):
           </style> \
           <table class="tg"> \
             <tr> \
-              <th class="tg-0pky"><strong>Precision weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>Recall weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>Fall-off weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>F-Measure weighted mean</strong></th> \
+              <th class="tg-0pky"><strong>Precision ponderada</strong></th> \
+              <th class="tg-0pky"><strong>Recall ponderada</strong></th> \
+              <th class="tg-0pky"><strong>Fall-off ponderada</strong></th> \
+              <th class="tg-0pky"><strong>F-Measure ponderada</strong></th> \
             </tr> \
             <tr> \
               <td class="tg-0pky">' + precisionW + '</td> \
@@ -196,8 +196,6 @@ def printCovertypeData(filename):
     print()
     print('Descripción: ', end='')
     print(descriptions_covertye[ord(filename[-1]) - 97])
-    print()
-    display(HTML('<p><strong>Accuracy</strong>: ' + accuracy + '</p>'))
 
     prffm = ' \
         <div> \
@@ -209,12 +207,14 @@ def printCovertypeData(filename):
           </style> \
           <table class="tg"> \
             <tr> \
-              <th class="tg-0pky"><strong>Precision mean</strong></th> \
-              <th class="tg-0pky"><strong>Recall mean</strong></th> \
-              <th class="tg-0pky"><strong>Fall-off mean</strong></th> \
-              <th class="tg-0pky"><strong>F-Measure mean</strong></th> \
+              <th class="tg-0pky"><strong>Accuracy</strong></th> \
+              <th class="tg-0pky"><strong>Precision promediada</strong></th> \
+              <th class="tg-0pky"><strong>Recall promediada</strong></th> \
+              <th class="tg-0pky"><strong>Fall-off promediada</strong></th> \
+              <th class="tg-0pky"><strong>F-Measure promediada</strong></th> \
             </tr> \
             <tr> \
+              <td class="tg-0pky">' + accuracy + '</td> \
               <td class="tg-0pky">' + precision + '</td> \
               <td class="tg-0pky">' + recall + '</td> \
               <td class="tg-0pky">' + falloff + '</td> \
@@ -234,10 +234,10 @@ def printCovertypeData(filename):
           </style> \
           <table class="tg"> \
             <tr> \
-              <th class="tg-0pky"><strong>Precision weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>Recall weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>Fall-off weighted mean</strong></th> \
-              <th class="tg-0pky"><strong>F-Measure weighted mean</strong></th> \
+              <th class="tg-0pky"><strong>Precision ponderada</strong></th> \
+              <th class="tg-0pky"><strong>Recall ponderada</strong></th> \
+              <th class="tg-0pky"><strong>Fall-off ponderada</strong></th> \
+              <th class="tg-0pky"><strong>F-Measure ponderada</strong></th> \
             </tr> \
             <tr> \
               <td class="tg-0pky">' + precisionW + '</td> \
