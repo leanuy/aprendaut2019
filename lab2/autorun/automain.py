@@ -80,6 +80,7 @@ if __name__ == '__main__':
 
     resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
     resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".csv"
+    print(resultCSVName)
     if evalMode == EvaluationOps.NORMAL:
         (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
         parser.getEvaluationCSV(resultCSVName, accuracy, means, weightedMeans, eval, confusionMatrix)
