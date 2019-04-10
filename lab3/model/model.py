@@ -152,7 +152,7 @@ class Model():
         return nbTrain(dataset, self.attributes, self.results, self.options)
 
     def classifyNaiveBayes(self, example):
-        return nbClassify(self.classifier, example)
+        return nbClassify(self.classifier, example, self.attributes)
 
     def trainKNN(self, dataset):
         return knnTrain(dataset, self.attributes, self.results, self.options)
