@@ -2,6 +2,7 @@
 ### ------------------
 import math
 import random
+import numpy as np
 import processing.processor as processor
 import processing.calculator as calculator
 from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, MEASURE
@@ -9,7 +10,7 @@ from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, ME
 ### METODOS PRINCIPALES
 ### -------------------
 
-def nbTrain(dataset, attributes, results, options, m_est = 1):
+def nbTrain(dataset, attributes, results, options, m_est = 10):
   # Initialization
   classificator = {}
   amountClass = {}
@@ -27,17 +28,15 @@ def nbTrain(dataset, attributes, results, options, m_est = 1):
       for value in processor.getPossibleValues(dataset, attribute):
         classificator[result][attributeKey][value] = 0
 
-  # Para los atributos continuos Bayes sencillo asume distribución normal y calcula su esperanza y varianza.
-  # The other option is options[CONTINUOUS] == ContinuousOps.VARIABLE:
+  # Para los atributos continuos Bayes sencillo asume distribución normal y calcula su esperanza y desviación estándar.
   if options[CONTINUOUS] == ContinuousOps.STANDARDIZATION:
     for attribute in attributes:
       (attributeKey, attributeType) = attribute
       if attributeType == AttributeType.CONTINUOUS:
         for result in results:
           valuesOfResult = dataset[dataset['class'] == result] # Condition: dataset['class'] == result
-          mean = calculate_mean(valuesOfResult, attributeKey, result)
-          classificator[result][attributeKey]['mean'] = mean
-          classificator[result][attributeKey]['variance'] = calculate_variance(valuesOfResult, attributeKey, mean, result)
+          classificator[result][attributeKey]['mean'] = calculateMean(valuesOfResult, attributeKey)
+          classificator[result][attributeKey]['std_dev'] = calculateStandardDeviation(valuesOfResult, attributeKey)
 
   # Para cada valor de cada atributo se cuenta la ocurrencia de valores.
   for index in dataset.index:
@@ -49,12 +48,12 @@ def nbTrain(dataset, attributes, results, options, m_est = 1):
   
   # Se calculan las probabilidades en base a los resultados del dataset.
   for result in results:
-    for key, values in classificator[result].items():
-      if key != 'total': # key = AttributeKey
-        # Para cada resultado se guarda la proporcion de cada valor para cada atributo que clasificó con dicho resultado
-        for value, count in values.items():
-          classificator[result][key][value] = (classificator[result][key][value] + m_est/len(classificator[result][key])) / (amountClass[result] + m_est)
-
+    for attribute in attributes:
+      (attributeKey, attributeType) = attribute
+      for value in classificator[result][attributeKey]:
+        if value != 'mean' and value != 'std_dev':
+          # Para cada resultado se guarda la proporcion de cada valor para cada atributo que clasificó con dicho resultado
+          classificator[result][attributeKey][value] = (classificator[result][attributeKey][value] + m_est/len(classificator[result][attributeKey])) / (amountClass[result] + m_est)
   return classificator
 
 def nbClassify(classificator, example, attributes):
@@ -65,19 +64,18 @@ def nbClassify(classificator, example, attributes):
       continuousAttributes.append(attributeKey)
 
   probabilitiesResult = {}
-  for result, attributeDict in classificator.items():
+  for result in classificator:
     probabilitiesResult[result] = classificator[result]['total']
   
-  for key, value in example.items():
-    if key != 'class':
-      if key in continuousAttributes:
-        probabilitiesResult[result] *= gaussian_normal(float(value), classificator[result][key]['mean'], classificator[result][key]['variance'])
-      else:
-        probabilitiesResult[result] *= classificator[result][key][value]
-
+  for result in classificator:
+    for key, value in example.items():
+      if key != 'class':
+        if key in continuousAttributes:
+          probabilitiesResult[result] *= gaussianNormal(float(value), classificator[result][key]['mean'], classificator[result][key]['std_dev'])
+        else:
+          probabilitiesResult[result] *= classificator[result][key][value]
   bestProbability = max(probabilitiesResult.values())
-  # print(probabilitiesResult)
-  # print(bestProbability)
+
   # En caso de empate al clasificar junta todos los posibles resultados.
   bestResults = [(i,j) for i,j in probabilitiesResult.items() if j == bestProbability]
   return random.choice(bestResults)
@@ -85,13 +83,11 @@ def nbClassify(classificator, example, attributes):
 ### METODOS AUXILIARES
 ### -------------------
 
-def calculate_mean(valuesOfResult, attribute, result):
-  values = [x/len(valuesOfResult) for x in valuesOfResult[attribute]]
-  return sum(values)
+def calculateMean(valuesOfResult, attribute):
+  return np.mean(valuesOfResult[attribute], axis=0)
 
-def calculate_variance(valuesOfResult, attribute, mean, result):
-  values = [(x - mean) ** 2 for x in valuesOfResult[attribute]]
-  return math.sqrt(sum(values)/(len(values) - 1))
+def calculateStandardDeviation(valuesOfResult, attribute):
+  return np.std(valuesOfResult[attribute], axis=0)
 
-def gaussian_normal(value, mean, variance):
-  return math.exp(-((value-mean)/(2*variance))**2)/(math.sqrt(2*math.pi*variance**2))
+def gaussianNormal(value, mean, std_dev):
+  return math.exp(-((value-mean)/(2*std_dev))**2)/(math.sqrt(2*math.pi*std_dev**2))
