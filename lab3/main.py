@@ -36,7 +36,7 @@ if __name__ == '__main__':
             onehot = gui.printOneHotEncoding(modelType)
 
             model = Model(modelType)
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, onehot)
             options = {
               'k': k,
               'continuous': continuous,

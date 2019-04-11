@@ -14,7 +14,7 @@ from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 
 # Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
 # Si el dataset es CoverType, deshace el one hot encoding de sus atributos
-def readDataset(filename, isCovertype = False):
+def readDataset(filename, isCovertype = False, onehot = False):
 
     if not isCovertype:
         data, meta = arff.loadarff(filename)
@@ -65,21 +65,25 @@ def readDataset(filename, isCovertype = False):
             convertedObject.loc[:,col] = dataObject[col].astype('int')
         convertedObject = dataObject.apply(pd.to_numeric,downcast='unsigned')
 
-        # Optimización de one hot encoding
-        attribute1 = convertedObject.iloc[:, :4]
-        attribute2 = convertedObject.iloc[:, 4:]
+        if onehot:
+            # Optimización de one hot encoding
+            attribute1 = convertedObject.iloc[:, :4]
+            attribute2 = convertedObject.iloc[:, 4:]
 
-        attribute1 = attribute1[attribute1==1].stack().reset_index().drop(0,1)
-        attribute1 = attribute1['level_1']
-        attribute1 = attribute1.apply(getColumnValue).astype('uint8')
-        attribute1 = attribute1.astype('uint8')
-        optimizedData['wilderness_area'] = attribute1
+            attribute1 = attribute1[attribute1==1].stack().reset_index().drop(0,1)
+            attribute1 = attribute1['level_1']
+            attribute1 = attribute1.apply(getColumnValue).astype('uint8')
+            attribute1 = attribute1.astype('uint8')
+            optimizedData['wilderness_area'] = attribute1
 
-        attribute2 = attribute2[attribute2==1].stack().reset_index().drop(0,1)
-        attribute2 = attribute2['level_1']
-        attribute2 = attribute2.apply(getColumnValue)
-        attribute2 = attribute2.astype('uint8')
-        optimizedData['soil_type'] = attribute2
+            attribute2 = attribute2[attribute2==1].stack().reset_index().drop(0,1)
+            attribute2 = attribute2['level_1']
+            attribute2 = attribute2.apply(getColumnValue)
+            attribute2 = attribute2.astype('uint8')
+            optimizedData['soil_type'] = attribute2
+        
+        else:
+            optimizedData[convertedObject.columns] = convertedObject
 
         # Optimización de category
         dataClassification = data['class']
