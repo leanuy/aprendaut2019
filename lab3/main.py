@@ -109,9 +109,10 @@ if __name__ == '__main__':
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
             onehot = gui.printOneHotEncoding(modelType)
+            evalMode = gui.printEvaluationMode()
 
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
             model = Model(modelType)
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
             options = {
               'k': k,
               'continuous': continuous,
@@ -119,9 +120,6 @@ if __name__ == '__main__':
               'norm': norm,
               'onehot': onehot,
             }
-
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
-            model = Model(modelType)
 
             classifier = {
                 'model': model,
@@ -131,8 +129,7 @@ if __name__ == '__main__':
                 'name': modelName,
                 'options': options,
             }
-
-            evalMode = gui.printEvaluationMode()
+            classifiers.append(classifier)
 
             if evalMode == EvaluationOps.NORMAL:
                 (trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix) = normalValidation(dataset, classifier)
