@@ -86,7 +86,7 @@ def printClassifiers(classifiers):
 
         if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
             print("   Estrategia de one hot encoding: ", end="")
-            print(c['options']['onehot'])
+            print(c['options']['revertOnehot'])
 
         index = index + 1
         
@@ -356,7 +356,7 @@ def printTrainedClassifier(classifier):
 
     if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
         print("--> Estrategia de one hot encoding: ", end="")
-        print(classifier['options']['onehot'])
+        print(classifier['options']['revertOnehot'])
 
     print()
 
