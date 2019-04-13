@@ -127,7 +127,7 @@ def distance(example, point, attributes, distanceType, norm):
         point = point.drop('class')
 
     if distanceType == DistanceOps.MANHATTAN:
-        pass
+        return np.sum(np.absolute(np.subtract(example, point)), axis = 0)
     
     elif distanceType == DistanceOps.EUCLIDEAN:
         return np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
