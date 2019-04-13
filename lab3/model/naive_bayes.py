@@ -13,7 +13,6 @@ from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, ME
 ### -------------------
 
 def nbTrain(dataset, attributes, results, options):
-    print(options['mEst'])
     # Inicialización
     classificator = {}
     amountClass = {}
