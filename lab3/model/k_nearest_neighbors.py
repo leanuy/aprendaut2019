@@ -115,7 +115,7 @@ def knnClassify(classifier, example):
 
     ordered.sort(key = lambda x: x[1])
 
-    return classification(ordered[0:classifier['k']], classifier['results'])
+    return classification(ordered[0:classifier['k']], classifier['results'], classifier['norm'])
 
 
 def distance(example, point, attributes, distanceType, norm):
@@ -138,14 +138,18 @@ def distance(example, point, attributes, distanceType, norm):
     elif distanceType == DistanceOps.MAHALANOBIS:
         pass
 
-def classification(k_nearest, results):
+def classification(k_nearest, results, norm):
     classes = {}
+
     for res in results:
         if res not in classes.keys():
             classes[res] = 0
     
     for n in k_nearest:
-        classes[n[0]['class']] += 1
+        if norm == NormOps.EUCLIDEAN:
+            classes[n[0]['class_col']] += 1
+        else:
+            classes[n[0]['class']] += 1
     
     winner = None
     max_class = -1
