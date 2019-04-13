@@ -294,29 +294,17 @@ def printNormType(modelType):
         except:
             return NormOps.EUCLIDEAN
 
-# Imprime las opciones posibles para el m estimador y lee la opción elegida
+# Imprime las opciones de m estimator y lee la opción elegida
 def printMEstimator(modelType):
-
     if modelType != ModelOps.NAIVE_BAYES:
         return 1
-
     else:
         print ("")
-        print ("-> Elija un valor para el m estimador: ")
+        print ("-> Asigne un valor para el m estimador (0..n): ")
         print ("-> DEFAULT: 1")
-        print ("1. 1")
-        print ("2. 10")
-        print ("3. 100")
-
         try:
-            mEst = int( input() )
-            if mEst == 1:
-                return 1
-            elif mEst == 2:
-                return 10
-            elif mEst == 3:
-                return 100
-            return 1
+            evaluationK = abs(int( input() ))
+            return evaluationK
         except:
             return 1
 
@@ -361,6 +349,10 @@ def printTrainedClassifier(classifier):
     if modelType == ModelOps.KNN:
         print("--> Estrategia de normalización: ", end="")
         print(classifier['options']['norm'])
+
+    if modelType == ModelOps.NAIVE_BAYES:
+        print("--> Valor del m estimador: ", end="")
+        print(classifier['options']['mEst'])
 
     if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
         print("--> Estrategia de one hot encoding: ", end="")

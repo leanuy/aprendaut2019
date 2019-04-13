@@ -34,7 +34,7 @@ if __name__ == '__main__':
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
             mEst = gui.printMEstimator(modelType)
-            onehot = gui.printOneHotEncoding(modelType)
+            revertOnehot = gui.printOneHotEncoding(modelType)
 
             model = Model(modelType)
             (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
               'continuous': continuous,
               'measure': measure,
               'norm': norm,
-              'onehot': onehot,
+              'revertOnehot': revertOnehot,
               'mEst': mEst,
             }
 
@@ -111,17 +111,17 @@ if __name__ == '__main__':
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
             mEst = gui.printMEstimator(modelType)
-            onehot = gui.printOneHotEncoding(modelType)
+            revertOnehot = gui.printOneHotEncoding(modelType)
             evalMode = gui.printEvaluationMode()
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)   
+            (dataset, attributes, results) = reader.readDataset(datasetFile, revertOnehot)   
             model = Model(modelType)
             options = {
               'k': k,
               'continuous': continuous,
               'measure': measure,
               'norm': norm,
-              'onehot': onehot,
+              'revertOnehot': revertOnehot,
               'mEst': mEst,
             }
 

@@ -14,39 +14,9 @@ from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 
 # Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
 # Si el dataset es CoverType, deshace el one hot encoding de sus atributos
-def readDataset(filename, isCovertype = False):
+def readDataset(filename, revertOnehot = True):
 
-    if not isCovertype:
-        data, meta = arff.loadarff(filename)
-        data = pd.DataFrame(data)
-
-        attributes = getAttributes(meta)
-        results = getResults(data)
-
-        # Optimización de float
-        dataFloat = data.select_dtypes(include=['float'])
-        convertedFloat = dataFloat.apply(pd.to_numeric,downcast='float')
-
-        # Optimización de int
-        dataObject = data.select_dtypes(include=['object']).copy()
-        dataObject = dataObject.drop(columns=['class'])
-        convertedObject = pd.DataFrame()
-        for col in dataObject.columns:
-            convertedObject.loc[:,col] = dataObject[col].astype('int')
-        convertedObject = dataObject.apply(pd.to_numeric,downcast='unsigned')
-
-        # Optimización de category
-        dataClassification = data['class']
-        convertedClassification = dataClassification.astype('category')
-
-        optimizedData = data.copy()
-        optimizedData[convertedFloat.columns] = convertedFloat
-        optimizedData[convertedObject.columns] = convertedObject
-        optimizedData['class'] = convertedClassification
-
-        return (optimizedData, attributes, results)
-
-    else:
+    if revertOnehot:
         data, meta = arff.loadarff(filename)
         data = pd.DataFrame(data)
 
@@ -88,6 +58,36 @@ def readDataset(filename, isCovertype = False):
 
         attributes = getAttributesDecoded(optimizedData.columns)
         results = getResults(data)
+
+        return (optimizedData, attributes, results)
+        
+    else:
+        data, meta = arff.loadarff(filename)
+        data = pd.DataFrame(data)
+
+        attributes = getAttributes(meta)
+        results = getResults(data)
+
+        # Optimización de float
+        dataFloat = data.select_dtypes(include=['float'])
+        convertedFloat = dataFloat.apply(pd.to_numeric,downcast='float')
+
+        # Optimización de int
+        dataObject = data.select_dtypes(include=['object']).copy()
+        dataObject = dataObject.drop(columns=['class'])
+        convertedObject = pd.DataFrame()
+        for col in dataObject.columns:
+            convertedObject.loc[:,col] = dataObject[col].astype('int')
+        convertedObject = dataObject.apply(pd.to_numeric,downcast='unsigned')
+
+        # Optimización de category
+        dataClassification = data['class']
+        convertedClassification = dataClassification.astype('category')
+
+        optimizedData = data.copy()
+        optimizedData[convertedFloat.columns] = convertedFloat
+        optimizedData[convertedObject.columns] = convertedObject
+        optimizedData['class'] = convertedClassification
 
         return (optimizedData, attributes, results)
 

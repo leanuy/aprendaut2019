@@ -20,7 +20,9 @@ def normalValidation(dataset, classifier):
 
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
+    tic = time.time()
     classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
+    toc = time.time()
     print("-> FIN DEL ENTRENAMIENTO")
     print()
 
