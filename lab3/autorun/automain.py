@@ -141,7 +141,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     ### LECTURA
-    (dataset, attributes, results) = reader.readDataset(datasetFile, revertOnehot)
+    (dataset, attributes, results) = reader.readDataset(datasetFile, (datasetFile == '../' + COVERTYPE_DATASET), revertOnehot)
 
     ### CONFIGURACIÓN
     model = Model(modelType)

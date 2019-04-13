@@ -473,20 +473,42 @@ def printConfusionMatrix(confusionMatrix, results):
         print()
         print()
 
-# Imprime datos genéricos de evaluación normal y llama a printEvaluation
-def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
+def printDataFromModel(classifier, trainingTime):
     print()
     print("MODELO:")
     print()
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
-    print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['options']['continuous'])
-    print("-> Estrategia de medida: ", end="")
-    print(classifier['options']['measure'])
+
+    if classifier['name'] == 'Arbol' or classifier['name'] == 'Árbol' or classifier['name'] == 'Bosque':
+        print("-> Estrategia de atributos continuos: ", end="")
+        print(classifier['options']['continuous'])
+        print("-> Estrategia de medida: ", end="")
+        print(classifier['options']['measure'])
+    else:
+        print("-> Se deshizo el one-hot encoding: ", end="")
+        print(classifier['options']['revertOnehot'])
+    
+    if classifier['name'] == 'Bayes':
+        print("-> Estrategia de atributos continuos: ", end="")
+        print(classifier['options']['continuous'])
+        print("-> Valor del m estimator: ", end="")
+        print(classifier['options']['mEst'])
+    elif classifier['name'] == 'KNN':
+        print("-> Valor del k (vecinos): ", end="")
+        print(classifier['options']['k'])
+        print("-> Estrategia de medida: ", end="")
+        print(classifier['options']['measure'])
+        print("-> Estrategia de norma: ", end="")
+        print(classifier['options']['norm'])
+    
     print("-> Tiempo de entrenamiento: ", end="")
     print(trainingTime)
     print()
+
+# Imprime datos genéricos de evaluación normal y llama a printEvaluation
+def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
+    printDataFromModel(classifier, trainingTime)
     print("EVALUACIÓN NORMAL (80/20):")
     print()
     trainingLength = (dataLength // 5) * 4
@@ -499,16 +521,7 @@ def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMea
 
 # Imprime datos genéricos de evaluación cruzada y llama a printEvaluation para cada iteración
 def printCrossEvaluation(classifier, eval, evalMean, dataLength):
-    print()
-    print("MODELO:")
-    print()
-    print("-> Modelo Entrenado: ", end="")
-    print(classifier['name'])
-    print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['options']['continuous'])
-    print("-> Estrategia de medida: ", end="")
-    print(classifier['options']['measure'])
-    print()
+    printDataFromModel(classifier, trainingTime)
     print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
     print()
     trainingLength = (dataLength // len(eval)) * (len(eval) - 1)

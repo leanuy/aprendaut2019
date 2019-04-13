@@ -114,7 +114,7 @@ if __name__ == '__main__':
             revertOnehot = gui.printOneHotEncoding(modelType)
             evalMode = gui.printEvaluationMode()
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile, revertOnehot)   
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, revertOnehot)
             model = Model(modelType)
             options = {
               'k': k,

@@ -66,6 +66,9 @@ def nbTrain(dataset, attributes, results, options):
         for attributeKey, attributeType in attributes:
             for value in classificator[result][attributeKey]:
                 if value != 'mean' and value != 'std':
+                    print(len(classificator[result][attributeKey]))
+                    print(len(processor.getPossibleValues(dataset, attribute)))
+                    print()
                     # Para cada resultado se guarda la proporcion de cada valor para cada atributo que clasificó con dicho resultado
                     classificator[result][attributeKey][value] += mEst/len(classificator[result][attributeKey])
                     classificator[result][attributeKey][value] /= amountClass[result] + mEst

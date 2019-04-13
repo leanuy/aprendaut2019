@@ -14,9 +14,9 @@ from utils.const import AttributeType, IRIS_DATASET, COVERTYPE_DATASET
 
 # Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
 # Si el dataset es CoverType, deshace el one hot encoding de sus atributos
-def readDataset(filename, revertOnehot = True):
+def readDataset(filename, isCovertype = True, revertOnehot = True):
 
-    if revertOnehot:
+    if revertOnehot and isCovertype:
         data, meta = arff.loadarff(filename)
         data = pd.DataFrame(data)
 
