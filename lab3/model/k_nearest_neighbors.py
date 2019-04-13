@@ -1,12 +1,8 @@
 ### DEPENDENCIAS
 ### ------------------
-import math
-import random
-import pandas as pd
 import numpy as np
-from scipy import stats
 
-from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, DistanceOps, NormOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
+from utils.const import MeasureOps, DistanceOps, NormOps
 
 ### METODOS PRINCIPALES
 ### -------------------
@@ -109,13 +105,18 @@ def knnClassify(classifier, example):
 
     ordered = []
     dataset = classifier['dataset'].reset_index()
-    for index in dataset.index:
-        point = dataset.iloc[index, :]
-        ordered.append([point, distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm'])])
 
-    ordered.sort(key = lambda x: x[1])
+    distances = dataset.apply(lambda point: distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm']), axis = 1)
+    dataset = dataset.assign(distances=distances)
+    
+    dataset = dataset.sort_values('distances')
+   
+    if classifier['norm'] == NormOps.EUCLIDEAN:
+        winners = dataset.loc[:, 'class_col'].tolist()
+    else:
+        winners = dataset.loc[:, 'class'].tolist()
 
-    return classification(ordered[0:classifier['k']], classifier['results'], classifier['norm'])
+    return classification(winners[0:classifier['k']], classifier['results'], classifier['norm'])
 
 
 def distance(example, point, attributes, distanceType, norm):
@@ -144,18 +145,15 @@ def classification(k_nearest, results, norm):
     for res in results:
         if res not in classes.keys():
             classes[res] = 0
-    
+        
     for n in k_nearest:
-        if norm == NormOps.EUCLIDEAN:
-            classes[n[0]['class_col']] += 1
-        else:
-            classes[n[0]['class']] += 1
-    
+        classes[n] += 1
+
     winner = None
     max_class = -1
     for res in classes.keys():
         if classes[res] > max_class:
             max_class = classes[res]
             winner = res
-
+    
     return winner, max_class / len(results)
