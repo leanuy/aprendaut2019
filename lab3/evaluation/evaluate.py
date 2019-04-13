@@ -26,13 +26,11 @@ def normalValidation(dataset, classifier):
     print("-> FIN DEL ENTRENAMIENTO")
     print()
 
-    print()
     print("-> COMIENZO DE LA CLASIFICACIÓN")
     resultSet = classifier['model'].classifySet(evaluationSet)
     print("-> FIN DE LA CLASIFICACIÓN")
     print()
 
-    print()
     print("-> COMIENZO DE LA EVALUACIÓN")
     evaluation = getEvaluation(resultSet, evaluationSet, classifier['results'], toc-tic)
     print("-> FIN DE LA EVALUACIÓN")
