@@ -300,10 +300,10 @@ def printMEstimator(modelType):
         return 1
     else:
         print ("")
-        print ("-> Asigne un valor para el m estimador (0..n): ")
+        print ("-> Asigne un valor real para el m estimador (0..n) Ej: 0.5: ")
         print ("-> DEFAULT: 1")
         try:
-            evaluationK = abs(int( input() ))
+            evaluationK = abs(float( input() ))
             return evaluationK
         except:
             return 1

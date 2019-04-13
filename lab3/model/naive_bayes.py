@@ -41,7 +41,7 @@ def nbTrain(dataset, attributes, results, options):
             # Atributo es discreto
             else:
                 for value in processor.getPossibleValues(dataset, attribute):
-                    classificator[result][attributeKey][value] = 0               
+                    classificator[result][attributeKey][value] = 0
 
     # Para cada valor de cada atributo se cuenta la ocurrencia de valores
     for index in dataset.index:
@@ -55,7 +55,7 @@ def nbTrain(dataset, attributes, results, options):
                 value = dataset.at[index, attributeKey]
                 intervals = list(classificator[result][attributeKey].keys())
                 interval = processor.getIntervalForValue(value, intervals)
-                classificator[result][attributeKey][interval] += 1 
+                classificator[result][attributeKey][interval] += 1
             # Atributo es discreto
             else:   
                 value = dataset.at[index, attributeKey]

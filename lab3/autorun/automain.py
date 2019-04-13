@@ -111,11 +111,11 @@ if __name__ == '__main__':
         # Bayes:
         if modelType == ModelOps.NAIVE_BAYES:
             (continuous, continuousOut) = continuousStrategiesBayes[int(sys.argv[5])]
-            mEst = abs(int(sys.argv[6]))
+            mEst = abs(float(sys.argv[6]))
 
             # Results filenames
-            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ".dat"
-            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ".csv"
+            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".dat"
+            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".csv"
             
         if modelType == ModelOps.KNN:
             k = abs(int(sys.argv[5]))
@@ -123,8 +123,8 @@ if __name__ == '__main__':
             (norm, normOut) = normStrategies[int(sys.argv[7])]
 
             # Results filenames
-            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ".dat"
-            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ".csv"
+            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
+            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
         
         print(resultCSVName)
 
