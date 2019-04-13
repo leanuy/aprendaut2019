@@ -133,7 +133,7 @@ def distance(example, point, attributes, distanceType, norm):
         return np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
 
     elif distanceType == DistanceOps.CHEBYCHEV:
-        pass
+        return np.max(np.absolute(np.subtract(example, point)), axis = 0)
 
     elif distanceType == DistanceOps.MAHALANOBIS:
         pass
