@@ -1,101 +1,157 @@
 ### DEPENDENCIAS
 ### ------------------
+import math
+import random
+import pandas as pd
+import numpy as np
+from scipy import stats
 
+from utils.const import MenuOps, ModelOps, ContinuousOps, MeasureOps, DistanceOps, NormOps, EvaluationOps, IRIS_DATASET, COVERTYPE_DATASET
 
 ### METODOS PRINCIPALES
 ### -------------------
 
 def knnTrain(dataset, attributes, results, options):
-    # for index in dataset.index:
-    #     for attr in attributes:
-    #         print(dataset.at[index, attr[0]], ',', end='')
-    #     print()
 
+    to_return = {}
+
+    k = options['k']
+    distanceType = options['measure']
+    norm = options['norm']
+
+    to_return['k'] = k
+    to_return['distance'] = distanceType
+    to_return['norm'] = norm
+    to_return['attributes'] = attributes
+    to_return['results'] = results
     
-    print(len(attributes))
-    print(len(results))
-    return
-    knn_ds = list(ds)
-    knn_ds_2 = list(ds)
-    to_return = {'dataset': dataset}
+    if norm == NormOps.NONE:
+        to_return['dataset'] = dataset
+     
+    elif norm == NormOps.EUCLIDEAN:
+        modifiedDataset = dataset.copy()
+        modifiedDataset = modifiedDataset.drop(columns=['class'])
+        modifiedDataset = modifiedDataset.apply(lambda row: np.divide(row, np.sqrt(sum(np.power(row, 2)))), axis = 1)
+        classes = dataset.loc[:, 'class']
+        modifiedDataset = modifiedDataset.assign(class_col=classes)
+        to_return['dataset'] = modifiedDataset
 
+    elif norm == NormOps.Z_SCORE or norm == NormOps.MIN_MAX:
+        mean_dict = {}
+        std_dict = {}
+        max_dict = {}
+        min_dict = {}
+        for attr in attributes:
+            (key, attrType) = attr
+            data_column = dataset.loc[:,key]
+            if norm == NormOps.Z_SCORE:
+                mean_dict[key] = np.mean(data_column, axis=0)
+                std_dict[key] = np.std(data_column, axis=0)
+            elif norm == NormOps.MIN_MAX:
+                max_dict[key] = np.max(data_column, axis=0)
+                min_dict[key] = np.min(data_column, axis=0)
 
-    for att in normAtts:
-        if normOption == 1:
-            to_return['normalize']= ('1',normalize(knn_ds_2, att))
-        elif normOption == 2:
-            to_return['normalize']= ('2',min_max_normalize(knn_ds_2, att))
-        elif normOption == 3:
-            to_return['normalize']= ('3',z_normalize(knn_ds_2, att))
-
-    if not isEvaluating:
-	    one_hot = []
-	    one_hot.append(('gender',one_hot_encode(knn_ds,'gender')))
-	    one_hot.append(('ethnicity',one_hot_encode(knn_ds,'ethnicity')))
-	    one_hot.append(('contry_of_res',one_hot_encode(knn_ds,'contry_of_res')))
-	    one_hot.append(('relation',one_hot_encode(knn_ds,'relation')))
-	    one_hot.append(('used_app_before',one_hot_encode(knn_ds,'used_app_before')))
-	    one_hot.append(('jundice',one_hot_encode(knn_ds,'jundice')))
-	    one_hot.append(('austim',one_hot_encode(knn_ds,'austim')))
-	    one_hot.append(('age_desc',one_hot_encode(knn_ds,'age_desc')))
-	    to_return['one_hot'] = one_hot
+        modifiedDataset = dataset.copy()
+        if norm == NormOps.Z_SCORE:
+            modifiedDataset = dataset.copy()
+            for index in modifiedDataset.index:
+                for attr in attributes:
+                    (key, attrType) = attr
+                    element = modifiedDataset.at[index, key]
+                    element -= mean_dict[key]
+                    element /= std_dict[key]
+                    modifiedDataset.at[index, key] = element
+            
+            to_return['dataset'] = modifiedDataset
+            to_return['mean'] = mean_dict
+            to_return['std'] = std_dict
+        elif norm == NormOps.MIN_MAX:
+            for index in modifiedDataset.index:
+                for attr in attributes:
+                    (key, attrType) = attr
+                    element = modifiedDataset.at[index, key]
+                    element -= min_dict[key]
+                    element /= (max_dict[key] + min_dict[key])
+                    modifiedDataset.at[index, key] = element
+            
+            to_return['dataset'] = modifiedDataset
+            to_return['max'] = max_dict
+            to_return['min'] = min_dict
 
     return to_return
 
-def knnClassify(classifier, example, results):
-    pass
-    # k_nearest = []
 
-	# normAtts = ['age']
-	
-	# for att in normAtts:
-	# 	if example[att] != '?':
-	# 		if classifier['normalize'][0] == '1' :
-	# 			example[att] = example[att] / classifier['normalize'][1]
-	# 		elif classifier['normalize'][0] == '2' :
-	# 			(min_val, max_val) = classifier['normalize'][1]
-	# 			example[att] = (example[att] - min_val) /(max_val-min_val)
-	# 		elif classifier['normalize'][0] == '3' :
-	# 			(mean, std) = classifier['normalize'][1]
-	# 			example[att] = (example[att] - mean) / std
+def knnClassify(classifier, example):
 
-	# for x in classifier['dataset']:
-	# 	distance = get_distance(x, example, missingOption)
-	# 	if not math.isnan(distance):
-	# 		k_nearest.append({'ejemplo': x, 'distancia': distance})
+    example = example.drop('class')
 
-	# k_nearest = sorted(k_nearest, key=itemgetter('distancia'))[:k]
-	# suma_pos = len( [ x for x in k_nearest if x['ejemplo']['truth'] ] )
-	# suma_neg = len( [ x for x in k_nearest if not x['ejemplo']['truth'] ] )
+    if classifier['norm'] == NormOps.EUCLIDEAN:
+        example = np.divide(example, np.sqrt(sum(np.power(example, 2))))
 
-	# return suma_pos > suma_neg
+    elif classifier['norm'] == NormOps.Z_SCORE:
+        for attr in classifier['attributes']:
+            (key, attrType) = attr
+            value = example[key]
+            value -= classifier['mean'][key]
+            value /= classifier['std'][key]
+            example[key] = value
 
-def entrenar(self,ejemplos, atributo_objetivo, atributos):
-    self.ejemplos = ejemplos
-    self.atributo_objetivo = atributo_objetivo
-    self.atributos = atributos
-    self.maximos, self.minimos = valores_maximos_minimos_atributos(ejemplos, atributos)
+    elif classifier['norm'] == NormOps.MIN_MAX:
+        for attr in classifier['attributes']:
+            (key, attrType) = attr
+            value = example[key]
+            value -= classifier['min'][key]
+            value /= (classifier['max'][key] + classifier['min'][key])
+            example[key] = value
+   
+    elif classifier['norm'] == NormOps.NONE:
+        pass
+
+    ordered = []
+    dataset = classifier['dataset'].reset_index()
+    for index in dataset.index:
+        point = dataset.iloc[index, :]
+        ordered.append([point, distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm'])])
+
+    ordered.sort(key = lambda x: x[1])
+
+    return classification(ordered[0:classifier['k']], classifier['results'])
 
 
-def clasificar(self, ejemplo):
-    ordenado = deepcopy(self.ejemplos)
-    #ordeno los ejemplos segun la distancia a ejemplo
-    ordenado = self.ordenar(ordenado, self.atributos, ejemplo)
+def distance(example, point, attributes, distanceType, norm):
 
-    valores = []
-    # separo los k vecinos cercanos y obtengo el valor del objetivo.
-    for n in ordenado[0:self.k]:
-        valores.append(n[self.atributo_objetivo.get_pos()])
+    point = point.drop('index')
+    if norm == NormOps.EUCLIDEAN:
+        point = point.drop('class_col')
+    else:
+        point = point.drop('class')
 
-    #retorno el valor mas comun
-    return objetivo_mas_comun(valores)
+    if distanceType == DistanceOps.MANHATTAN:
+        pass
+    
+    elif distanceType == DistanceOps.EUCLIDEAN:
+        return np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
 
-#ordena un conjunto de ejemplos respecto a la distancia a un ejemplo
-def ordenar(self, ejemplos, atributos, ejemplo):
-    # aca cargar los mas comunes
-    comunes = valores_mas_comunes_para_cada_atributo(ejemplos, atributos)
-    ordenados = []
-    for e in ejemplos:
-        ordenados.append([e, distancia1(ejemplo, e, atributos, comunes, self.maximos, self.minimos)])
-    ordenados.sort(key = lambda x: x[1])
-    return [x[0] for x in ordenados]
+    elif distanceType == DistanceOps.CHEBYCHEV:
+        pass
+
+    elif distanceType == DistanceOps.MAHALANOBIS:
+        pass
+
+def classification(k_nearest, results):
+    classes = {}
+    for res in results:
+        if res not in classes.keys():
+            classes[res] = 0
+    
+    for n in k_nearest:
+        classes[n[0]['class']] += 1
+    
+    winner = None
+    max_class = -1
+    for res in classes.keys():
+        if classes[res] > max_class:
+            max_class = classes[res]
+            winner = res
+
+    return winner, max_class / len(results)
