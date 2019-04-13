@@ -18,21 +18,42 @@ def normalValidation(dataset, classifier):
     (trainingSet, evaluationSet) = splitDataset(shuffled, 0.8)
     evaluationSet.drop(columns=['class'])
 
+    print("Train: " + str(len(trainingSet)))
+    print("Eval: " + str(len(evaluationSet)))
+
     print()
     print("-> COMIENZO DEL ENTRENAMIENTO")
     tic = time.time()
     classifier['model'].train(trainingSet, classifier['attributes'], classifier['results'], classifier['options'])
     toc = time.time()
     print("-> FIN DEL ENTRENAMIENTO")
+    print(toc-tic)
     print()
 
+    print()
     print("-> COMIENZO DE LA CLASIFICACIÓN")
+
+    tic2 = time.time()
     resultSet = classifier['model'].classifySet(evaluationSet)
+    toc2 = time.time()
+
     print("-> FIN DE LA CLASIFICACIÓN")
+    print(toc2-tic2)
+    print()
+
+    print()
+    print("-> COMIENZO DE LA EVALUACIÓN")
+
+    tic2 = time.time()
+    evaluation = getEvaluation(resultSet, evaluationSet, classifier['results'], toc-tic)
+    toc2 = time.time()
+
+    print("-> FIN DE LA EVALUACIÓN")
+    print(toc2-tic2)
     print()
 
     print("-> COMIENZO DE LA EVALUACIÓN")
-    evaluation = getEvaluation(resultSet, evaluationSet, classifier['results'], toc-tic)
+    
     print("-> FIN DE LA EVALUACIÓN")
     print()
 

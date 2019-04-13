@@ -33,6 +33,7 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
+            mEst = gui.printMEstimator(modelType)
             onehot = gui.printOneHotEncoding(modelType)
 
             model = Model(modelType)
@@ -43,6 +44,7 @@ if __name__ == '__main__':
               'measure': measure,
               'norm': norm,
               'onehot': onehot,
+              'mEst': mEst,
             }
 
             print()
@@ -108,10 +110,11 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
+            mEst = gui.printMEstimator(modelType)
             onehot = gui.printOneHotEncoding(modelType)
             evalMode = gui.printEvaluationMode()
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)   
             model = Model(modelType)
             options = {
               'k': k,
@@ -119,6 +122,7 @@ if __name__ == '__main__':
               'measure': measure,
               'norm': norm,
               'onehot': onehot,
+              'mEst': mEst,
             }
 
             classifier = {

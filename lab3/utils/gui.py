@@ -294,6 +294,32 @@ def printNormType(modelType):
         except:
             return NormOps.EUCLIDEAN
 
+# Imprime las opciones posibles para el m estimador y lee la opción elegida
+def printMEstimator(modelType):
+
+    if modelType != ModelOps.NAIVE_BAYES:
+        return 1
+
+    else:
+        print ("")
+        print ("-> Elija un valor para el m estimador: ")
+        print ("-> DEFAULT: 1")
+        print ("1. 1")
+        print ("2. 10")
+        print ("3. 100")
+
+        try:
+            mEst = int( input() )
+            if mEst == 1:
+                return 1
+            elif mEst == 2:
+                return 10
+            elif mEst == 3:
+                return 100
+            return 1
+        except:
+            return 1
+
 # Imprime las opciones de vecinos y lee la opción elegida
 def printOneHotEncoding(modelType):
     if modelType == ModelOps.DECISION_TREE or modelType == ModelOps.DECISION_FOREST:

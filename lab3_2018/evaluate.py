@@ -18,6 +18,9 @@ def normal_validation(ds, model):
             fill_missing_values(dataset, get_attributes_from_dataset(dataset))
 
     (train, evaluate) = split_data(dataset, 20, 0.8)
+
+    print("Training with: " + str(len(train) + " elements")
+    print("Evaluating with: " + str(len(evaluate) + " elements")
     
     classify_array = []
     for example in evaluate:
@@ -25,8 +28,27 @@ def normal_validation(ds, model):
         d.pop('truth', None)
         classify_array.append(d)
 
+    print()
+    print("-> COMIENZO DE ENTRENAMIENTO")
+
+    tic = time.time()
     model['model'].train(train, model['continuous'], model['missing'], model['norm'], model['k'], model['m'], True)
+    toc = time.time()
+
+    print("-> FIN DE ENTRENAMIENTO")
+    print(tic-toc)
+    print()
+
+    print()
+    print("-> COMIENZO DE CLASIFICACIÓN")
+
+    tic = time.time()
     result = model['model'].classify_set(classify_array, model['continuous'], model['missing'], model['norm'], model['k'], model['m'])
+    toc = time.time()
+
+    print("-> FIN DE CLASIFICACIÓN")
+    print(tic-toc)
+    print()
 
     return get_results(result, evaluate)
 
