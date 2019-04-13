@@ -116,7 +116,7 @@ def knnClassify(classifier, example):
     else:
         winners = dataset.loc[:, 'class'].tolist()
 
-    return classification(winners[0:classifier['k']], classifier['results'], classifier['norm'])
+    return classification(winners[0:classifier['k']], classifier['results'])
 
 
 def distance(example, point, attributes, distanceType, norm):
@@ -139,7 +139,7 @@ def distance(example, point, attributes, distanceType, norm):
     elif distanceType == DistanceOps.MAHALANOBIS:
         pass
 
-def classification(k_nearest, results, norm):
+def classification(k_nearest, results):
     classes = {}
 
     for res in results:
