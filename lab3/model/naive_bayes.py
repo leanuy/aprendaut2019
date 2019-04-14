@@ -11,11 +11,11 @@ from utils.const import AttributeType, ContinuousOps, MeasureOps, CONTINUOUS, ME
 ### METODOS PRINCIPALES
 ### -------------------
 
-def nbTrain(dataset, attributes, results, options, m_est = 10):
-
+def nbTrain(dataset, attributes, results, options):
     # Inicialización
     classificator = {}
     amountClass = {}
+    mEst = options['mEst']
     proportions = processor.getAllProportionExamplesForResults(dataset, results)
 
     for result in results:
@@ -40,7 +40,7 @@ def nbTrain(dataset, attributes, results, options, m_est = 10):
             # Atributo es discreto
             else:
                 for value in processor.getPossibleValues(dataset, attribute):
-                    classificator[result][attributeKey][value] = 0               
+                    classificator[result][attributeKey][value] = 0
 
     # Para cada valor de cada atributo se cuenta la ocurrencia de valores
     for index in dataset.index:
@@ -54,7 +54,7 @@ def nbTrain(dataset, attributes, results, options, m_est = 10):
                 value = dataset.at[index, attributeKey]
                 intervals = list(classificator[result][attributeKey].keys())
                 interval = processor.getIntervalForValue(value, intervals)
-                classificator[result][attributeKey][interval] += 1 
+                classificator[result][attributeKey][interval] += 1
             # Atributo es discreto
             else:   
                 value = dataset.at[index, attributeKey]
@@ -66,8 +66,8 @@ def nbTrain(dataset, attributes, results, options, m_est = 10):
             for value in classificator[result][attributeKey]:
                 if value != 'mean' and value != 'std':
                     # Para cada resultado se guarda la proporcion de cada valor para cada atributo que clasificó con dicho resultado
-                    classificator[result][attributeKey][value] += m_est/len(classificator[result][attributeKey])
-                    classificator[result][attributeKey][value] /= amountClass[result] + m_est
+                    classificator[result][attributeKey][value] += mEst/len(classificator[result][attributeKey])
+                    classificator[result][attributeKey][value] /= amountClass[result] + mEst
     
     return classificator
 
@@ -109,5 +109,4 @@ def calculateStandardDeviation(valuesOfResult, attribute):
     return np.std(valuesOfResult[attribute], axis=0)
 
 def gaussianNormal(value, mean, std):
-    return 1 if std == 0 else stats.norm(mean, std).pdf(value)
-    #return math.exp(-((value-mean)/(2*std_dev))**2)/(math.sqrt(2*math.pi*std_dev**2))
+    return 1 if std == 0 else math.exp(-((value-mean)/(2*std))**2)/(math.sqrt(2*math.pi*std**2))

@@ -42,8 +42,9 @@ def getFormattedExample(text, attributes):
 def getEvaluationCSV(filename, accuracy, means, wMeans, evals, confusionMatrix = None):
     with open(filename, 'w') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow([accuracy])
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL,
+                                lineterminator='\n')
+        filewriter.writerow([accuracy,"","",""])
         filewriter.writerow(means)
         filewriter.writerow(wMeans)
 
