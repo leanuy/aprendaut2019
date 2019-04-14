@@ -27,14 +27,17 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
+            # Independientes del modelo
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
+            revertOnehot = gui.printOneHotEncoding(modelType)
+
+            # Especificos al modelo  
             k = gui.printModelK(modelType)
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
             mEst = gui.printMEstimator(modelType)
-            revertOnehot = gui.printOneHotEncoding(modelType)
 
             model = Model(modelType)
             (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
