@@ -76,7 +76,6 @@ def knnTrain(dataset, attributes, results, options):
 
     return to_return
 
-
 def knnClassify(classifier, example):
 
     example = example.drop('class')
@@ -103,7 +102,6 @@ def knnClassify(classifier, example):
     elif classifier['norm'] == NormOps.NONE:
         pass
 
-    ordered = []
     dataset = classifier['dataset'].reset_index()
 
     distances = dataset.apply(lambda point: distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm']), axis = 1)
@@ -156,4 +154,4 @@ def classification(k_nearest, results):
             max_class = classes[res]
             winner = res
     
-    return winner, max_class / len(results)
+    return winner, max_class / len(k_nearest)
