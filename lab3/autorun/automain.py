@@ -1,8 +1,8 @@
 ### README
 ### ------------------
 
-# Call:
-# python automain.py DATASET MODEL EVALUATION ... (Depending on model, detailed below)
+# Llamar con:
+# python automain.py DATASET MODEL EVALUATION ... (Los parámetros subsiguientes dependen del modelo)
 # DATASET = { 1: Iris, 2: Covertype }
 # MODEL = { 1: Arbol, 2: Bosque, 3: Naive Bayes, 4: KNN }
 # EVALUATION = { 1: Normal, 2: Cross }
@@ -13,7 +13,7 @@
 # MEASURE = { 1: Gain, 2: Gain Ratio, 3: Impurity Reduction }
 #
 # python automain.py (1|2) (1|2) (1|2) (1|2|3) (1|2|3)
-# EX: automain.py 2 2 1 2 3
+# EJ: automain.py 2 2 1 2 3
 
 # Bayes:
 # python automain.py DATASET MODEL EVALUATION ONEHOT CONTINUOUS mEST
@@ -22,7 +22,7 @@
 # mEST = 0..n
 #
 # python automain.py (1|2) 3 (1|2) (1|2) (1|2) (0..n)
-# EX: automain.py 2 3 1 1 1
+# EJ: automain.py 2 3 1 1 1
 
 # KNN:
 # python automain.py DATASET MODEL EVALUATION ONEHOT K MEASURE NORM
@@ -32,7 +32,7 @@
 # NORM = { 1: Norma Euclídea, 2: Norma Min-Max, 3: Norma Z-Score, 4: Ninguna Norma }
 #
 # python automain.py (1|2) 4 (1|2) (1|2) (1..n) (1|2|3|4) (1|2|3|4)
-# EX: 2 4 1 3 2 1
+# EJ: automain.py 2 4 1 3 2 1
 
 ### DEPENDENCIAS
 ### ------------------
@@ -101,7 +101,7 @@ if __name__ == '__main__':
             (continuous, continuousOut) = continuousStrategiesTrees[int(sys.argv[4])]
             (measureType, measureTypeOut) = measureTypesTrees[int(sys.argv[5])]
 
-            # Results filenames
+            # Nombres de archivos
             resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
             resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".csv"
         else:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             (continuous, continuousOut) = continuousStrategiesBayes[int(sys.argv[5])]
             mEst = abs(float(sys.argv[6]))
 
-            # Results filenames
+            # Nombres de archivos
             resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".dat"
             resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".csv"
             
@@ -122,13 +122,13 @@ if __name__ == '__main__':
             (measureType, measureTypeOut) = measureTypesKNN[int(sys.argv[6])]
             (norm, normOut) = normStrategies[int(sys.argv[7])]
 
-            # Results filenames
+            # Nombres de archivos
             resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
             resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
         
         print(resultCSVName)
 
-        # Defaults:
+        # Valores por defecto:
         continuous = continuous if 'continuous' in vars() else ContinuousOps.FIXED
         measureType = measureType if 'measureType' in vars() else MeasureOps.GAIN
         revertOnehot = revertOnehot if 'revertOnehot' in vars() else True
