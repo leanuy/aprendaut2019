@@ -1,7 +1,6 @@
 ### DEPENDENCIAS
 ### ------------------
 import math
-import time
 import random
 import numpy as np
 from scipy import stats
