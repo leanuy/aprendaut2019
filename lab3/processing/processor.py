@@ -75,6 +75,13 @@ def getDiscretePossibleValues(dataset, attribute, results, continuous, getGain):
                 
         return [bestThreshold, 'bigger']
 
+# Dado una lista de posibles valores (discretizados) devuelve el intervalo para 'value'
+def getIntervalForValue(value, intervals):
+    for interval in intervals[:-1]:
+        if value <= interval:
+            return interval
+    return intervals[-1]
+
 ### METODOS PRINCIPALES - EJEMPLOS
 ### ---------------------------------
 

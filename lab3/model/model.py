@@ -133,6 +133,10 @@ class Model():
                 self.classifier[result].printTree(0)
                 print()
 
+        elif self.model == ModelOps.NAIVE_BAYES:
+            print(self.classifier)
+            print()
+
     ### METODOS INTERNOS
     ### -------------------
 
@@ -152,7 +156,7 @@ class Model():
         return nbTrain(dataset, self.attributes, self.results, self.options)
 
     def classifyNaiveBayes(self, example):
-        return nbClassify(self.classifier, example)
+        return nbClassify(self.classifier, example, self.attributes, self.options)
 
     def trainKNN(self, dataset):
         return knnTrain(dataset, self.attributes, self.results, self.options)
