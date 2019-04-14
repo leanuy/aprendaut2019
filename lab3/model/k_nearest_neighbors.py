@@ -12,16 +12,7 @@ from utils.const import MeasureOps, DistanceOps, NormOps
 def knnTrain(dataset, attributes, results, options):
 
     to_return = {}
-
-    k = options['k']
-    distanceType = options['measure']
     norm = options['norm']
-
-    to_return['k'] = k
-    to_return['distance'] = distanceType
-    to_return['norm'] = norm
-    to_return['attributes'] = attributes
-    to_return['results'] = results
     
     if norm == NormOps.NONE:
         to_return['dataset'] = dataset
@@ -31,7 +22,7 @@ def knnTrain(dataset, attributes, results, options):
         modifiedDataset = modifiedDataset.drop(columns=['class'])
         modifiedDataset = modifiedDataset.apply(lambda row: np.divide(row, np.sqrt(sum(np.power(row, 2)))), axis = 1)
         classes = dataset.loc[:, 'class']
-        modifiedDataset = modifiedDataset.assign(class_col=classes)
+        modifiedDataset['class'] = classes
         to_return['dataset'] = modifiedDataset
 
     elif norm == NormOps.Z_SCORE or norm == NormOps.MIN_MAX:
@@ -78,28 +69,28 @@ def knnTrain(dataset, attributes, results, options):
 
     return to_return
 
-def knnClassify(classifier, example):
+def knnClassify(classifier, example, attributes, results, options):
 
-    if classifier['norm'] == NormOps.EUCLIDEAN:
+    if options['norm'] == NormOps.EUCLIDEAN:
         example = np.divide(example, np.sqrt(sum(np.power(example, 2))))
 
-    elif classifier['norm'] == NormOps.Z_SCORE:
-        for attr in classifier['attributes']:
+    elif options['norm'] == NormOps.Z_SCORE:
+        for attr in attributes:
             (key, attrType) = attr
             value = example[key]
             value -= classifier['mean'][key]
             value /= classifier['std'][key]
             example[key] = value
 
-    elif classifier['norm'] == NormOps.MIN_MAX:
-        for attr in classifier['attributes']:
+    elif options['norm'] == NormOps.MIN_MAX:
+        for attr in attributes:
             (key, attrType) = attr
             value = example[key]
             value -= classifier['min'][key]
             value /= (classifier['max'][key] + classifier['min'][key])
             example[key] = value
    
-    elif classifier['norm'] == NormOps.NONE:
+    elif options['norm'] == NormOps.NONE:
         pass
 
     tic = time.time()
@@ -107,20 +98,27 @@ def knnClassify(classifier, example):
     datasetWithoutClass = dataset.drop(columns=['class'])
     toc = time.time()
     print('Tiempo de copia: ' + str(toc-tic))
-    print()
 
     tic = time.time()
-    if classifier['distance'] == DistanceOps.MANHATTAN:
-        distances = np.sum(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis=1).transpose()
+    if options['measure'] == DistanceOps.MANHATTAN:
+        distances = np.sum(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis = 1).transpose()
+    
+    elif options['measure'] == DistanceOps.EUCLIDEAN:
+        distances = np.sqrt(np.sum(np.power(np.subtract(datasetWithoutClass.values, example.values), 2), axis = 1)).transpose()
+
+    elif options['measure'] == DistanceOps.CHEBYCHEV:
+        distances = np.max(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis = 1).transpose()
+
+    elif options['measure'] == DistanceOps.MAHALANOBIS:
+        pass
+
     toc = time.time()
     print('Tiempo de calculo de distancias: ' + str(toc-tic))
-    print()
-
+    
     tic = time.time()
     distancesDataframe = pd.DataFrame({'distances': distances}, index=dataset.index.values)
     toc = time.time()
     print('Tiempo de generación de dataframe: ' + str(toc-tic))
-    print()
 
     tic = time.time()
     distancesDataframe = distancesDataframe.sort_values('distances')
@@ -128,45 +126,16 @@ def knnClassify(classifier, example):
     print('Tiempo de reordenamiento de dataset: ' + str(toc-tic))
     print()
 
-    kIndexes = distancesDataframe.index.values[:classifier['k']]
+    kIndexes = distancesDataframe.index.values[:options['k']]
     winners = dataset.loc[kIndexes, 'class'].tolist()
-   
-    if classifier['norm'] == NormOps.EUCLIDEAN:
-        winners = dataset.loc[:, 'class_col'].tolist()
 
-    return classification(winners, classifier['results'])
-
-
-def distance(example, point, attributes, distanceType, norm):
-
-    point = point.drop('index')
-    if norm == NormOps.EUCLIDEAN:
-        point = point.drop('class_col')
-    else:
-        point = point.drop('class')
-
-    if distanceType == DistanceOps.MANHATTAN:
-        res = np.sum(np.absolute(np.subtract(example, point)), axis = 0)
-    
-    elif distanceType == DistanceOps.EUCLIDEAN:
-        res = np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
-
-    elif distanceType == DistanceOps.CHEBYCHEV:
-        res = np.max(np.absolute(np.subtract(example, point)), axis = 0)
-
-    elif distanceType == DistanceOps.MAHALANOBIS:
-        pass
-
-    return res
-
-def classification(k_nearest, results):
     classes = {}
 
     for res in results:
         if res not in classes.keys():
             classes[res] = 0
         
-    for n in k_nearest:
+    for n in winners:
         classes[n] += 1
 
     winner = None
@@ -176,4 +145,6 @@ def classification(k_nearest, results):
             max_class = classes[res]
             winner = res
     
-    return winner, max_class / len(k_nearest)
+    return winner, max_class / len(winners)
+
+

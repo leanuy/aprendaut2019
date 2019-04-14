@@ -162,6 +162,6 @@ class Model():
         return knnTrain(dataset, self.attributes, self.results, self.options)
 
     def classifyKNN(self, example):
-        return knnClassify(self.classifier, example)
+        return knnClassify(self.classifier, example, self.attributes, self.results, self.options)
 
 
