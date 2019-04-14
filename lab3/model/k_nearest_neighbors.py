@@ -1,7 +1,8 @@
 ### DEPENDENCIAS
 ### ------------------
-import numpy as np
 import time
+import numpy as np
+import pandas as pd
 
 from utils.const import MeasureOps, DistanceOps, NormOps
 
@@ -79,8 +80,6 @@ def knnTrain(dataset, attributes, results, options):
 
 def knnClassify(classifier, example):
 
-    example = example.drop('class')
-
     if classifier['norm'] == NormOps.EUCLIDEAN:
         example = np.divide(example, np.sqrt(sum(np.power(example, 2))))
 
@@ -104,36 +103,38 @@ def knnClassify(classifier, example):
         pass
 
     tic = time.time()
-    dataset = classifier['dataset'].reset_index()
+    dataset = classifier['dataset']
+    datasetWithoutClass = dataset.drop(columns=['class'])
     toc = time.time()
-
-    print('Tiempo de reseteo de indices: ' + str(toc-tic))
+    print('Tiempo de copia: ' + str(toc-tic))
     print()
 
     tic = time.time()
-    distances = dataset.apply(lambda point: distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm']), axis = 1)
+    if classifier['distance'] == DistanceOps.MANHATTAN:
+        distances = np.sum(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis=1).transpose()
     toc = time.time()
     print('Tiempo de calculo de distancias: ' + str(toc-tic))
     print()
 
     tic = time.time()
-    dataset = dataset.assign(distances=distances)
+    distancesDataframe = pd.DataFrame({'distances': distances}, index=dataset.index.values)
     toc = time.time()
-    print('Tiempo de agregado de columna: ' + str(toc-tic))
+    print('Tiempo de generación de dataframe: ' + str(toc-tic))
     print()
 
     tic = time.time()
-    dataset = dataset.sort_values('distances')
+    distancesDataframe = distancesDataframe.sort_values('distances')
     toc = time.time()
     print('Tiempo de reordenamiento de dataset: ' + str(toc-tic))
     print()
+
+    kIndexes = distancesDataframe.index.values[:classifier['k']]
+    winners = dataset.loc[kIndexes, 'class'].tolist()
    
     if classifier['norm'] == NormOps.EUCLIDEAN:
         winners = dataset.loc[:, 'class_col'].tolist()
-    else:
-        winners = dataset.loc[:, 'class'].tolist()
 
-    return classification(winners[0:classifier['k']], classifier['results'])
+    return classification(winners, classifier['results'])
 
 
 def distance(example, point, attributes, distanceType, norm):

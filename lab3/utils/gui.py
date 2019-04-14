@@ -124,7 +124,7 @@ def printModelType():
         modelType = int( input() )
 
         if modelType < 1 or modelType > 4:
-            return (ModelOps.DECISION_TREE, "Árbol")
+            return (ModelOps.KNN, "KNN")
         else:
             if modelType == 1:
                 modelType = ModelOps.DECISION_TREE
@@ -142,7 +142,7 @@ def printModelType():
         return (modelType, modelName)
 
     except:
-        return (ModelOps.DECISION_TREE, "Árbol")
+        return (ModelOps.KNN, "KNN")
 
 # Imprime las opciones de vecinos y lee la opción elegida
 def printModelK(modelType):
@@ -241,7 +241,7 @@ def printMeasureType(modelType):
             return DistanceOps.EUCLIDEAN
 
         except:
-            return DistanceOps.EUCLIDEAN
+            return DistanceOps.MANHATTAN
 
     else:
         print ("")
@@ -292,7 +292,7 @@ def printNormType(modelType):
             return NormOps.EUCLIDEAN
 
         except:
-            return NormOps.EUCLIDEAN
+            return NormOps.MIN_MAX
 
 # Imprime las opciones de m estimator y lee la opción elegida
 def printMEstimator(modelType):
