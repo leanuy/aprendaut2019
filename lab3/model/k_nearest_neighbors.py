@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 import numpy as np
+import time
 
 from utils.const import MeasureOps, DistanceOps, NormOps
 
@@ -102,12 +103,30 @@ def knnClassify(classifier, example):
     elif classifier['norm'] == NormOps.NONE:
         pass
 
+    tic = time.time()
     dataset = classifier['dataset'].reset_index()
+    toc = time.time()
 
+    print('Tiempo de reseteo de indices: ' + str(toc-tic))
+    print()
+
+    tic = time.time()
     distances = dataset.apply(lambda point: distance(example, point, classifier['attributes'], classifier['distance'], classifier['norm']), axis = 1)
+    toc = time.time()
+    print('Tiempo de calculo de distancias: ' + str(toc-tic))
+    print()
+
+    tic = time.time()
     dataset = dataset.assign(distances=distances)
-    
+    toc = time.time()
+    print('Tiempo de agregado de columna: ' + str(toc-tic))
+    print()
+
+    tic = time.time()
     dataset = dataset.sort_values('distances')
+    toc = time.time()
+    print('Tiempo de reordenamiento de dataset: ' + str(toc-tic))
+    print()
    
     if classifier['norm'] == NormOps.EUCLIDEAN:
         winners = dataset.loc[:, 'class_col'].tolist()
@@ -126,16 +145,18 @@ def distance(example, point, attributes, distanceType, norm):
         point = point.drop('class')
 
     if distanceType == DistanceOps.MANHATTAN:
-        return np.sum(np.absolute(np.subtract(example, point)), axis = 0)
+        res = np.sum(np.absolute(np.subtract(example, point)), axis = 0)
     
     elif distanceType == DistanceOps.EUCLIDEAN:
-        return np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
+        res = np.sqrt(np.sum(np.power(np.subtract(example, point), 2), axis = 0))
 
     elif distanceType == DistanceOps.CHEBYCHEV:
-        return np.max(np.absolute(np.subtract(example, point)), axis = 0)
+        res = np.max(np.absolute(np.subtract(example, point)), axis = 0)
 
     elif distanceType == DistanceOps.MAHALANOBIS:
         pass
+
+    return res
 
 def classification(k_nearest, results):
     classes = {}
