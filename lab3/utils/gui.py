@@ -473,7 +473,7 @@ def printConfusionMatrix(confusionMatrix, results):
         print()
         print()
 
-def printDataFromModel(classifier, trainingTime):
+def printDataFromModel(classifier):
     print()
     print("MODELO:")
     print()
@@ -502,13 +502,14 @@ def printDataFromModel(classifier, trainingTime):
         print("-> Estrategia de norma: ", end="")
         print(classifier['options']['norm'])
     
-    print("-> Tiempo de entrenamiento: ", end="")
-    print(trainingTime)
-    print()
+    
 
 # Imprime datos genéricos de evaluación normal y llama a printEvaluation
 def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
-    printDataFromModel(classifier, trainingTime)
+    printDataFromModel(classifier)
+    print("-> Tiempo de entrenamiento: ", end="")
+    print(trainingTime)
+    print()
     print("EVALUACIÓN NORMAL (80/20):")
     print()
     trainingLength = (dataLength // 5) * 4
@@ -521,7 +522,7 @@ def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMea
 
 # Imprime datos genéricos de evaluación cruzada y llama a printEvaluation para cada iteración
 def printCrossEvaluation(classifier, eval, evalMean, dataLength):
-    printDataFromModel(classifier, trainingTime)
+    printDataFromModel(classifier)
     print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
     print()
     trainingLength = (dataLength // len(eval)) * (len(eval) - 1)
