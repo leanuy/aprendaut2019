@@ -40,6 +40,13 @@ class DistanceOps(Enum):
     CHEBYCHEV = 3
     MAHALANOBIS = 4
 
+DistanceMetrics = {
+    DistanceOps.MANHATTAN: 'manhattan',
+    DistanceOps.EUCLIDEAN: 'euclidean',
+    DistanceOps.CHEBYCHEV: 'chebyshev',
+    DistanceOps.MAHALANOBIS: 'mahalanobis',
+}
+
 # Estrategias de normalización
 class NormOps(Enum):
     NONE = 0

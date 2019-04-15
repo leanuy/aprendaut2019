@@ -114,7 +114,7 @@ def printDataset():
 def printModelType():
     print ("")
     print ("-> Elija un tipo de modelo para entrenar: ")
-    print ("-> DEFAULT: 1")
+    print ("-> DEFAULT: 3")
     print ("1. Árbol de decisión")
     print ("2. Bosque de decisión")
     print ("3. Bayes sencillo")
@@ -124,7 +124,7 @@ def printModelType():
         modelType = int( input() )
 
         if modelType < 1 or modelType > 4:
-            return (ModelOps.DECISION_TREE, "Árbol")
+            return (ModelOps.NAIVE_BAYES, "Bayes")
         else:
             if modelType == 1:
                 modelType = ModelOps.DECISION_TREE
@@ -142,7 +142,7 @@ def printModelType():
         return (modelType, modelName)
 
     except:
-        return (ModelOps.DECISION_TREE, "Árbol")
+        return (ModelOps.NAIVE_BAYES, "Bayes")
 
 # Imprime las opciones de vecinos y lee la opción elegida
 def printModelK(modelType):
