@@ -102,8 +102,8 @@ if __name__ == '__main__':
             (measureType, measureTypeOut) = measureTypesTrees[int(sys.argv[5])]
 
             # Nombres de archivos
-            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
-            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".csv"
+            resultFileName = "results/data/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".dat"
+            resultCSVName = "results/csv/" + datasetOut + ", " + modelName + ", " + str(continuousOut) + ", " + str(measureTypeOut) + ", " + str(evalModeOut) + ".csv"
         else:
             # Bayes y KNN:
             (revertOnehot, onehotOut) = onehotStrategies[int(sys.argv[4])]
@@ -114,8 +114,8 @@ if __name__ == '__main__':
             mEst = abs(float(sys.argv[6]))
 
             # Nombres de archivos
-            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".dat"
-            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".csv"
+            resultFileName = "results/data/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".dat"
+            resultCSVName = "results/csv/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", " + str(continuousOut) + ", mEst - " + str(mEst) + ", " + str(evalModeOut) + ".csv"
             
         if modelType == ModelOps.KNN:
             k = abs(int(sys.argv[5]))
@@ -123,8 +123,8 @@ if __name__ == '__main__':
             (norm, normOut) = normStrategies[int(sys.argv[7])]
 
             # Nombres de archivos
-            resultFileName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
-            resultCSVName = "results/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
+            resultFileName = "results/data/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
+            resultCSVName = "results/csv/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
         
         print(resultCSVName)
 
