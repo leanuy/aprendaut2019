@@ -1,10 +1,10 @@
 ### DEPENDENCIAS
 ### ------------------
-import time
 import numpy as np
 import pandas as pd
+from sklearn.neighbors import KDTree
 
-from utils.const import MeasureOps, DistanceOps, NormOps
+from utils.const import MeasureOps, DistanceOps, NormOps, DistanceMetrics
 
 ### METODOS PRINCIPALES
 ### -------------------
@@ -67,6 +67,8 @@ def knnTrain(dataset, attributes, results, options):
             to_return['max'] = max_dict
             to_return['min'] = min_dict
 
+    ds = to_return['dataset'].drop(columns=['class'])
+    to_return['kdtree'] = KDTree(ds.values, leaf_size=8, metric=DistanceMetrics[options['measure']])   
     return to_return
 
 def knnClassify(classifier, example, attributes, results, options):
@@ -93,42 +95,10 @@ def knnClassify(classifier, example, attributes, results, options):
     elif options['norm'] == NormOps.NONE:
         pass
 
-    tic = time.time()
     dataset = classifier['dataset']
-    datasetWithoutClass = dataset.drop(columns=['class'])
-    toc = time.time()
-    print('Tiempo de copia: ' + str(toc-tic))
-
-    tic = time.time()
-    if options['measure'] == DistanceOps.MANHATTAN:
-        distances = np.sum(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis = 1).transpose()
+    dist, indexes = classifier['kdtree'].query(example.values.reshape(1,-1), k=options['k'])
+    winners = dataset.iloc[indexes[0]]['class'].tolist()
     
-    elif options['measure'] == DistanceOps.EUCLIDEAN:
-        distances = np.sqrt(np.sum(np.power(np.subtract(datasetWithoutClass.values, example.values), 2), axis = 1)).transpose()
-
-    elif options['measure'] == DistanceOps.CHEBYCHEV:
-        distances = np.max(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis = 1).transpose()
-
-    elif options['measure'] == DistanceOps.MAHALANOBIS:
-        pass
-
-    toc = time.time()
-    print('Tiempo de calculo de distancias: ' + str(toc-tic))
-    
-    tic = time.time()
-    distancesDataframe = pd.DataFrame({'distances': distances}, index=dataset.index.values)
-    toc = time.time()
-    print('Tiempo de generación de dataframe: ' + str(toc-tic))
-
-    tic = time.time()
-    distancesDataframe = distancesDataframe.sort_values('distances')
-    toc = time.time()
-    print('Tiempo de reordenamiento de dataset: ' + str(toc-tic))
-    print()
-
-    kIndexes = distancesDataframe.index.values[:options['k']]
-    winners = dataset.loc[kIndexes, 'class'].tolist()
-
     classes = {}
 
     for res in results:
