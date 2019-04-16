@@ -5,44 +5,10 @@ import os
 from IPython.display import display, clear_output, HTML
 import tabulate
 from ipywidgets import Button, Box, Layout
-
-descriptions_iris = ['Árbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada .',
-  'Árbol del conjunto Iris, GainRatio como medida, trata atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Árbol del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Árbol del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Árbol del conjunto Iris, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Árbol del conjunto Iris, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Árbol del conjunto Iris, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Bosque del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Bosque del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Bosque del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación cruzada ',
-  'Bosque del conjunto Iris, Ganancia como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Bosque del conjunto Iris, GainRatio como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Bosque del conjunto Iris, Impurity Reduction como medida, atributos continuos partiendo en intervalos variables. Validación cruzada ',
-  'Bosque del conjunto Iris, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Bosque del conjunto Iris, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  'Bosque del conjunto Iris, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación cruzada ',
-  ]
-
-descriptions_covertye = ['Árbol del conjunto CoverType, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20.',
-  'Árbol del conjunto CoverType, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Árbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Árbol del conjunto CoverType, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Árbol del conjunto CoverType, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Árbol del conjunto CoverType, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Bosque del conjunto CoverType, Ganancia como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Bosque del conjunto CoverType, GainRatio como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Bosque del conjunto CoverType, Impurity Reduction como medida, atributos continuos partiendo en intervalos fijos. Validación 80/20',
-  'Bosque del conjunto CoverType, Ganancia como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Bosque del conjunto CoverType, GainRatio como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  'Bosque del conjunto CoverType, Impurity Reduction como medida, atributos continuos maximizando ganancia local (C4.5). Validación 80/20',
-  ]
-
+import ipywidgets as widgets
 
 # Imprimir matrices de iris
-def printIrisData(filename, file_number):
+def printIrisData(filename, printConfusionMatrix = True):
     hdir = os.path.dirname(__file__)
     matrix_data = os.path.join(hdir, 'matrix_data/' + filename + '.csv')
     f = open(matrix_data, 'r')
@@ -74,11 +40,11 @@ def printIrisData(filename, file_number):
             elif i == 5:
                 aux.insert(0, 'Virginica')
             params_table.append(aux)
+        elif i > 5 and i < 9:
+            aux = r
+            aux.insert(0, str(i - 9))
+            matrix_rows.append(aux)
         i += 1
-
-    print()
-    print('Descripción: ', end='')
-    print(descriptions_iris[file_number - 1])
 
     prffm = ' \
         <div> \
@@ -132,11 +98,15 @@ def printIrisData(filename, file_number):
         </div>'
     display(HTML(prffmw))
 
+    if printConfusionMatrix:
+        display(HTML('<h2>Matriz de confusión</h2>'))
+        display(HTML(tabulate.tabulate(matrix_rows, tablefmt='html')))
+
     display(HTML('<h2>Métricas</h2>'))
     display(HTML(tabulate.tabulate(params_table, tablefmt='html')))
 
 # Imprimir matrices de covertype
-def printCovertypeData(filename):
+def printCovertypeData(filename, printConfusionMatrix = True):
     hdir = os.path.dirname(__file__)
     matrix_data = os.path.join(hdir, 'matrix_data/' + filename + '.csv')
     f = open(matrix_data, 'r')
@@ -193,10 +163,6 @@ def printCovertypeData(filename):
             matrix_rows.append(aux)
         i += 1
 
-    print()
-    print('Descripción: ', end='')
-    print(descriptions_covertye[ord(filename[-1]) - 97])
-
     prffm = ' \
         <div> \
           <style type="text/css"> \
@@ -249,412 +215,124 @@ def printCovertypeData(filename):
         </div>'
     display(HTML(prffmw))
 
-    display(HTML('<h2>Matriz de confusión</h2>'))
-    display(HTML(tabulate.tabulate(matrix_rows, tablefmt='html')))
+    if printConfusionMatrix:
+        display(HTML('<h2>Matriz de confusión</h2>'))
+        display(HTML(tabulate.tabulate(matrix_rows, tablefmt='html')))
 
     display(HTML('<h2>Métricas</h2>'))
     display(HTML(tabulate.tabulate(params_table, tablefmt='html')))
 
+def printNotFound():
+    prffmw = '<h1>Archivo no encontrado.</h1>'
+    display(HTML(prffmw))
+
 # Imprimir titulo
 def printTitle():
-    display(HTML('<h1 style="text-align: center;">Seleccione un caso para visualizar de la botonera</h1>'))
+    display(HTML('<h1 style="text-align: center;">Seleccione los parametros del caso que desee visualizar</h1>'))
 
-# Imprimir tabla de indices
-def printButtonDescriptions():
+ConjuntoDict = { 'Conjunto: Iris': 'Iris', 'Conjunto: Covertype': 'Covertype' }
+ModeloDict = { 'Modelo: Árbol de decisión': 'Arbol', 'Modelo: Bosque de decisión': 'Bosque', 'Modelo: Bayes sencillo': 'Bayes', 'Modelo: K vecinos más cercanos': 'KNN' }
+ValidacionDict = { 'Validación: Normal': 'Normal', 'Validación: Cruzada': 'Cross' }
 
-    buttonDescriptions = ' \
-        <div> \
-          <style type="text/css"> \
-          .tg  {border-collapse:collapse;border-spacing:0;} \
-          .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;} \
-          .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;} \
-          .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top} \
-          </style> \
-          <table class="tg"> \
-            <tr> \
-              <th class="tg-0pky"><strong>Botón</strong></th> \
-              <th class="tg-0pky" style="text-align: center;"><strong>Descripción</strong></th> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">1</td> \
-              <td class="tg-0pky">' + descriptions_iris[0] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">2</td> \
-              <td class="tg-0pky">' + descriptions_iris[1] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">3</td> \
-              <td class="tg-0pky">' + descriptions_iris[2] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">4</td> \
-              <td class="tg-0pky">' + descriptions_iris[3] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">5</td> \
-              <td class="tg-0pky">' + descriptions_iris[4] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">6</td> \
-              <td class="tg-0pky">' + descriptions_iris[5] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">7</td> \
-              <td class="tg-0pky">' + descriptions_iris[6] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">8</td> \
-              <td class="tg-0pky">' + descriptions_iris[7] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">9</td> \
-              <td class="tg-0pky">' + descriptions_iris[8] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">10</td> \
-              <td class="tg-0pky">' + descriptions_iris[9] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">11</td> \
-              <td class="tg-0pky">' + descriptions_iris[10] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">12</td> \
-              <td class="tg-0pky">' + descriptions_iris[11] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">13</td> \
-              <td class="tg-0pky">' + descriptions_iris[12] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">14</td> \
-              <td class="tg-0pky">' + descriptions_iris[13] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">15</td> \
-              <td class="tg-0pky">' + descriptions_iris[14] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">16</td> \
-              <td class="tg-0pky">' + descriptions_iris[15] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">17</td> \
-              <td class="tg-0pky">' + descriptions_iris[16] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">18</td> \
-              <td class="tg-0pky">' + descriptions_iris[17] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">a</td> \
-              <td class="tg-0pky">' + descriptions_covertye[0] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">b</td> \
-              <td class="tg-0pky">' + descriptions_covertye[1] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">c</td> \
-              <td class="tg-0pky">' + descriptions_covertye[2] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">d</td> \
-              <td class="tg-0pky">' + descriptions_covertye[3] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">e</td> \
-              <td class="tg-0pky">' + descriptions_covertye[4] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">f</td> \
-              <td class="tg-0pky">' + descriptions_covertye[5] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">g</td> \
-              <td class="tg-0pky">' + descriptions_covertye[6] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">h</td> \
-              <td class="tg-0pky">' + descriptions_covertye[7] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">i</td> \
-              <td class="tg-0pky">' + descriptions_covertye[8] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">j</td> \
-              <td class="tg-0pky">' + descriptions_covertye[9] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">k</td> \
-              <td class="tg-0pky">' + descriptions_covertye[10] + '</td> \
-            </tr> \
-            <tr> \
-              <td class="tg-0pky">l</td> \
-              <td class="tg-0pky">' + descriptions_covertye[11] + '</td> \
-            </tr> \
-          </table> \
-        </div>'
+ContinuousTreesDict = { 'Continuos: Partir en intervalos fijos': 'Fixed', 'Continuos: Partir en intervalos variables': 'Variable', 'Continuos: Intervalos que maximicen ganancia': 'C45' }
+MeasureTreesDict = { 'Medida: Ganancia': 'Gain', 'Medida: Ratio de ganancia': 'GainRatio', 'Medida: Reducción de impureza': 'ImpurityReduction' }
 
-    display(HTML(buttonDescriptions))
+OnehotDict = { 'Revertir one-hot encoding': 'No Onehot', 'Mantener one-hot encoding': 'Onehot' }
 
-# Fila de botones para Covertype. 18 combinaciones
-Comb1Button = Button(
-    id='1',
-    description='1',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb2Button = Button(
-    description='2',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb3Button = Button(
-    description='3',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb4Button = Button(
-    description='4',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb5Button = Button(
-    description='5',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb6Button = Button(
-    description='6',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb7Button = Button(
-    description='7',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb8Button = Button(
-    description='8',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb9Button = Button(
-    description='9',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb10Button = Button(
-    description='10',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb11Button = Button(
-    description='11',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb12Button = Button(
-    description='12',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb13Button = Button(
-    description='13',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb14Button = Button(
-    description='14',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb15Button = Button(
-    description='15',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb16Button = Button(
-    description='16',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb17Button = Button(
-    description='17',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-Comb18Button = Button(
-    description='18',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-box1_layout = Layout(display='flex',
+ContinuousBayesDict = { 'Continuos: Estandarizar según distribución': 'Standarization', 'Continuos: Partir en intervalos variables': 'Variable' }
+mEstDict = { 'm estimador: 0': 'mEst - 0.0', 'm estimador: 0.5': 'mEst - 0.5', 'm estimador: 1': 'mEst - 1.0', 'm estimador: 10': 'mEst - 10.0', 'm estimador: 100': 'mEst - 100.0' }
+
+KDict = { 'K: 1': 'k - 1', 'K: 3': 'k - 3', 'K: 5': 'k - 5' }
+MeasureKNNDict = { "Medida: Distancia 'Manhattan'": "Distancia 'Manhattan'", 'Medida: Distancia Euclídea': 'Distancia Euclídea', 'Medida: Distancia de Chebychev': 'Distancia de Chebychev', 'Medida: Distancia de Mahalanobis': 'Distancia de Mahalanobis' }
+NormDict = { 'Norma: Euclídea (División por norma)': 'Norma Euclídea', 'Norma: Min-Max (Reescalamiento)': 'Norma Min-Max', 'Norma: Z-Score (Estandarización)': 'Norma Z-Score', 'Norma: Ninguna': 'Ninguna Norma' }
+
+box_layout = Layout(display='flex',
                     flex_flow='row',
                     margin='8px 0px 8px 0px',
-                    width='100%')
-box1 = Box(children=[Comb1Button, Comb2Button, Comb3Button, Comb4Button,
-                     Comb5Button, Comb6Button, Comb7Button, Comb8Button,
-                     Comb9Button, Comb10Button, Comb11Button, Comb12Button,
-                     Comb13Button, Comb14Button, Comb15Button, Comb16Button,
-                     Comb17Button, Comb18Button], layout=box1_layout)
+                    width='100%',
+                    justify_content='space-between')
 
+# Independiente del modelo
+Conjunto = widgets.Dropdown(options=ConjuntoDict.keys())
+Modelo = widgets.Dropdown(options=ModeloDict.keys())
+Validacion = widgets.Dropdown(options=ValidacionDict.keys())
 
-# Fila de botones para Covertype. 12 combinaciones
-CombAButton = Button(
-    id='1',
-    description='a',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombBButton = Button(
-    description='b',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombCButton = Button(
-    description='c',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombDButton = Button(
-    description='d',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombEButton = Button(
-    description='e',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombFButton = Button(
-    description='f',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombGButton = Button(
-    description='g',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombHButton = Button(
-    description='h',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombIButton = Button(
-    description='i',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombJButton = Button(
-    description='j',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombKButton = Button(
-    description='k',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-CombLButton = Button(
-    description='l',
-    disabled=False,
-    button_style='warning', # 'success', 'info', 'warning', 'danger' or ''
-    layout=Layout(max_width='150px', margin='0px 16px 0px 0px')
-)
-box2_layout = Layout(display='flex',
-                    flex_flow='row',
-                    margin='8px 0px 8px 0px',
-                    width='100%')
-box2 = Box(children=[CombAButton, CombBButton, CombCButton, CombDButton,
-                     CombEButton, CombFButton, CombGButton, CombHButton,
-                     CombIButton, CombJButton, CombKButton, CombLButton], layout=box2_layout)
+boxGeneral = Box(children=[Conjunto, Modelo, Validacion], layout=box_layout)
 
+# Arboles y Bosques
+ContinuousTrees = widgets.Dropdown(options=ContinuousTreesDict.keys())
+MeasureTrees = widgets.Dropdown(options=MeasureTreesDict.keys())
 
-# Todo
+boxArboles = Box(children=[ContinuousTrees, MeasureTrees], layout=box_layout)
+
+# Bayes y KNN
+Onehot = widgets.Dropdown(options=OnehotDict.keys())
+
+# Bayes
+ContinuousBayes = widgets.Dropdown(options=ContinuousBayesDict.keys())
+mEst = widgets.Dropdown(options=mEstDict.keys())
+
+boxBayes = Box(children=[Onehot, ContinuousBayes, mEst], layout=box_layout)
+
+# KNN
+K = widgets.Dropdown(options=KDict.keys())
+MeasureKNN = widgets.Dropdown(options=MeasureKNNDict.keys(), value='Medida: Distancia Euclídea')
+Norm = widgets.Dropdown(options=NormDict.keys())
+
+boxKNN = Box(children=[Onehot, K, MeasureKNN, Norm], layout=box_layout)
+
 main_box_layout = Layout(display='flex',
                         flex_flow='column',
                         width='100%')
-main_box = Box(children=[box1, box2], layout=main_box_layout)
 
-def changeMatrix(btn):
+def getBox(model):
+    if model == 'Arbol' or model == 'Bosque':
+      main_box = Box(children=[boxGeneral, boxArboles], layout=main_box_layout) 
+    elif model == 'Bayes':
+      main_box = Box(children=[boxGeneral, boxBayes], layout=main_box_layout)           
+    else: # KNN
+      main_box = Box(children=[boxGeneral, boxKNN], layout=main_box_layout)     
+    return main_box
+
+def refreshMatrix(dropdown = None):
     clear_output()
     printTitle()
-    try:
-        file_number = int(btn.description)
-        printIrisData('confusion_matrix_iris_' + btn.description, file_number)
-    except:
-        printCovertypeData('confusion_matrix_covertype_' + btn.description)
-        
+    main_box = getBox(ModeloDict[Modelo.value])
     display(main_box)
-    printButtonDescriptions()
 
-# Iris events
-Comb1Button.on_click(changeMatrix)
-Comb2Button.on_click(changeMatrix)
-Comb3Button.on_click(changeMatrix)
-Comb4Button.on_click(changeMatrix)
-Comb5Button.on_click(changeMatrix)
-Comb6Button.on_click(changeMatrix)
-Comb7Button.on_click(changeMatrix)
-Comb8Button.on_click(changeMatrix)
-Comb9Button.on_click(changeMatrix)
-Comb10Button.on_click(changeMatrix)
-Comb11Button.on_click(changeMatrix)
-Comb12Button.on_click(changeMatrix)
-Comb13Button.on_click(changeMatrix)
-Comb14Button.on_click(changeMatrix)
-Comb15Button.on_click(changeMatrix)
-Comb16Button.on_click(changeMatrix)
-Comb17Button.on_click(changeMatrix)
-Comb18Button.on_click(changeMatrix)
-# CoverType events
-CombAButton.on_click(changeMatrix)
-CombBButton.on_click(changeMatrix)
-CombCButton.on_click(changeMatrix)
-CombDButton.on_click(changeMatrix)
-CombEButton.on_click(changeMatrix)
-CombFButton.on_click(changeMatrix)
-CombGButton.on_click(changeMatrix)
-CombHButton.on_click(changeMatrix)
-CombIButton.on_click(changeMatrix)
-CombJButton.on_click(changeMatrix)
-CombKButton.on_click(changeMatrix)
-CombLButton.on_click(changeMatrix)
+    try:
+        fileName = ConjuntoDict[Conjunto.value] + ', ' + ModeloDict[Modelo.value] + ', '
+        if ModeloDict[Modelo.value] == 'Arbol' or ModeloDict[Modelo.value] == 'Bosque':
+            fileName += ContinuousTreesDict[ContinuousTrees.value] + ', ' + MeasureTreesDict[MeasureTrees.value] + ', '
+        elif ModeloDict[Modelo.value] == 'Bayes':
+            fileName += OnehotDict[Onehot.value] + ', ' + ContinuousBayesDict[ContinuousBayes.value] + ', ' + mEstDict[mEst.value] + ', '
+        else: # KNN
+            fileName += OnehotDict[Onehot.value] + ', ' + KDict[K.value] + ', ' + MeasureKNNDict[MeasureKNN.value] + ', ' + NormDict[Norm.value] + ', '
+        fileName += ValidacionDict[Validacion.value]
+        if ConjuntoDict[Conjunto.value] == 'Covertype':
+            printCovertypeData(fileName, ValidacionDict[Validacion.value] == 'Normal')
+        else: # Iris
+            printIrisData(fileName, ValidacionDict[Validacion.value] == 'Normal')
+    except:
+        printNotFound()
+        
 
-printTitle()
-display(main_box)
-printButtonDescriptions()
+Conjunto.observe(refreshMatrix, names='value')
+Modelo.observe(refreshMatrix, names='value')
+Validacion.observe(refreshMatrix, names='value')
+
+ContinuousTrees.observe(refreshMatrix, names='value')
+MeasureTrees.observe(refreshMatrix, names='value')
+
+Onehot.observe(refreshMatrix, names='value')
+
+ContinuousBayes.observe(refreshMatrix, names='value')
+mEst.observe(refreshMatrix, names='value')
+
+K.observe(refreshMatrix, names='value')
+MeasureKNN.observe(refreshMatrix, names='value')
+Norm.observe(refreshMatrix, names='value')
+
+# Todo
+
+refreshMatrix()
