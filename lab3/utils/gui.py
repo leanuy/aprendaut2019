@@ -86,7 +86,7 @@ def printClassifiers(classifiers):
 
         if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
             print("   Estrategia de one hot encoding: ", end="")
-            print(c['options']['onehot'])
+            print(c['options']['revertOnehot'])
 
         index = index + 1
         
@@ -114,7 +114,7 @@ def printDataset():
 def printModelType():
     print ("")
     print ("-> Elija un tipo de modelo para entrenar: ")
-    print ("-> DEFAULT: 1")
+    print ("-> DEFAULT: 3")
     print ("1. Árbol de decisión")
     print ("2. Bosque de decisión")
     print ("3. Bayes sencillo")
@@ -124,7 +124,7 @@ def printModelType():
         modelType = int( input() )
 
         if modelType < 1 or modelType > 4:
-            return (ModelOps.DECISION_TREE, "Árbol")
+            return (ModelOps.NAIVE_BAYES, "Bayes")
         else:
             if modelType == 1:
                 modelType = ModelOps.DECISION_TREE
@@ -142,7 +142,7 @@ def printModelType():
         return (modelType, modelName)
 
     except:
-        return (ModelOps.DECISION_TREE, "Árbol")
+        return (ModelOps.NAIVE_BAYES, "Bayes")
 
 # Imprime las opciones de vecinos y lee la opción elegida
 def printModelK(modelType):
@@ -294,6 +294,20 @@ def printNormType(modelType):
         except:
             return NormOps.EUCLIDEAN
 
+# Imprime las opciones de m estimator y lee la opción elegida
+def printMEstimator(modelType):
+    if modelType != ModelOps.NAIVE_BAYES:
+        return 1
+    else:
+        print ("")
+        print ("-> Asigne un valor real no negativo para el m estimador Ej: 0.5: ")
+        print ("-> DEFAULT: 1")
+        try:
+            evaluationK = abs(float( input() ))
+            return evaluationK
+        except:
+            return 1
+
 # Imprime las opciones de vecinos y lee la opción elegida
 def printOneHotEncoding(modelType):
     if modelType == ModelOps.DECISION_TREE or modelType == ModelOps.DECISION_FOREST:
@@ -336,9 +350,13 @@ def printTrainedClassifier(classifier):
         print("--> Estrategia de normalización: ", end="")
         print(classifier['options']['norm'])
 
+    if modelType == ModelOps.NAIVE_BAYES:
+        print("--> Valor del m estimador: ", end="")
+        print(classifier['options']['mEst'])
+
     if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
         print("--> Estrategia de one hot encoding: ", end="")
-        print(classifier['options']['onehot'])
+        print(classifier['options']['revertOnehot'])
 
     print()
 
@@ -455,17 +473,40 @@ def printConfusionMatrix(confusionMatrix, results):
         print()
         print()
 
-# Imprime datos genéricos de evaluación normal y llama a printEvaluation
-def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
+def printDataFromModel(classifier):
     print()
     print("MODELO:")
     print()
     print("-> Modelo Entrenado: ", end="")
     print(classifier['name'])
-    print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['options']['continuous'])
-    print("-> Estrategia de medida: ", end="")
-    print(classifier['options']['measure'])
+
+    if classifier['name'] == 'Arbol' or classifier['name'] == 'Árbol' or classifier['name'] == 'Bosque':
+        print("-> Estrategia de atributos continuos: ", end="")
+        print(classifier['options']['continuous'])
+        print("-> Estrategia de medida: ", end="")
+        print(classifier['options']['measure'])
+    else:
+        print("-> Se deshizo el one-hot encoding: ", end="")
+        print(classifier['options']['revertOnehot'])
+    
+    if classifier['name'] == 'Bayes':
+        print("-> Estrategia de atributos continuos: ", end="")
+        print(classifier['options']['continuous'])
+        print("-> Valor del m estimator: ", end="")
+        print(classifier['options']['mEst'])
+    elif classifier['name'] == 'KNN':
+        print("-> Valor del k (vecinos): ", end="")
+        print(classifier['options']['k'])
+        print("-> Estrategia de medida: ", end="")
+        print(classifier['options']['measure'])
+        print("-> Estrategia de norma: ", end="")
+        print(classifier['options']['norm'])
+    
+    
+
+# Imprime datos genéricos de evaluación normal y llama a printEvaluation
+def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):
+    printDataFromModel(classifier)
     print("-> Tiempo de entrenamiento: ", end="")
     print(trainingTime)
     print()
@@ -481,16 +522,7 @@ def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMea
 
 # Imprime datos genéricos de evaluación cruzada y llama a printEvaluation para cada iteración
 def printCrossEvaluation(classifier, eval, evalMean, dataLength):
-    print()
-    print("MODELO:")
-    print()
-    print("-> Modelo Entrenado: ", end="")
-    print(classifier['name'])
-    print("-> Estrategia de atributos continuos: ", end="")
-    print(classifier['options']['continuous'])
-    print("-> Estrategia de medida: ", end="")
-    print(classifier['options']['measure'])
-    print()
+    printDataFromModel(classifier)
     print("EVALUACIÓN CRUZADA (" + str(len(eval)) + " particiones):")
     print()
     trainingLength = (dataLength // len(eval)) * (len(eval) - 1)

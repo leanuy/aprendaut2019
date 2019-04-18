@@ -27,22 +27,27 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
+            # Independientes del modelo
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
+            revertOnehot = gui.printOneHotEncoding(modelType)
+
+            # Especificos al modelo  
             k = gui.printModelK(modelType)
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
-            onehot = gui.printOneHotEncoding(modelType)
+            mEst = gui.printMEstimator(modelType)
 
             model = Model(modelType)
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, onehot)
             options = {
               'k': k,
               'continuous': continuous,
               'measure': measure,
               'norm': norm,
-              'onehot': onehot,
+              'revertOnehot': revertOnehot,
+              'mEst': mEst,
             }
 
             print()
@@ -102,23 +107,31 @@ if __name__ == '__main__':
 
         elif op == MenuOps.EVALUATE:
 
+            # Independientes del modelo
             datasetFile = gui.printDataset()
             (modelType, modelName) = gui.printModelType()
+            evalMode = gui.printEvaluationMode()
+            if evalMode == EvaluationOps.CROSS:
+                evalK = gui.printEvaluationK()
+            revertOnehot = gui.printOneHotEncoding(modelType)
+
+            # Especificos al modelo            
             k = gui.printModelK(modelType)
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
-            onehot = gui.printOneHotEncoding(modelType)
-            evalMode = gui.printEvaluationMode()
+            mEst = gui.printMEstimator(modelType)
 
-            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET)            
+
+            (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, revertOnehot)
             model = Model(modelType)
             options = {
               'k': k,
               'continuous': continuous,
               'measure': measure,
               'norm': norm,
-              'onehot': onehot,
+              'revertOnehot': revertOnehot,
+              'mEst': mEst,
             }
 
             classifier = {
@@ -136,7 +149,6 @@ if __name__ == '__main__':
                 gui.printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, len(dataset))
 
             elif evalMode == EvaluationOps.CROSS:
-                evalK = gui.printEvaluationK()
                 (eval, evalMean) = crossValidation(dataset, classifier, evalK)
                 gui.printCrossEvaluation(classifier, eval, evalMean, len(dataset))
 
