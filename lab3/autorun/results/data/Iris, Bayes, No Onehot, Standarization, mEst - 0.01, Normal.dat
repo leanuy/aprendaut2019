@@ -1,0 +1,58 @@
+
+MODELO:
+
+-> Modelo Entrenado: Bayes
+-> Se deshizo el one-hot encoding: True
+-> Estrategia de atributos continuos: ContinuousOps.STANDARDIZATION
+-> Valor del m estimator: 0.01
+-> Tiempo de entrenamiento: 0.013963937759399414
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 120
+-> Ejemplos de evaluación: 30
+
+-> Accuracy: 0.9666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9666666666666667
+--> Recall promediada: 0.9444444444444445
+--> Fall-off promediada: 0.015873015873015872
+--> F-Measure promediada: 0.952153110047847
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.97
+--> Recall ponderada: 0.9666666666666668
+--> Fall-off ponderada: 0.014285714285714284
+--> F-Measure ponderada: 0.9660287081339713
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          15             0               0        
+
+b'Iris-versicolor'      0             5               1        
+
+b'Iris-virginica'       0             0               9        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.8333333333333334
+--> Fall-off: 0.0
+--> F-Measure: 0.9090909090909091
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.9
+--> Recall: 1.0
+--> Fall-off: 0.047619047619047616
+--> F-Measure: 0.9473684210526316
+
