@@ -1,0 +1,509 @@
+
+MODELO:
+
+-> Modelo Entrenado: Bayes
+-> Se deshizo el one-hot encoding: True
+-> Estrategia de atributos continuos: ContinuousOps.VARIABLE
+-> Valor del m estimator: 1.0
+EVALUACIÓN CRUZADA (10 particiones):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 135
+-> Ejemplos de evaluación: 15
+
+
+--- Partición N° 1 ---
+
+-> Accuracy: 0.9333333333333333
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9629629629629629
+--> Recall promediada: 0.8888888888888888
+--> Fall-off promediada: 0.047619047619047616
+--> F-Measure promediada: 0.9137254901960784
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9407407407407407
+--> Recall ponderada: 0.9333333333333333
+--> Fall-off ponderada: 0.07619047619047618
+--> F-Measure ponderada: 0.9286274509803922
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          4             0               0        
+
+b'Iris-versicolor'      0             2               1        
+
+b'Iris-virginica'       0             0               8        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.6666666666666666
+--> Fall-off: 0.0
+--> F-Measure: 0.8
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8888888888888888
+--> Recall: 1.0
+--> Fall-off: 0.14285714285714285
+--> F-Measure: 0.9411764705882353
+
+
+--- Partición N° 2 ---
+
+-> Accuracy: 0.8666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.888888888888889
+--> Recall promediada: 0.888888888888889
+--> Fall-off promediada: 0.06666666666666667
+--> F-Measure promediada: 0.888888888888889
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.8666666666666668
+--> Recall ponderada: 0.8666666666666668
+--> Fall-off ponderada: 0.08000000000000002
+--> F-Measure ponderada: 0.8666666666666668
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          3             0               0        
+
+b'Iris-versicolor'      0             5               1        
+
+b'Iris-virginica'       0             1               5        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.8333333333333334
+--> Recall: 0.8333333333333334
+--> Fall-off: 0.1
+--> F-Measure: 0.8333333333333334
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8333333333333334
+--> Recall: 0.8333333333333334
+--> Fall-off: 0.1
+--> F-Measure: 0.8333333333333334
+
+
+--- Partición N° 3 ---
+
+-> Accuracy: 0.9333333333333333
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9166666666666666
+--> Recall promediada: 0.9333333333333332
+--> Fall-off promediada: 0.027777777777777776
+--> F-Measure promediada: 0.9153439153439153
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.95
+--> Recall ponderada: 0.9333333333333333
+--> Fall-off ponderada: 0.016666666666666666
+--> F-Measure ponderada: 0.9343915343915343
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          7             0               0        
+
+b'Iris-versicolor'      0             3               0        
+
+b'Iris-virginica'       0             1               4        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.75
+--> Recall: 1.0
+--> Fall-off: 0.08333333333333333
+--> F-Measure: 0.8571428571428571
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 0.8
+--> Fall-off: 0.0
+--> F-Measure: 0.888888888888889
+
+
+--- Partición N° 4 ---
+
+-> Accuracy: 1.0
+
+-> Promedio general de métricas: 
+--> Precision promediada: 1.0
+--> Recall promediada: 1.0
+--> Fall-off promediada: 0.0
+--> F-Measure promediada: 1.0
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 1.0
+--> Recall ponderada: 1.0
+--> Fall-off ponderada: 0.0
+--> F-Measure ponderada: 1.0
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          5             0               0        
+
+b'Iris-versicolor'      0             5               0        
+
+b'Iris-virginica'       0             0               5        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+
+--- Partición N° 5 ---
+
+-> Accuracy: 0.9333333333333333
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9523809523809524
+--> Recall promediada: 0.8888888888888888
+--> Fall-off promediada: 0.037037037037037035
+--> F-Measure promediada: 0.9076923076923077
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9428571428571428
+--> Recall ponderada: 0.9333333333333333
+--> Fall-off ponderada: 0.044444444444444446
+--> F-Measure ponderada: 0.9292307692307693
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             6               0        
+
+b'Iris-virginica'       0             1               2        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.8571428571428571
+--> Recall: 1.0
+--> Fall-off: 0.1111111111111111
+--> F-Measure: 0.923076923076923
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 0.6666666666666666
+--> Fall-off: 0.0
+--> F-Measure: 0.8
+
+
+--- Partición N° 6 ---
+
+-> Accuracy: 0.8666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8611111111111112
+--> Recall promediada: 0.8611111111111112
+--> Fall-off promediada: 0.061111111111111116
+--> F-Measure promediada: 0.8611111111111112
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.8666666666666667
+--> Recall ponderada: 0.8666666666666667
+--> Fall-off ponderada: 0.06222222222222223
+--> F-Measure ponderada: 0.8666666666666667
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          5             0               0        
+
+b'Iris-versicolor'      0             3               1        
+
+b'Iris-virginica'       0             1               5        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.75
+--> Recall: 0.75
+--> Fall-off: 0.08333333333333333
+--> F-Measure: 0.75
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8333333333333334
+--> Recall: 0.8333333333333334
+--> Fall-off: 0.1
+--> F-Measure: 0.8333333333333334
+
+
+--- Partición N° 7 ---
+
+-> Accuracy: 0.9333333333333333
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9166666666666666
+--> Recall promediada: 0.9444444444444445
+--> Fall-off promediada: 0.027777777777777776
+--> F-Measure promediada: 0.9220779220779222
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9500000000000001
+--> Recall ponderada: 0.9333333333333333
+--> Fall-off ponderada: 0.016666666666666666
+--> F-Measure ponderada: 0.9350649350649352
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             5               1        
+
+b'Iris-virginica'       0             0               3        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.8333333333333334
+--> Fall-off: 0.0
+--> F-Measure: 0.9090909090909091
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.75
+--> Recall: 1.0
+--> Fall-off: 0.08333333333333333
+--> F-Measure: 0.8571428571428571
+
+
+--- Partición N° 8 ---
+
+-> Accuracy: 1.0
+
+-> Promedio general de métricas: 
+--> Precision promediada: 1.0
+--> Recall promediada: 1.0
+--> Fall-off promediada: 0.0
+--> F-Measure promediada: 1.0
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 1.0
+--> Recall ponderada: 1.0
+--> Fall-off ponderada: 0.0
+--> F-Measure ponderada: 1.0
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          4             0               0        
+
+b'Iris-versicolor'      0             3               0        
+
+b'Iris-virginica'       0             0               8        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+
+--- Partición N° 9 ---
+
+-> Accuracy: 1.0
+
+-> Promedio general de métricas: 
+--> Precision promediada: 1.0
+--> Recall promediada: 1.0
+--> Fall-off promediada: 0.0
+--> F-Measure promediada: 1.0
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 1.0
+--> Recall ponderada: 1.0
+--> Fall-off ponderada: 0.0
+--> F-Measure ponderada: 1.0
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          6             0               0        
+
+b'Iris-versicolor'      0             6               0        
+
+b'Iris-virginica'       0             0               3        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+
+--- Partición N° 10 ---
+
+-> Accuracy: 0.8666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8666666666666667
+--> Recall promediada: 0.9166666666666666
+--> Fall-off promediada: 0.05555555555555555
+--> F-Measure promediada: 0.8690476190476191
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.92
+--> Recall ponderada: 0.8666666666666667
+--> Fall-off ponderada: 0.03333333333333333
+--> F-Measure ponderada: 0.8738095238095238
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          4             0               0        
+
+b'Iris-versicolor'      0             6               2        
+
+b'Iris-virginica'       0             0               3        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.75
+--> Fall-off: 0.0
+--> F-Measure: 0.8571428571428571
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.6
+--> Recall: 1.0
+--> Fall-off: 0.16666666666666666
+--> F-Measure: 0.7499999999999999
+
+
+--- Promedio de Evaluación ---
+
+-> Accuracy: 0.9333333333333333
+
+-> Promedio de métricas promediadas: 
+--> Precision general promediada: 0.9365343915343918
+--> Recall general promediada: 0.9322222222222221
+--> Fall-off general promediada: 0.03235449735449736
+--> F-Measure general promediada: 0.9277887254357842
+
+-> Promedio de métricas ponderadas: 
+--> Precision general ponderada: 0.9436931216931216
+--> Recall general ponderada: 0.9333333333333333
+--> Fall-off general ponderada: 0.032952380952380955
+--> F-Measure general ponderada: 0.9334457546810487
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 0.919047619047619
+--> Recall: 0.8833333333333332
+--> Fall-off: 0.03777777777777778
+--> F-Measure: 0.8929786879786882
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.8905555555555555
+--> Recall: 0.9133333333333333
+--> Fall-off: 0.05928571428571429
+--> F-Measure: 0.8903874883286648
+

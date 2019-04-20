@@ -1,0 +1,59 @@
+
+MODELO:
+
+-> Modelo Entrenado: KNN
+-> Se deshizo el one-hot encoding: True
+-> Valor del k (vecinos): 7
+-> Estrategia de medida: DistanceOps.MANHATTAN
+-> Estrategia de norma: NormOps.EUCLIDEAN
+-> Tiempo de entrenamiento: 0.0359339714050293
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 120
+-> Ejemplos de evaluación: 30
+
+-> Accuracy: 0.9666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9583333333333334
+--> Recall promediada: 0.9696969696969697
+--> Fall-off promediada: 0.014492753623188406
+--> F-Measure promediada: 0.9619047619047619
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9708333333333332
+--> Recall ponderada: 0.9666666666666668
+--> Fall-off ponderada: 0.010144927536231883
+--> F-Measure ponderada: 0.9669841269841271
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          12             0               0        
+
+b'Iris-versicolor'      0             10               1        
+
+b'Iris-virginica'       0             0               7        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.9090909090909091
+--> Fall-off: 0.0
+--> F-Measure: 0.9523809523809523
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.875
+--> Recall: 1.0
+--> Fall-off: 0.043478260869565216
+--> F-Measure: 0.9333333333333333
+
