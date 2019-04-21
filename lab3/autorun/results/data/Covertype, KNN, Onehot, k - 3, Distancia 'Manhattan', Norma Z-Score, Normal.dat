@@ -1,0 +1,91 @@
+
+MODELO:
+
+-> Modelo Entrenado: KNN
+-> Se deshizo el one-hot encoding: False
+-> Valor del k (vecinos): 3
+-> Estrategia de medida: DistanceOps.MANHATTAN
+-> Estrategia de norma: NormOps.Z_SCORE
+-> Tiempo de entrenamiento: 1613.410673379898
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 581012
+-> Ejemplos de entrenamiento: 464808
+-> Ejemplos de evaluación: 116202
+
+-> Accuracy: 0.9355094102561896
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.900923672698556
+--> Recall promediada: 0.8786738063587036
+--> Fall-off promediada: 0.014429250578657368
+--> F-Measure promediada: 0.8893176639306007
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9353464921640822
+--> Recall ponderada: 0.9355094102561896
+--> Fall-off ponderada: 0.038645894111661735
+--> F-Measure ponderada: 0.9353837187251965
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 39549 2604 2 0 34 6 190 
+
+b'2' 2254 53993 137 2 203 131 26 
+
+b'3' 4 208 6414 53 9 342 0 
+
+b'4' 0 2 92 428 0 37 0 
+
+b'5' 68 290 21 0 1550 6 0 
+
+b'6' 20 167 322 20 5 2922 0 
+
+b'7' 204 35 0 0 0 0 3853 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9394284899878858
+--> Recall: 0.9330895363925917
+--> Fall-off: 0.03326636574738435
+--> F-Measure: 0.9362482836986885
+
+-> Evaluación para b'2': 
+--> Precision: 0.9423026579870504
+--> Recall: 0.951485567264653
+--> Fall-off: 0.053142581578524355
+--> F-Measure: 0.9468718488316017
+
+-> Evaluación para b'3': 
+--> Precision: 0.9178591871780195
+--> Recall: 0.912375533428165
+--> Fall-off: 0.005228210476459391
+--> F-Measure: 0.9151091453845057
+
+-> Evaluación para b'4': 
+--> Precision: 0.8508946322067594
+--> Recall: 0.7656529516994633
+--> Fall-off: 0.0006478082487583676
+--> F-Measure: 0.8060263653483992
+
+-> Evaluación para b'5': 
+--> Precision: 0.8606329816768462
+--> Recall: 0.8010335917312662
+--> Fall-off: 0.0021892144121828474
+--> F-Measure: 0.829764453961456
+
+-> Evaluación para b'6': 
+--> Precision: 0.8484320557491289
+--> Recall: 0.8454861111111112
+--> Fall-off: 0.004608010169401753
+--> F-Measure: 0.8469565217391305
+
+-> Evaluación para b'7': 
+--> Precision: 0.9469157041042026
+--> Recall: 0.9415933528836755
+--> Fall-off: 0.0019225634178905208
+--> F-Measure: 0.9442470285504229
+
