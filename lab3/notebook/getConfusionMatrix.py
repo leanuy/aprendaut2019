@@ -240,9 +240,9 @@ MeasureTreesDict = { 'Medida: Ganancia': 'Gain', 'Medida: Ratio de ganancia': 'G
 OnehotDict = { 'Revertir one-hot encoding': 'No Onehot', 'Mantener one-hot encoding': 'Onehot' }
 
 ContinuousBayesDict = { 'Continuos: Estandarizar según distribución': 'Standarization', 'Continuos: Partir en intervalos variables': 'Variable' }
-mEstDict = { 'm estimador: 0': 'mEst - 0.0', 'm estimador: 0.5': 'mEst - 0.5', 'm estimador: 1': 'mEst - 1.0', 'm estimador: 10': 'mEst - 10.0', 'm estimador: 100': 'mEst - 100.0' }
+mEstDict = { 'm estimador: 0': 'mEst - 0.0', 'm estimador: 0.01': 'mEst - 0.01', 'm estimador: 0.5': 'mEst - 0.5', 'm estimador: 1': 'mEst - 1.0', 'm estimador: 100': 'mEst - 100.0' }
 
-KDict = { 'K: 1': 'k - 1', 'K: 3': 'k - 3', 'K: 5': 'k - 5' }
+KDict = { 'K: 1': 'k - 1', 'K: 3': 'k - 3', 'K: 7': 'k - 7' }
 MeasureKNNDict = { "Medida: Distancia 'Manhattan'": "Distancia 'Manhattan'", 'Medida: Distancia Euclídea': 'Distancia Euclídea', 'Medida: Distancia de Chebychev': 'Distancia de Chebychev', 'Medida: Distancia de Mahalanobis': 'Distancia de Mahalanobis' }
 NormDict = { 'Norma: Euclídea (División por norma)': 'Norma Euclídea', 'Norma: Min-Max (Reescalamiento)': 'Norma Min-Max', 'Norma: Z-Score (Estandarización)': 'Norma Z-Score', 'Norma: Ninguna': 'Ninguna Norma' }
 
