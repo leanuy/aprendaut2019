@@ -1,0 +1,854 @@
+
+MODELO:
+
+-> Modelo Entrenado: KNN
+-> Se deshizo el one-hot encoding: False
+-> Valor del k (vecinos): 1
+-> Estrategia de medida: DistanceOps.MANHATTAN
+-> Estrategia de norma: NormOps.MIN_MAX
+EVALUACIÓN CRUZADA (10 particiones):
+
+-> Total de ejemplos: 581012
+-> Ejemplos de entrenamiento: 522909
+-> Ejemplos de evaluación: 58101
+
+
+--- Partición N° 1 ---
+
+-> Accuracy: 0.9360596203163457
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9005853440986841
+--> Recall promediada: 0.8900704884542161
+--> Fall-off promediada: 0.014128317458020337
+--> F-Measure promediada: 0.8949482538312329
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9360652397916697
+--> Recall ponderada: 0.9360596203163456
+--> Fall-off ponderada: 0.037100973429753235
+--> F-Measure ponderada: 0.9360419018295342
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 20071 1240 3 0 16 6 109 
+
+b'2' 1198 26584 86 3 118 80 16 
+
+b'3' 4 92 3254 14 9 167 0 
+
+b'4' 0 2 41 223 0 19 0 
+
+b'5' 20 134 5 0 787 5 1 
+
+b'6' 6 71 131 16 5 1492 0 
+
+b'7' 87 11 0 0 0 0 1975 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.938511175535397
+--> Recall: 0.9359291210072278
+--> Fall-off: 0.03457796476465948
+--> F-Measure: 0.9372183698722888
+
+-> Evaluación para b'2': 
+--> Precision: 0.944906518802872
+--> Recall: 0.9465551005875023
+--> Fall-off: 0.04917980772281626
+--> F-Measure: 0.9457300912502891
+
+-> Evaluación para b'3': 
+--> Precision: 0.9244318181818182
+--> Recall: 0.9192090395480226
+--> Fall-off: 0.004849855051324594
+--> F-Measure: 0.9218130311614732
+
+-> Evaluación para b'4': 
+--> Precision: 0.87109375
+--> Recall: 0.7824561403508772
+--> Fall-off: 0.0005701648294688829
+--> F-Measure: 0.8243992606284658
+
+-> Evaluación para b'5': 
+--> Precision: 0.841711229946524
+--> Recall: 0.8266806722689075
+--> Fall-off: 0.00258226611299159
+--> F-Measure: 0.8341282458929519
+
+-> Evaluación para b'6': 
+--> Precision: 0.8434143583945732
+--> Recall: 0.8669378268448577
+--> Fall-off: 0.004893214859827942
+--> F-Measure: 0.8550143266475645
+
+-> Evaluación para b'7': 
+--> Precision: 0.9400285578296049
+--> Recall: 0.9527255185721177
+--> Fall-off: 0.0022449488650536295
+--> F-Measure: 0.9463344513655965
+
+
+--- Partición N° 2 ---
+
+-> Accuracy: 0.9363177914321612
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8959400147544191
+--> Recall promediada: 0.8896535351038075
+--> Fall-off promediada: 0.014117658732510984
+--> F-Measure promediada: 0.892658748527223
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9362593987844063
+--> Recall ponderada: 0.9363177914321611
+--> Fall-off ponderada: 0.037286068961631974
+--> F-Measure ponderada: 0.9362763932831374
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19762 1239 1 0 22 5 108 
+
+b'2' 1207 26872 80 0 125 70 16 
+
+b'3' 2 79 3332 29 15 152 0 
+
+b'4' 0 6 32 197 0 12 0 
+
+b'5' 26 156 10 0 753 6 0 
+
+b'6' 4 60 139 8 5 1504 0 
+
+b'7' 73 13 0 0 0 0 1981 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9377431906614786
+--> Recall: 0.9349481951081042
+--> Fall-off: 0.03422102819583192
+--> F-Measure: 0.9363436071166283
+
+-> Evaluación para b'2': 
+--> Precision: 0.9453649956024626
+--> Recall: 0.9471977440958759
+--> Fall-off: 0.049729418169009575
+--> F-Measure: 0.9462804824368342
+
+-> Evaluación para b'3': 
+--> Precision: 0.9271007234279355
+--> Recall: 0.9232474369631477
+--> Fall-off: 0.0047837280213259325
+--> F-Measure: 0.9251700680272109
+
+-> Evaluación para b'4': 
+--> Precision: 0.8418803418803419
+--> Recall: 0.7975708502024291
+--> Fall-off: 0.0006389886709035645
+--> F-Measure: 0.8191268191268192
+
+-> Evaluación para b'5': 
+--> Precision: 0.8184782608695652
+--> Recall: 0.7917981072555205
+--> Fall-off: 0.0029120457557369043
+--> F-Measure: 0.8049171566007481
+
+-> Evaluación para b'6': 
+--> Precision: 0.8599199542595769
+--> Recall: 0.8744186046511628
+--> Fall-off: 0.004328851352545188
+--> F-Measure: 0.8671086768521189
+
+-> Evaluación para b'7': 
+--> Precision: 0.9410926365795724
+--> Recall: 0.9583938074504113
+--> Fall-off: 0.002209550962223806
+--> F-Measure: 0.9496644295302014
+
+
+--- Partición N° 3 ---
+
+-> Accuracy: 0.9359735632777405
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8902937591519311
+--> Recall promediada: 0.8940911259882528
+--> Fall-off promediada: 0.014178167534409772
+--> F-Measure promediada: 0.8921531207380625
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9359794084241592
+--> Recall ponderada: 0.9359735632777406
+--> Fall-off ponderada: 0.03735780768344689
+--> F-Measure ponderada: 0.935972135391144
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19974 1260 1 0 26 3 87 
+
+b'2' 1177 26805 90 1 127 70 17 
+
+b'3' 3 75 3217 35 16 156 0 
+
+b'4' 0 2 31 229 0 10 0 
+
+b'5' 21 126 14 0 739 7 0 
+
+b'6' 11 85 145 16 8 1499 0 
+
+b'7' 85 14 0 0 1 0 1918 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9390249635654178
+--> Recall: 0.9355065336518196
+--> Fall-off: 0.03401788758622498
+--> F-Measure: 0.9372624466238093
+
+-> Evaluación para b'2': 
+--> Precision: 0.9449360172030881
+--> Recall: 0.9476084420405133
+--> Fall-off: 0.04991053169734151
+--> F-Measure: 0.9462703427825043
+
+-> Evaluación para b'3': 
+--> Precision: 0.9196683819325329
+--> Recall: 0.9186179326099372
+--> Fall-off: 0.005119889220902267
+--> F-Measure: 0.9191428571428572
+
+-> Evaluación para b'4': 
+--> Precision: 0.8149466192170819
+--> Recall: 0.8419117647058824
+--> Fall-off: 0.0008985346972629251
+--> F-Measure: 0.8282097649186257
+
+-> Evaluación para b'5': 
+--> Precision: 0.8058887677208287
+--> Recall: 0.814773980154355
+--> Fall-off: 0.0031030996129842057
+--> F-Measure: 0.8103070175438595
+
+-> Evaluación para b'6': 
+--> Precision: 0.859025787965616
+--> Recall: 0.8497732426303855
+--> Fall-off: 0.004346136178933606
+--> F-Measure: 0.8543744656597321
+
+-> Evaluación para b'7': 
+--> Precision: 0.9485657764589516
+--> Recall: 0.9504459861248761
+--> Fall-off: 0.0018510937472189096
+--> F-Measure: 0.9495049504950495
+
+
+--- Partición N° 4 ---
+
+-> Accuracy: 0.9362833686167191
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8901471634504209
+--> Recall promediada: 0.8916928960582913
+--> Fall-off promediada: 0.013992520883262272
+--> F-Measure promediada: 0.8909141459534526
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9362989201742162
+--> Recall ponderada: 0.9362833686167191
+--> Fall-off ponderada: 0.03631908660610067
+--> F-Measure ponderada: 0.9362894301290283
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 20022 1189 0 0 21 6 93 
+
+b'2' 1220 26584 84 2 122 84 10 
+
+b'3' 4 80 3293 38 15 164 0 
+
+b'4' 0 2 33 214 0 16 0 
+
+b'5' 24 123 10 0 779 7 3 
+
+b'6' 3 89 152 12 8 1528 0 
+
+b'7' 77 11 0 0 0 0 1979 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9377985948477752
+--> Recall: 0.9386339130842436
+--> Fall-off: 0.0348748654113816
+--> F-Measure: 0.9382160680396429
+
+-> Evaluación para b'2': 
+--> Precision: 0.9467910819858965
+--> Recall: 0.9458478616665481
+--> Fall-off: 0.047402988863153216
+--> F-Measure: 0.9463192367933931
+
+-> Evaluación para b'3': 
+--> Precision: 0.921892497200448
+--> Recall: 0.9162493043962159
+--> Fall-off: 0.005090497737556561
+--> F-Measure: 0.9190622383477532
+
+-> Evaluación para b'4': 
+--> Precision: 0.8045112781954887
+--> Recall: 0.8075471698113208
+--> Fall-off: 0.0008983018639763678
+--> F-Measure: 0.8060263653483992
+
+-> Evaluación para b'5': 
+--> Precision: 0.8243386243386244
+--> Recall: 0.8234672304439746
+--> Fall-off: 0.0028959212867659886
+--> F-Measure: 0.8239026969857219
+
+-> Evaluación para b'6': 
+--> Precision: 0.8465373961218836
+--> Recall: 0.8526785714285714
+--> Fall-off: 0.004896328637335832
+--> F-Measure: 0.849596886294134
+
+-> Evaluación para b'7': 
+--> Precision: 0.9491606714628298
+--> Recall: 0.957426221577165
+--> Fall-off: 0.001888742382666334
+--> F-Measure: 0.9532755298651252
+
+
+--- Partición N° 5 ---
+
+-> Accuracy: 0.9351141096692024
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.896046715073138
+--> Recall promediada: 0.8917325846651568
+--> Fall-off promediada: 0.014357515752038797
+--> F-Measure promediada: 0.8938608606232952
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9350661228100176
+--> Recall ponderada: 0.9351141096692024
+--> Fall-off ponderada: 0.037818487054969784
+--> F-Measure ponderada: 0.9350869331880726
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19895 1254 3 0 15 7 107 
+
+b'2' 1227 26696 75 0 112 79 18 
+
+b'3' 7 88 3291 28 14 154 0 
+
+b'4' 0 3 36 224 0 14 0 
+
+b'5' 20 127 11 0 811 4 0 
+
+b'6' 5 82 147 18 6 1509 0 
+
+b'7' 87 21 0 0 1 0 1906 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.936631985311426
+--> Recall: 0.9348714816033081
+--> Fall-off: 0.035229146491480616
+--> F-Measure: 0.9357509054136682
+
+-> Evaluación para b'2': 
+--> Precision: 0.9442892009479679
+--> Recall: 0.9464317368029213
+--> Fall-off: 0.05014965293256066
+--> F-Measure: 0.9453592549311236
+
+-> Evaluación para b'3': 
+--> Precision: 0.9236598372158293
+--> Recall: 0.9187604690117253
+--> Fall-off: 0.004962507525861597
+--> F-Measure: 0.9212036389083275
+
+-> Evaluación para b'4': 
+--> Precision: 0.8296296296296296
+--> Recall: 0.8086642599277978
+--> Fall-off: 0.0007947752168354124
+--> F-Measure: 0.8190127970749543
+
+-> Evaluación para b'5': 
+--> Precision: 0.8456725755995829
+--> Recall: 0.8335046248715313
+--> Fall-off: 0.0025833027875233456
+--> F-Measure: 0.8395445134575569
+
+-> Evaluación para b'6': 
+--> Precision: 0.8539898132427843
+--> Recall: 0.8539898132427843
+--> Fall-off: 0.004558867704486421
+--> F-Measure: 0.8539898132427843
+
+-> Evaluación para b'7': 
+--> Precision: 0.9384539635647464
+--> Recall: 0.9459057071960297
+--> Fall-off: 0.0022243576055235247
+--> F-Measure: 0.9421651013346515
+
+
+--- Partición N° 6 ---
+
+-> Accuracy: 0.937143939002771
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8945117889757732
+--> Recall promediada: 0.8934674913169539
+--> Fall-off promediada: 0.013928104987173309
+--> F-Measure promediada: 0.8939677875247855
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9371538852900853
+--> Recall ponderada: 0.937143939002771
+--> Fall-off ponderada: 0.03668291657411462
+--> F-Measure ponderada: 0.9371434951270002
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19763 1203 5 0 24 10 83 
+
+b'2' 1172 26985 73 2 128 58 13 
+
+b'3' 2 80 3304 36 8 179 0 
+
+b'4' 0 3 35 227 0 10 0 
+
+b'5' 24 139 8 0 814 4 0 
+
+b'6' 5 71 143 13 4 1484 0 
+
+b'7' 99 18 0 0 0 0 1872 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9381913126038453
+--> Recall: 0.9371680576631259
+--> Fall-off: 0.03396108299859148
+--> F-Measure: 0.9376794059734775
+
+-> Evaluación para b'2': 
+--> Precision: 0.9468753289589108
+--> Recall: 0.9491400232140973
+--> Fall-off: 0.04865663967090886
+--> F-Measure: 0.9480063235552433
+
+-> Evaluación para b'3': 
+--> Precision: 0.9260089686098655
+--> Recall: 0.915489055139928
+--> Fall-off: 0.00481778199536471
+--> F-Measure: 0.9207189633551625
+
+-> Evaluación para b'4': 
+--> Precision: 0.8165467625899281
+--> Recall: 0.8254545454545454
+--> Fall-off: 0.0008812247295849605
+--> F-Measure: 0.8209764918625677
+
+-> Evaluación para b'5': 
+--> Precision: 0.8323108384458078
+--> Recall: 0.8230535894843276
+--> Fall-off: 0.002862778640878384
+--> F-Measure: 0.8276563294356889
+
+-> Evaluación para b'6': 
+--> Precision: 0.8504297994269341
+--> Recall: 0.8627906976744186
+--> Fall-off: 0.004609922814702298
+--> F-Measure: 0.8565656565656565
+
+-> Evaluación para b'7': 
+--> Precision: 0.9512195121951219
+--> Recall: 0.9411764705882353
+--> Fall-off: 0.0017073040601824682
+--> F-Measure: 0.9461713419257013
+
+
+--- Partición N° 7 ---
+
+-> Accuracy: 0.9344417479905681
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8895581776440394
+--> Recall promediada: 0.8898074765961655
+--> Fall-off promediada: 0.014461866575082633
+--> F-Measure promediada: 0.889671348360401
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9344602754575911
+--> Recall ponderada: 0.9344417479905682
+--> Fall-off ponderada: 0.037890348492001326
+--> F-Measure ponderada: 0.9344475771371732
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19705 1257 1 0 21 8 97 
+
+b'2' 1218 26884 84 1 132 72 17 
+
+b'3' 1 87 3275 37 2 185 0 
+
+b'4' 0 1 35 228 0 15 0 
+
+b'5' 20 136 6 0 782 7 0 
+
+b'6' 4 78 158 13 7 1449 0 
+
+b'7' 93 16 0 0 0 0 1969 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9365049189677297
+--> Recall: 0.9343733700033192
+--> Fall-off: 0.034795291176164186
+--> F-Measure: 0.9354379302159982
+
+-> Evaluación para b'2': 
+--> Precision: 0.9446572261850381
+--> Recall: 0.9463531399605745
+--> Fall-off: 0.050453278662267356
+--> F-Measure: 0.9455044226001019
+
+-> Evaluación para b'3': 
+--> Precision: 0.9202023040179825
+--> Recall: 0.9130192361304712
+--> Fall-off: 0.005180024076168241
+--> F-Measure: 0.9165966974531207
+
+-> Evaluación para b'4': 
+--> Precision: 0.8172043010752689
+--> Recall: 0.8172043010752689
+--> Fall-off: 0.0008812399564563786
+--> F-Measure: 0.8172043010752688
+
+-> Evaluación para b'5': 
+--> Precision: 0.8283898305084746
+--> Recall: 0.8222923238696109
+--> Fall-off: 0.0028262879673406722
+--> F-Measure: 0.8253298153034301
+
+-> Evaluación para b'6': 
+--> Precision: 0.8346774193548387
+--> Recall: 0.8478642480983031
+--> Fall-off: 0.005066017086775401
+--> F-Measure: 0.8412191582002903
+
+-> Evaluación para b'7': 
+--> Precision: 0.9452712433989439
+--> Recall: 0.9475457170356112
+--> Fall-off: 0.0020309271004061856
+--> F-Measure: 0.9464071136745975
+
+
+--- Partición N° 8 ---
+
+-> Accuracy: 0.9364554826939295
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8925992353174639
+--> Recall promediada: 0.887485091155537
+--> Fall-off promediada: 0.014047934732913376
+--> F-Measure promediada: 0.8898887218539916
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9364748880275972
+--> Recall ponderada: 0.9364554826939295
+--> Fall-off ponderada: 0.036888559501090615
+--> F-Measure ponderada: 0.9364562967603404
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19623 1195 1 0 30 5 78 
+
+b'2' 1202 27175 77 4 130 81 20 
+
+b'3' 7 90 3285 24 3 153 0 
+
+b'4' 0 1 43 228 0 19 0 
+
+b'5' 24 111 5 0 746 1 0 
+
+b'6' 5 81 165 17 6 1397 0 
+
+b'7' 102 11 0 0 1 0 1955 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9360778514525593
+--> Recall: 0.9374641696923371
+--> Fall-off: 0.03482509485940018
+--> F-Measure: 0.9367704976727532
+
+-> Evaluación para b'2': 
+--> Precision: 0.9480533072843985
+--> Recall: 0.9472271602356304
+--> Fall-off: 0.04814719006661062
+--> F-Measure: 0.9476400537025089
+
+-> Evaluación para b'3': 
+--> Precision: 0.9186241610738255
+--> Recall: 0.9222346996069624
+--> Fall-off: 0.005308669001751314
+--> F-Measure: 0.9204258896049313
+
+-> Evaluación para b'4': 
+--> Precision: 0.8351648351648352
+--> Recall: 0.7835051546391752
+--> Fall-off: 0.0007775646674615106
+--> F-Measure: 0.8085106382978723
+
+-> Evaluación para b'5': 
+--> Precision: 0.8144104803493449
+--> Recall: 0.8410372040586246
+--> Fall-off: 0.002963996164240258
+--> F-Measure: 0.8275097060454798
+
+-> Evaluación para b'6': 
+--> Precision: 0.8435990338164251
+--> Recall: 0.8360263315380012
+--> Fall-off: 0.004567579006772009
+--> F-Measure: 0.8397956116621581
+
+-> Evaluación para b'7': 
+--> Precision: 0.9522649780808573
+--> Recall: 0.944900918318028
+--> Fall-off: 0.0017454493641577316
+--> F-Measure: 0.9485686559922368
+
+
+--- Partición N° 9 ---
+
+-> Accuracy: 0.9355604894924355
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8908366039248523
+--> Recall promediada: 0.888608673237362
+--> Fall-off promediada: 0.01420436210180874
+--> F-Measure promediada: 0.8896431509149103
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9356222734092079
+--> Recall ponderada: 0.9355604894924356
+--> Fall-off ponderada: 0.0371180059892274
+--> F-Measure ponderada: 0.9355766313377646
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19727 1266 3 0 23 2 91 
+
+b'2' 1175 26825 81 3 121 71 20 
+
+b'3' 0 75 3298 32 10 193 0 
+
+b'4' 0 4 39 227 0 19 0 
+
+b'5' 21 131 9 0 803 9 0 
+
+b'6' 8 58 135 18 8 1526 0 
+
+b'7' 99 20 0 0 0 0 1951 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9380408939610081
+--> Recall: 0.9343974990526714
+--> Fall-off: 0.03395528222233804
+--> F-Measure: 0.9362156518437663
+
+-> Evaluación para b'2': 
+--> Precision: 0.9452411994784876
+--> Recall: 0.9480138535482047
+--> Fall-off: 0.049686660698299016
+--> F-Measure: 0.9466254962505515
+
+-> Evaluación para b'3': 
+--> Precision: 0.9251051893408134
+--> Recall: 0.914079822616408
+--> Fall-off: 0.00487199605860993
+--> F-Measure: 0.919559459082671
+
+-> Evaluación para b'4': 
+--> Precision: 0.8107142857142857
+--> Recall: 0.7854671280276817
+--> Fall-off: 0.000915782562117704
+--> F-Measure: 0.7978910369068541
+
+-> Evaluación para b'5': 
+--> Precision: 0.8321243523316062
+--> Recall: 0.8252826310380267
+--> Fall-off: 0.0028273238158399946
+--> F-Measure: 0.8286893704850361
+
+-> Evaluación para b'6': 
+--> Precision: 0.8384615384615385
+--> Recall: 0.8705077010838562
+--> Fall-off: 0.005196641626159964
+--> F-Measure: 0.8541841589700532
+
+-> Evaluación para b'7': 
+--> Precision: 0.946168768186227
+--> Recall: 0.942512077294686
+--> Fall-off: 0.001976847729296527
+--> F-Measure: 0.9443368828654405
+
+
+--- Partición N° 10 ---
+
+-> Accuracy: 0.93587139857492
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.8936817838435532
+--> Recall promediada: 0.8841304190846229
+--> Fall-off promediada: 0.014208571522138223
+--> F-Measure promediada: 0.888826145609892
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.9358372545258283
+--> Recall ponderada: 0.93587139857492
+--> Fall-off ponderada: 0.03748565697703903
+--> F-Measure ponderada: 0.9358446636039535
+
+-> Confusion Matrix: 
+
+  b'1' b'2' b'3' b'4' b'5' b'6' b'7' 
+
+b'1' 19767 1205 4 0 14 9 75 
+
+b'2' 1270 26891 74 3 105 64 15 
+
+b'3' 4 84 3273 36 9 155 0 
+
+b'4' 0 2 41 202 0 22 0 
+
+b'5' 30 118 8 0 801 7 0 
+
+b'6' 7 75 145 16 5 1502 0 
+
+b'7' 104 19 0 0 1 0 1940 
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9331979983004438
+--> Recall: 0.9379804498434089
+--> Fall-off: 0.03691143863310291
+--> F-Measure: 0.9355831124574024
+
+-> Evaluación para b'2': 
+--> Precision: 0.9470662816087906
+--> Recall: 0.9461332770389135
+--> Fall-off: 0.04815609881131652
+--> F-Measure: 0.9465995494226978
+
+-> Evaluación para b'3': 
+--> Precision: 0.9232722143864598
+--> Recall: 0.9191238416175231
+--> Fall-off: 0.004960878367287385
+--> F-Measure: 0.9211933577258654
+
+-> Evaluación para b'4': 
+--> Precision: 0.7859922178988327
+--> Recall: 0.7565543071161048
+--> Fall-off: 0.0009499136442141623
+--> F-Measure: 0.7709923664122137
+
+-> Evaluación para b'5': 
+--> Precision: 0.8566844919786096
+--> Recall: 0.8309128630705395
+--> Fall-off: 0.0023385281234184394
+--> F-Measure: 0.8436018957345972
+
+-> Evaluación para b'6': 
+--> Precision: 0.8538942581011939
+--> Recall: 0.8582857142857143
+--> Fall-off: 0.004540636042402827
+--> F-Measure: 0.8560843545169564
+
+-> Evaluación para b'7': 
+--> Precision: 0.9556650246305419
+--> Recall: 0.939922480620155
+--> Fall-off: 0.0016025070332253125
+--> F-Measure: 0.9477283829995116
+
+
+--- Promedio de Evaluación ---
+
+-> Accuracy: 0.9359221511066792
+
+-> Promedio de métricas promediadas: 
+--> Precision general promediada: 0.8934200586234274
+--> Recall general promediada: 0.8900739781660366
+--> Fall-off general promediada: 0.014162502027935847
+--> F-Measure general promediada: 0.8916532283937247
+
+-> Promedio de métricas ponderadas: 
+--> Precision general ponderada: 0.9359217666694779
+--> Recall general ponderada: 0.9359221511066794
+--> Fall-off general ponderada: 0.037194791126937556
+--> F-Measure general ponderada: 0.9359135457787149
+
+
+-> Evaluación para b'1': 
+--> Precision: 0.9371722885207079
+--> Recall: 0.9361272790709565
+--> Fall-off: 0.034736908233917535
+--> F-Measure: 0.9366477995229434
+
+-> Evaluación para b'2': 
+--> Precision: 0.9458181158057913
+--> Recall: 0.9470508339190781
+--> Fall-off: 0.04914722672942835
+--> F-Measure: 0.9464335253725249
+
+-> Evaluación para b'3': 
+--> Precision: 0.9229966095387511
+--> Recall: 0.9180030837640342
+--> Fall-off: 0.004994582705615253
+--> F-Measure: 0.9204886200809372
+
+-> Evaluación para b'4': 
+--> Precision: 0.8227684021365693
+--> Recall: 0.8006335621311083
+--> Fall-off: 0.0008206490838281869
+--> F-Measure: 0.811234984165204
+
+-> Evaluación para b'5': 
+--> Precision: 0.8300009452088968
+--> Recall: 0.8232803226515418
+--> Fall-off: 0.0027895550267719783
+--> F-Measure: 0.826558674748507
+
+-> Evaluación para b'6': 
+--> Precision: 0.8483949359145363
+--> Recall: 0.8573272751478054
+--> Fall-off: 0.004700419530994149
+--> F-Measure: 0.8527933108611447
+
+-> Evaluación para b'7': 
+--> Precision: 0.9467891132387398
+--> Recall: 0.9480954904777315
+--> Fall-off: 0.0019481728849954426
+--> F-Measure: 0.9474156840048111
+
