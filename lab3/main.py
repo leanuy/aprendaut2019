@@ -124,6 +124,7 @@ if __name__ == '__main__':
             norm = gui.printNormType(modelType)
             structure = gui.printStructure(modelType)
             mEst = gui.printMEstimator(modelType)
+            weighted = gui.printWeighted(modelType)
 
             (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, revertOnehot)
             model = Model(modelType)
@@ -135,6 +136,7 @@ if __name__ == '__main__':
               'mEst': mEst,
               'norm': norm,
               'structure': structure,
+              'weighted': weighted,
             }
 
             classifier = {

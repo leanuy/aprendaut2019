@@ -122,6 +122,7 @@ def knnClassify(classifier, example, attributes, results, options):
     if options['structure']:
         dist, indexes = classifier['kdtree'].query(example.values.reshape(1,-1), k=options['k'])
         winners = dataset.iloc[indexes[0]]['class'].tolist()
+        pares = list(zip(winners, dist[0]))
         #indexes, distances = classifier['kdtree'].query_radius(example.values.reshape(1,-1), 1, return_distance=True, sort_results=True)
         #winners = dataset.iloc[indexes[0][:options['k']]]['class'].tolist()
     
@@ -136,7 +137,7 @@ def knnClassify(classifier, example, attributes, results, options):
             distances = np.sqrt(np.sum(np.power(np.subtract(datasetWithoutClass.values, example.values), 2), axis = 1)).transpose()
         elif options['measure'] == DistanceOps.CHEBYCHEV:
             distances = np.max(np.absolute(np.subtract(datasetWithoutClass.values, example.values)), axis = 1).transpose()
-
+        
         # Obtener indices de cada fila, asociarlos a su distancia al ejemplo y ordenarlos ascendentemente por distancia
         distancesDataframe = pd.DataFrame({'distances': distances}, index=dataset.index.values)
         distancesDataframe = distancesDataframe.sort_values('distances')
@@ -144,14 +145,28 @@ def knnClassify(classifier, example, attributes, results, options):
         # Obtener los primeros k elementos 
         kIndexes = distancesDataframe.index.values[:options['k']]
         winners = dataset.loc[kIndexes, 'class'].tolist()
-    
-    # Generar estructura para votar
-    classes = {}
-    for res in results:
-        if res not in classes.keys():
-            classes[res] = 0
-    for n in winners:
-        classes[n] += 1
+        if options['weighted']:
+            distancias = distancesDataframe.loc[kIndexes, 'distances'].tolist()
+            pares = list(zip(winners, distancias))
+
+    if options['weighted']:
+        # Generar estructura para votar segun pesos
+        classes = {}
+        for clase, distancia in pares:
+            if distancia > 0:    
+                if clase not in classes.keys():
+                    classes[clase] = (1 / distancia ** 2)
+                else:
+                    classes[clase] += (1 / distancia ** 2)
+
+    else:
+        # Generar estructura para votar
+        classes = {}
+        for res in results:
+            if res not in classes.keys():
+                classes[res] = 0
+        for n in winners:
+            classes[n] += 1
 
     # Realizar votacion entre ganadores
     winner = None
@@ -160,7 +175,7 @@ def knnClassify(classifier, example, attributes, results, options):
         if classes[res] > maxClass:
             maxClass = classes[res]
             winner = res
-    
+
     return winner, maxClass / len(winners)
 
 
