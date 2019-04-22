@@ -209,12 +209,12 @@ def showCharts(name, fall_off, f_measure):
     bar_width = 0.4
     opacity = 0.8
     
-    rects1 = plt.bar(index, fall_off_data, bar_width,
+    rects1 = plt.bar(index, [float(x) for x in fall_off_data], bar_width,
     alpha=opacity,
     color='r',
     label='fall-off')
     
-    rects2 = plt.bar(index + bar_width, f_measure_data, bar_width,
+    rects2 = plt.bar(index + bar_width, [float(x) for x in f_measure_data], bar_width,
     alpha=opacity,
     color='b',
     label='f-measure')
