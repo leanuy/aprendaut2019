@@ -73,8 +73,9 @@ if __name__ == '__main__':
     continuousStrategiesBayes = { 1: (ContinuousOps.STANDARDIZATION, 'Standarization'), 2: (ContinuousOps.VARIABLE, 'Variable') }
 
     # KNN
-    measureTypesKNN = { 1: (DistanceOps.MANHATTAN, "Distancia 'Manhattan'"), 2: (DistanceOps.EUCLIDEAN, 'Distancia Euclídea'), 3: (DistanceOps.CHEBYCHEV, 'Distancia de Chebychev'), 4: (DistanceOps.MAHALANOBIS, 'Distancia de Mahalanobis') }
+    measureTypesKNN = { 1: (DistanceOps.MANHATTAN, "Distancia 'Manhattan'"), 2: (DistanceOps.EUCLIDEAN, 'Distancia Euclídea'), 3: (DistanceOps.CHEBYCHEV, 'Distancia de Chebychev') }
     normStrategies = { 1: (NormOps.EUCLIDEAN, 'Norma Euclídea'), 2: (NormOps.MIN_MAX, 'Norma Min-Max'), 3: (NormOps.Z_SCORE, 'Norma Z-Score'), 4: (NormOps.NONE, 'Ninguna Norma') }
+    weightStrategy = { 1: (True, 'Weighted'), 2: (False, '')}
 
     try:
         ### LECTURA DE ENTRADA
@@ -83,7 +84,7 @@ if __name__ == '__main__':
         elif int(sys.argv[2]) == 3: # Bayes
             lengthOfParams = 7
         elif int(sys.argv[2]) == 4: # KNN
-            lengthOfParams = 8
+            lengthOfParams = 9
         else:
             raise Exception('Modelo desconocido')
 
@@ -121,11 +122,16 @@ if __name__ == '__main__':
             k = abs(int(sys.argv[5]))
             (measureType, measureTypeOut) = measureTypesKNN[int(sys.argv[6])]
             (norm, normOut) = normStrategies[int(sys.argv[7])]
+            (weighted, weightedOut) = weightStrategy[int(sys.argv[8])]
 
             # Nombres de archivos
-            resultFileName = "results/data/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
-            resultCSVName = "results/csv/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
-        
+            if weighted:
+                resultFileName = "results/data/" + datasetOut + ", " + weightedOut + ' ' + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
+                resultCSVName = "results/csv/" + datasetOut + ", " + weightedOut + ' ' + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
+            else:
+                resultFileName = "results/data/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".dat"
+                resultCSVName = "results/csv/" + datasetOut + ", " + modelName + ", " + str(onehotOut) + ", k - " + str(k) + ", " + str(measureTypeOut) + ', ' + normOut + ", " + str(evalModeOut) + ".csv"
+
         print(resultCSVName)
 
         # Valores por defecto:
@@ -135,6 +141,7 @@ if __name__ == '__main__':
         mEst = mEst if 'mEst' in vars() else 1
         k = k if 'k' in vars() else 3
         norm = norm if 'norm' in vars() else NormOps.EUCLIDEAN
+        weighted = weighted if 'weighted' in vars() else False
 
     except Exception as error:
         print('Caught this error: ' + repr(error))
@@ -153,6 +160,7 @@ if __name__ == '__main__':
         'revertOnehot': revertOnehot,
         'mEst': mEst,
         'structure': True,
+        'weighted': weighted
     }
 
     classifier = {

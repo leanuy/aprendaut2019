@@ -1,4 +1,4 @@
-:: Call:
+﻿:: Call:
 :: python automain.py DATASET MODEL EVALUATION ... (Depending on model, detailed below)
 :: DATASET = { 1: Iris, 2: Covertype }
 :: MODEL = { 1: Arbol, 2: Bosque, 3: Naive Bayes, 4: KNN }
@@ -22,14 +22,15 @@
 :: EX: automain.py 2 3 1 1 1
 
 :: KNN:
-:: python automain.py DATASET MODEL EVALUATION ONEHOT K MEASURE NORM
+:: python automain.py DATASET MODEL EVALUATION ONEHOT K MEASURE NORM WEIGHTED
 :: ONEHOT = { 1: Deshacer Onehot Encoding, 2: Conservar Onehot Encoding }
 :: K = 1..n (Se prefieren impares)
-:: MEASURE = { 1: Distancia 'Manhattan', 2: Distancia Eucl�dea, 3: Distancia de Chebychev, 4: Distancia de Mahalanobis }
-:: NORM = { 1: Norma Eucl�dea, 2: Norma Min-Max, 3: Norma Z-Score, 4: Ninguna Norma }
+:: MEASURE = { 1: Distancia 'Manhattan', 2: Distancia Euclidea, 3: Distancia de Chebychev, 4: Distancia de Mahalanobis }
+:: NORM = { 1: Norma Euclidea, 2: Norma Min-Max, 3: Norma Z-Score, 4: Ninguna Norma }
+:: WEIGHTED = { 1: Weighted, 2: Not Weighted }
 ::
-:: python automain.py (1|2) 4 (1|2) (1|2) (1..n) (1|2|3|4) (1|2|3|4)
-:: EX: 2 4 1 3 2 1
+:: python automain.py (1|2) 4 (1|2) (1|2) (1..n) (1|2|3|4) (1|2|3|4) (1|2)
+:: EX: 2 4 1 1 3 2 1 1
 
 :: IRIS - NB
 :: -----------------------------------------------------------------------------------
