@@ -250,9 +250,6 @@ python automain.py 2 4 1 1 1 3 1
 python automain.py 2 4 1 1 1 3 2
 python automain.py 2 4 1 1 1 3 3
 
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 1 1 1 4 4
-
 :: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 3, Distancia Manhattan
 python automain.py 2 4 1 1 3 1 1
 python automain.py 2 4 1 1 3 1 2
@@ -267,9 +264,6 @@ python automain.py 2 4 1 1 3 2 3
 python automain.py 2 4 1 1 3 3 1
 python automain.py 2 4 1 1 3 3 2
 python automain.py 2 4 1 1 3 3 3
-
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 1 1 3 4 4
 
 :: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 7, Distancia Manhattan
 python automain.py 2 4 1 1 7 1 1
@@ -286,9 +280,6 @@ python automain.py 2 4 1 1 7 3 1
 python automain.py 2 4 1 1 7 3 2
 python automain.py 2 4 1 1 7 3 3
 
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 7, Distancia Mahalanobis
-::python automain.py 2 4 1 1 7 4 4
-
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Manhattan
 python automain.py 2 4 2 1 1 1 1
 python automain.py 2 4 2 1 1 1 2
@@ -303,9 +294,6 @@ python automain.py 2 4 2 1 1 2 3
 python automain.py 2 4 2 1 1 3 1
 python automain.py 2 4 2 1 1 3 2
 python automain.py 2 4 2 1 1 3 3
-
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 2 1 1 4 4
 
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 3, Distancia Manhattan
 python automain.py 2 4 2 1 3 1 1
@@ -322,9 +310,6 @@ python automain.py 2 4 2 1 3 3 1
 python automain.py 2 4 2 1 3 3 2
 python automain.py 2 4 2 1 3 3 3
 
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 2 1 3 4 4
-
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 7, Distancia Manhattan
 python automain.py 2 4 2 1 7 1 1
 python automain.py 2 4 2 1 7 1 2
@@ -339,9 +324,6 @@ python automain.py 2 4 2 1 7 2 3
 python automain.py 2 4 2 1 7 3 1
 python automain.py 2 4 2 1 7 3 2
 python automain.py 2 4 2 1 7 3 3
-
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 7, Distancia Mahalanobis
-::python automain.py 2 4 2 1 7 4 4
 
 :: Fijo: CoverType, KNN, Normal, Conservar Onehot, 1, Distancia Manhattan
 python automain.py 2 4 1 2 1 1 1
@@ -358,9 +340,6 @@ python automain.py 2 4 1 2 1 3 1
 python automain.py 2 4 1 2 1 3 2
 python automain.py 2 4 1 2 1 3 3
 
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 1 2 1 4 4
-
 :: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 3, Distancia Manhattan
 python automain.py 2 4 1 2 3 1 1
 python automain.py 2 4 1 2 3 1 2
@@ -375,9 +354,6 @@ python automain.py 2 4 1 2 3 2 3
 python automain.py 2 4 1 2 3 3 1
 python automain.py 2 4 1 2 3 3 2
 python automain.py 2 4 1 2 3 3 3
-
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 1 2 3 4 4
 
 :: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 7, Distancia Manhattan
 python automain.py 2 4 1 2 7 1 1
@@ -394,9 +370,6 @@ python automain.py 2 4 1 2 7 3 1
 python automain.py 2 4 1 2 7 3 2
 python automain.py 2 4 1 2 7 3 3
 
-:: Fijo: CoverType, KNN, Normal, Deshacer Onehot, 7, Distancia Mahalanobis
-::python automain.py 2 4 1 2 7 4 4
-
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Manhattan
 python automain.py 2 4 2 2 1 1 1
 python automain.py 2 4 2 2 1 1 2
@@ -411,9 +384,6 @@ python automain.py 2 4 2 2 1 2 3
 python automain.py 2 4 2 2 1 3 1
 python automain.py 2 4 2 2 1 3 2
 python automain.py 2 4 2 2 1 3 3
-
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 2 2 1 4 4
 
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 3, Distancia Manhattan
 python automain.py 2 4 2 2 3 1 1
@@ -430,9 +400,6 @@ python automain.py 2 4 2 2 3 3 1
 python automain.py 2 4 2 2 3 3 2
 python automain.py 2 4 2 2 3 3 3
 
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 1, Distancia Mahalanobis
-::python automain.py 2 4 2 2 3 4 4
-
 :: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 7, Distancia Manhattan
 python automain.py 2 4 2 2 7 1 1
 python automain.py 2 4 2 2 7 1 2
@@ -447,8 +414,5 @@ python automain.py 2 4 2 2 7 2 3
 python automain.py 2 4 2 2 7 3 1
 python automain.py 2 4 2 2 7 3 2
 python automain.py 2 4 2 2 7 3 3
-
-:: Fijo: CoverType, KNN, Cross, Deshacer Onehot, 7, Distancia Mahalanobis
-::python automain.py 2 4 2 2 7 4 4
 
 pause
