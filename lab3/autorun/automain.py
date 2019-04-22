@@ -152,6 +152,7 @@ if __name__ == '__main__':
         'norm': norm,
         'revertOnehot': revertOnehot,
         'mEst': mEst,
+        'structure': True,
     }
 
     classifier = {

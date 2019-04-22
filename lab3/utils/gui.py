@@ -84,6 +84,10 @@ def printClassifiers(classifiers):
             print("   Estrategia de normalización: ", end="")
             print(c['options']['norm'])
 
+        if modelType == ModelOps.KNN:
+            print("   Estrategia de búsqueda con KDTree: ", end="")
+            print(c['options']['structure'])
+
         if modelType == ModelOps.NAIVE_BAYES or modelType == ModelOps.KNN:
             print("   Estrategia de one hot encoding: ", end="")
             print(c['options']['revertOnehot'])
@@ -226,7 +230,6 @@ def printMeasureType(modelType):
         print ("1. Distancia 'Manhattan'")
         print ("2. Distancia Euclídea")
         print ("3. Distancia de Chebychev")
-        print ("4. Distancia de Mahalanobis")
 
         try:
             measureType = int( input() )
@@ -236,8 +239,6 @@ def printMeasureType(modelType):
                 return DistanceOps.EUCLIDEAN
             elif measureType == 3:
                 return DistanceOps.CHEBYCHEV
-            elif measureType == 4:
-                return DistanceOps.MAHALANOBIS
             return DistanceOps.EUCLIDEAN
 
         except:
@@ -308,7 +309,7 @@ def printMEstimator(modelType):
         except:
             return 1
 
-# Imprime las opciones de vecinos y lee la opción elegida
+# Imprime las opciones de one hot encoding y lee la opción elegida
 def printOneHotEncoding(modelType):
     if modelType == ModelOps.DECISION_TREE or modelType == ModelOps.DECISION_FOREST:
         return True
@@ -321,6 +322,34 @@ def printOneHotEncoding(modelType):
             return onehot != 'n'
         except:
             return True
+
+# Imprime las opciones de estructura para knn y lee la opción elegida
+def printStructure(modelType):
+    if modelType != ModelOps.KNN:
+        return False
+    else:
+        print ("")
+        print ("-> Desea utilizar una estructura KDTree para clasificar? (y/n): ")
+        print ("-> DEFAULT: n")
+        try:
+            structure = input()
+            return structure == 'y'
+        except:
+            return False
+
+# Imprime para elegir knn o weighted nn y lee la opción elegida
+def printWeighted(modelType):
+    if modelType != ModelOps.KNN:
+        return False
+    else:
+        print ("")
+        print ("-> Desea utilizar weighted neaerst neighbour para clasificar? (y/n): ")
+        print ("-> DEFAULT: n")
+        try:
+            weighted = input()
+            return weighted == 'y'
+        except:
+            return False
 
 # Imprime los datos de entrenamiento de un clasificador
 def printTrainedClassifier(classifier):
@@ -501,8 +530,6 @@ def printDataFromModel(classifier):
         print(classifier['options']['measure'])
         print("-> Estrategia de norma: ", end="")
         print(classifier['options']['norm'])
-    
-    
 
 # Imprime datos genéricos de evaluación normal y llama a printEvaluation
 def printNormalEvaluation(classifier, trainingTime, accuracy, means, weightedMeans, eval, confusionMatrix, dataLength):

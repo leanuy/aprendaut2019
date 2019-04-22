@@ -37,6 +37,7 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
+            structure = gui.printStructure(modelType)
             mEst = gui.printMEstimator(modelType)
 
             model = Model(modelType)
@@ -45,9 +46,10 @@ if __name__ == '__main__':
               'k': k,
               'continuous': continuous,
               'measure': measure,
-              'norm': norm,
               'revertOnehot': revertOnehot,
               'mEst': mEst,
+              'norm': norm,
+              'structure': structure,
             }
 
             print()
@@ -120,8 +122,9 @@ if __name__ == '__main__':
             continuous = gui.printContinuousStrategy(modelType)
             measure = gui.printMeasureType(modelType)
             norm = gui.printNormType(modelType)
+            structure = gui.printStructure(modelType)
             mEst = gui.printMEstimator(modelType)
-
+            weighted = gui.printWeighted(modelType)
 
             (dataset, attributes, results) = reader.readDataset(datasetFile, datasetFile == COVERTYPE_DATASET, revertOnehot)
             model = Model(modelType)
@@ -129,9 +132,11 @@ if __name__ == '__main__':
               'k': k,
               'continuous': continuous,
               'measure': measure,
-              'norm': norm,
               'revertOnehot': revertOnehot,
               'mEst': mEst,
+              'norm': norm,
+              'structure': structure,
+              'weighted': weighted,
             }
 
             classifier = {
