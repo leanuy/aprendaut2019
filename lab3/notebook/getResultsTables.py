@@ -1,6 +1,14 @@
 import csv
 import os
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+#  Codigo para celda del notebook
+# %matplotlib inline
+# %config InlineBackend.print_figure_kwargs={'bbox_inches':None}
+# import getResultsTables.py
+
 # Dependencias de IPython
 from IPython.display import display, clear_output, HTML
 import tabulate
@@ -91,59 +99,131 @@ def round_sig(x, sig=4):
 def printData(dataset, model, validation):
     params = ['<b>|</b>', '<b>Accuracy</b>', '<b>Precisión promediada</b>', '<b>Precisión ponderada</b>', '<b>Recall promediado</b>', '<b>Recall ponderado</b>', '<b>Fall-off promediado</b>', '<b>Fall-off ponderado</b>', '<b>F-Measure promediada</b>', '<b>F-Measure ponderado</b>']
     if model == 'Arbol' or model == 'Bosque':
-        paramsTable = ['<b>Onehot</b>', '<b>Continuos</b>', '<b>Medida</b>'] + params
+        paramsTable = ['<b>Indice</b>', '<b>Onehot</b>', '<b>Continuos</b>', '<b>Medida</b>'] + params
     elif model == 'Bayes':
-        paramsTable = ['<b>Onehot</b>', '<b>Continuos</b>', '<b>mEst</b>'] + params
+        paramsTable = ['<b>Indice</b>', '<b>Onehot</b>', '<b>Continuos</b>', '<b>mEst</b>'] + params
     else: # KNN
-        paramsTable = ['<b>Onehot</b>', '<b>K</b>', '<b>Medida</b>', '<b>Norma</b>'] + params
+        paramsTable = ['<b>Indice</b>', '<b>Onehot</b>', '<b>K</b>', '<b>Medida</b>', '<b>Norma</b>'] + params
     
     matrix_data = []
     matrix_data.append(paramsTable)
+
+    index = []
+    fall_off = []
+    f_measure = []
 
     if dataset == 'Iris':
         if model == 'Arbol' or model == 'Bosque':
                 for continuous in datosTrees[dataset][model][validation]:
                     for measure in datosTrees[dataset][model][validation][continuous]:
-                        paramsTable = ['No aplica', continuous, measure, '|']
-                        paramsTable.extend(getData(datosTrees[dataset][model][validation][continuous][measure]))
+                        data = getData(datosTrees[dataset][model][validation][continuous][measure])
+                        
+                        fall_off.append(data[6])
+                        f_measure.append(data[8])
+                        index.append(len(f_measure))
+
+                        paramsTable = [index[-1], 'No aplica', continuous, measure, '|']
+                        paramsTable.extend(data)
                         matrix_data.append(paramsTable)
         elif model == 'Bayes':
             for continuous in datosBayes[dataset][model][validation]['Onehot']:
                 for mEst in datosBayes[dataset][model][validation]['Onehot'][continuous]:
-                    paramsTable = ['No aplica', continuous, humanizeMEst[mEst], '|']
-                    paramsTable.extend(getData(datosBayes[dataset][model][validation]['Onehot'][continuous][mEst]))
+                    data = getData(datosBayes[dataset][model][validation]['Onehot'][continuous][mEst])
+                        
+                    fall_off.append(data[6])
+                    f_measure.append(data[8])
+                    index.append(len(f_measure))
+
+                    paramsTable = [index[-1], 'No aplica', continuous, humanizeMEst[mEst], '|']
+                    paramsTable.extend(data)
                     matrix_data.append(paramsTable)
         else: # KNN
             for k in datosKNN[dataset][model][validation]['Onehot']:
                 for measure in datosKNN[dataset][model][validation]['Onehot'][k]:
                     for norm in datosKNN[dataset][model][validation]['Onehot'][k][measure]:
-                        paramsTable = ['No aplica', humanizeK[k], measure, norm, '|']
-                        paramsTable.extend(getData(datosKNN[dataset][model][validation]['No Onehot'][k][measure][norm]))
+                        data = getData(datosKNN[dataset][model][validation]['No Onehot'][k][measure][norm])
+
+                        
+                        fall_off.append(data[6])
+                        f_measure.append(data[8])
+                        index.append(len(f_measure))
+
+                        paramsTable = [index[-1], 'No aplica', humanizeK[k], measure, norm, '|']
+                        paramsTable.extend(data)
                         matrix_data.append(paramsTable)
     else:
         if model == 'Arbol' or model == 'Bosque':
             for continuous in datosTrees[dataset][model][validation]:
                 for measure in datosTrees[dataset][model][validation][continuous]:
-                    paramsTable = ['No', continuous, measure, '|']
-                    paramsTable.extend(getData(datosTrees[dataset][model][validation][continuous][measure]))
+                    data = getData(datosTrees[dataset][model][validation][continuous][measure])
+                    
+                    fall_off.append(data[6])
+                    f_measure.append(data[8])
+                    index.append(len(f_measure))
+
+                    paramsTable = [index[-1], 'No', continuous, measure, '|']
+                    paramsTable.extend(data)
                     matrix_data.append(paramsTable)
         elif model == 'Bayes':
             for onehot in datosBayes[dataset][model][validation]:
                 for continuous in datosBayes[dataset][model][validation][onehot]:
                     for mEst in datosBayes[dataset][model][validation][onehot][continuous]:
-                        paramsTable = [humanizeOnehot[onehot], continuous, humanizeMEst[mEst], '|']
-                        paramsTable.extend(getData(datosBayes[dataset][model][validation][onehot][continuous][mEst]))
+                        data = getData(datosBayes[dataset][model][validation][onehot][continuous][mEst])
+                        
+                        fall_off.append(data[6])
+                        f_measure.append(data[8])
+                        index.append(len(f_measure))
+                        
+                        paramsTable = [index[-1], humanizeOnehot[onehot], continuous, humanizeMEst[mEst], '|']
+                        paramsTable.extend(data)
                         matrix_data.append(paramsTable)
         else: # KNN
             for onehot in datosKNN[dataset][model][validation]:
                 for k in datosKNN[dataset][model][validation][onehot]:
                     for measure in datosKNN[dataset][model][validation][onehot][k]:
                         for norm in datosKNN[dataset][model][validation][onehot][k][measure]:
-                            paramsTable = [humanizeOnehot[onehot], humanizeK[k], measure, norm, '|']
-                            paramsTable.extend(getData(datosKNN[dataset][model][validation][onehot][k][measure][norm]))
+                            data = getData(datosKNN[dataset][model][validation][onehot][k][measure][norm])
+
+                            fall_off.append(data[6])
+                            f_measure.append(data[8])
+                            index.append(len(f_measure))
+
+                            paramsTable = [index[-1], humanizeOnehot[onehot], humanizeK[k], measure, norm, '|']
+                            paramsTable.extend(data)
                             matrix_data.append(paramsTable)
 
+    # ACA
+
+    showCharts(index, fall_off, f_measure)
     display(HTML(tabulate.tabulate(matrix_data, tablefmt='html')))
+
+def showCharts(name, fall_off, f_measure):
+    # data to plot
+    n_groups = len(name)
+    fall_off_data = fall_off
+    f_measure_data = f_measure
+    
+    # create plot
+    fig, ax = plt.subplots(figsize=(15,5))
+    index = np.arange(n_groups)
+    bar_width = 0.4
+    opacity = 0.8
+    
+    rects1 = plt.bar(index, fall_off_data, bar_width,
+    alpha=opacity,
+    color='r',
+    label='fall-off')
+    
+    rects2 = plt.bar(index + bar_width, f_measure_data, bar_width,
+    alpha=opacity,
+    color='b',
+    label='f-measure')
+
+    plt.title('Fall-off - F-Measure')
+    
+    plt.xticks(index + bar_width, name)
+    plt.legend()
+    plt.show()
 
 def getData(fileName):
     hdir = os.path.dirname(__file__)
