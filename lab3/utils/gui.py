@@ -337,6 +337,20 @@ def printStructure(modelType):
         except:
             return False
 
+# Imprime para elegir knn o weighted nn y lee la opción elegida
+def printWeighted(modelType):
+    if modelType != ModelOps.KNN:
+        return False
+    else:
+        print ("")
+        print ("-> Desea utilizar weighted neaerst neighbour para clasificar? (y/n): ")
+        print ("-> DEFAULT: n")
+        try:
+            weighted = input()
+            return weighted == 'y'
+        except:
+            return False
+
 # Imprime los datos de entrenamiento de un clasificador
 def printTrainedClassifier(classifier):
 
