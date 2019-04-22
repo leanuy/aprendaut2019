@@ -153,7 +153,7 @@ def knnClassify(classifier, example, attributes, results, options):
         # Generar estructura para votar segun pesos
         classes = {}
         for clase, distancia in pares:
-            if distancia > 0:    
+            if distancia > 0:
                 if clase not in classes.keys():
                     classes[clase] = (1 / distancia ** 2)
                 else:

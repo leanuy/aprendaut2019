@@ -343,7 +343,7 @@ def printWeighted(modelType):
         return False
     else:
         print ("")
-        print ("-> Desea utilizar weighted neaerst neighbour clasificar? (y/n): ")
+        print ("-> Desea utilizar weighted neaerst neighbour para clasificar? (y/n): ")
         print ("-> DEFAULT: n")
         try:
             weighted = input()
