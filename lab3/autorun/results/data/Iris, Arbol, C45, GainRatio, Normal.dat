@@ -1,0 +1,57 @@
+
+MODELO:
+
+-> Modelo Entrenado: Arbol
+-> Estrategia de atributos continuos: ContinuousOps.C45
+-> Estrategia de medida: MeasureOps.GAINRATIO
+-> Tiempo de entrenamiento: 1.2893118858337402
+
+EVALUACIÓN NORMAL (80/20):
+
+-> Total de ejemplos: 150
+-> Ejemplos de entrenamiento: 120
+-> Ejemplos de evaluación: 30
+
+-> Accuracy: 0.9666666666666667
+
+-> Promedio general de métricas: 
+--> Precision promediada: 0.9666666666666667
+--> Recall promediada: 0.9629629629629629
+--> Fall-off promediada: 0.015873015873015872
+--> F-Measure promediada: 0.9628482972136223
+
+-> Promedio ponderado de métricas: 
+--> Precision ponderada: 0.97
+--> Recall ponderada: 0.9666666666666668
+--> Fall-off ponderada: 0.014285714285714284
+--> F-Measure ponderada: 0.9665634674922601
+
+-> Confusion Matrix: 
+
+                b'Iris-setosa' b'Iris-versicolor' b'Iris-virginica' 
+
+b'Iris-setosa'          12             0               0        
+
+b'Iris-versicolor'      0             8               1        
+
+b'Iris-virginica'       0             0               9        
+
+
+-> Evaluación para b'Iris-setosa': 
+--> Precision: 1.0
+--> Recall: 1.0
+--> Fall-off: 0.0
+--> F-Measure: 1.0
+
+-> Evaluación para b'Iris-versicolor': 
+--> Precision: 1.0
+--> Recall: 0.8888888888888888
+--> Fall-off: 0.0
+--> F-Measure: 0.9411764705882353
+
+-> Evaluación para b'Iris-virginica': 
+--> Precision: 0.9
+--> Recall: 1.0
+--> Fall-off: 0.047619047619047616
+--> F-Measure: 0.9473684210526316
+
