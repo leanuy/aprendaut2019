@@ -111,6 +111,8 @@ def printData(dataset, model, validation):
     index = []
     fall_off = []
     f_measure = []
+    fall_off_g = []
+    f_measure_g = []
 
     if dataset == 'Iris':
         if model == 'Arbol' or model == 'Bosque':
@@ -120,6 +122,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
 
                         paramsTable = [index[-1], 'No aplica', continuous, measure, '|']
@@ -132,6 +136,8 @@ def printData(dataset, model, validation):
                         
                     fall_off.append(data[6])
                     f_measure.append(data[8])
+                    fall_off_g.append(data[5])
+                    f_measure_g.append(data[7])
                     index.append(len(f_measure))
 
                     paramsTable = [index[-1], 'No aplica', continuous, humanizeMEst[mEst], '|']
@@ -146,6 +152,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
 
                         paramsTable = [index[-1], 'No aplica', humanizeK[k], measure, norm, '|']
@@ -159,6 +167,8 @@ def printData(dataset, model, validation):
                     
                     fall_off.append(data[6])
                     f_measure.append(data[8])
+                    fall_off_g.append(data[5])
+                    f_measure_g.append(data[7])
                     index.append(len(f_measure))
 
                     paramsTable = [index[-1], 'No', continuous, measure, '|']
@@ -172,6 +182,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
                         
                         paramsTable = [index[-1], humanizeOnehot[onehot], continuous, humanizeMEst[mEst], '|']
@@ -186,6 +198,8 @@ def printData(dataset, model, validation):
 
                             fall_off.append(data[6])
                             f_measure.append(data[8])
+                            fall_off_g.append(data[5])
+                            f_measure_g.append(data[7])
                             index.append(len(f_measure))
 
                             paramsTable = [index[-1], humanizeOnehot[onehot], humanizeK[k], measure, norm, '|']
@@ -194,30 +208,42 @@ def printData(dataset, model, validation):
 
     # ACA
 
-    showCharts(index, fall_off, f_measure)
+    showCharts(index, fall_off, f_measure, fall_off_g, f_measure_g)
     display(HTML(tabulate.tabulate(matrix_data, tablefmt='html')))
 
-def showCharts(name, fall_off, f_measure):
+def showCharts(name, fall_off, f_measure, fall_off_g, f_measure_g):
     # data to plot
     n_groups = len(name)
     fall_off_data = fall_off
     f_measure_data = f_measure
+    fall_off_g_data = fall_off_g
+    f_measure_g_data = f_measure_g
     
     # create plot
     fig, ax = plt.subplots(figsize=(15,5))
     index = np.arange(n_groups)
-    bar_width = 0.4
+    bar_width = 0.24
     opacity = 0.8
     
-    rects1 = plt.bar(index, [float(x) for x in fall_off_data], bar_width,
+    rects1 = plt.bar(index, [float(x) for x in f_measure_data], bar_width,  
     alpha=opacity,
-    color='r',
-    label='fall-off')
-    
-    rects2 = plt.bar(index + bar_width, [float(x) for x in f_measure_data], bar_width,
+    color='#e1974c',
+    label='F-measure ponderada')
+
+    rects2 = plt.bar(index + bar_width, [float(x) for x in f_measure_g_data], bar_width,
     alpha=opacity,
-    color='b',
-    label='f-measure')
+    color='#84ba5e',
+    label='f-measure genérica')
+
+    rects3 = plt.bar(index + (2 * bar_width), [float(x) for x in fall_off_data], bar_width,
+    alpha=opacity,
+    color='#d35e60',
+    label='Fall-Off ponderada')
+
+    rects4 = plt.bar(index + (3 * bar_width), [float(x) for x in fall_off_g_data], bar_width,
+    alpha=opacity,
+    color='#7293cb',
+    label='Fall-Off genérica')
 
     plt.title('Fall-off - F-Measure')
     
