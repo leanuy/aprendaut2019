@@ -228,7 +228,7 @@ def printNotFound():
 
 # Imprimir titulo
 def printTitle():
-    display(HTML('<h1 style="text-align: center;">Seleccione los parametros del caso que desee visualizar</h1>'))
+    display(HTML('<h1 style="text-align: center;">Seleccione los parámetros del caso que desee visualizar</h1>'))
 
 ConjuntoDict = { 'Conjunto: Iris': 'Iris', 'Conjunto: Covertype': 'Covertype' }
 ModeloDict = { 'Modelo: Árbol de decisión': 'Arbol', 'Modelo: Bosque de decisión': 'Bosque', 'Modelo: Bayes sencillo': 'Bayes', 'Modelo: K vecinos más cercanos': 'KNN' }

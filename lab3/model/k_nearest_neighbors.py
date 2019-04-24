@@ -120,11 +120,14 @@ def knnClassify(classifier, example, attributes, results, options):
 
     # Obtener K vecinos mas cercanos utilizando estructura KDTree
     if options['structure']:
-        dist, indexes = classifier['kdtree'].query(example.values.reshape(1,-1), k=options['k'])
-        winners = dataset.iloc[indexes[0]]['class'].tolist()
-        pares = list(zip(winners, dist[0]))
-        #indexes, distances = classifier['kdtree'].query_radius(example.values.reshape(1,-1), 1, return_distance=True, sort_results=True)
-        #winners = dataset.iloc[indexes[0][:options['k']]]['class'].tolist()
+        indexes, distances = classifier['kdtree'].query_radius(example.values.reshape(1,-1), 1, return_distance=True, sort_results=True)
+        if len(indexes[0]) < options['k']:
+            increased_radius = 8
+            while(len(indexes[0]) < options['k']):
+                indexes, distances = classifier['kdtree'].query_radius(example.values.reshape(1,-1), increased_radius, return_distance=True, sort_results=True)
+                increased_radius *= 2
+        winners = dataset.iloc[indexes[0][:options['k']]]['class'].tolist()
+        pares = list(zip(winners, distances[0]))
     
     # Obtener K vecinos mas cercanos buscando en todo el dataset
     else:

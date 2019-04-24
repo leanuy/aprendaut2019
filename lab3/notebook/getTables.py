@@ -49,11 +49,18 @@ Validacion = widgets.Dropdown(options=ValidacionDict.keys())
 
 boxGeneral = Box(children=[Conjunto, Modelo, Validacion], layout=box_layout)
 
+FMPond = widgets.Checkbox(value=True, description='F-Measure ponderada', disabled=False)
+FMGenerica = widgets.Checkbox(value=True, description='F-Measure genérica', disabled=False)
+FallOffPond = widgets.Checkbox(value=True, description='Fall-Off ponderada', disabled=False)
+FallOffGenerica = widgets.Checkbox(value=True, description='Fall-Off genérica', disabled=False)
+
+boxGraphs = Box(children=[FMPond, FMGenerica, FallOffPond, FallOffGenerica], layout=box_layout)
+
 main_box_layout = Layout(display='flex',
                         flex_flow='column',
                         width='100%')
 
-main_box = Box(children=[boxGeneral], layout=main_box_layout)
+main_box = Box(children=[boxGeneral, boxGraphs], layout=main_box_layout)
 
 datosTrees = {}
 datosBayes = {}
@@ -111,6 +118,8 @@ def printData(dataset, model, validation):
     index = []
     fall_off = []
     f_measure = []
+    fall_off_g = []
+    f_measure_g = []
 
     if dataset == 'Iris':
         if model == 'Arbol' or model == 'Bosque':
@@ -120,6 +129,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
 
                         paramsTable = [index[-1], 'No aplica', continuous, measure, '|']
@@ -132,6 +143,8 @@ def printData(dataset, model, validation):
                         
                     fall_off.append(data[6])
                     f_measure.append(data[8])
+                    fall_off_g.append(data[5])
+                    f_measure_g.append(data[7])
                     index.append(len(f_measure))
 
                     paramsTable = [index[-1], 'No aplica', continuous, humanizeMEst[mEst], '|']
@@ -146,6 +159,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
 
                         paramsTable = [index[-1], 'No aplica', humanizeK[k], measure, norm, '|']
@@ -159,6 +174,8 @@ def printData(dataset, model, validation):
                     
                     fall_off.append(data[6])
                     f_measure.append(data[8])
+                    fall_off_g.append(data[5])
+                    f_measure_g.append(data[7])
                     index.append(len(f_measure))
 
                     paramsTable = [index[-1], 'No', continuous, measure, '|']
@@ -172,6 +189,8 @@ def printData(dataset, model, validation):
                         
                         fall_off.append(data[6])
                         f_measure.append(data[8])
+                        fall_off_g.append(data[5])
+                        f_measure_g.append(data[7])
                         index.append(len(f_measure))
                         
                         paramsTable = [index[-1], humanizeOnehot[onehot], continuous, humanizeMEst[mEst], '|']
@@ -186,41 +205,64 @@ def printData(dataset, model, validation):
 
                             fall_off.append(data[6])
                             f_measure.append(data[8])
+                            fall_off_g.append(data[5])
+                            f_measure_g.append(data[7])
                             index.append(len(f_measure))
 
                             paramsTable = [index[-1], humanizeOnehot[onehot], humanizeK[k], measure, norm, '|']
                             paramsTable.extend(data)
                             matrix_data.append(paramsTable)
 
-    # ACA
-
-    showCharts(index, fall_off, f_measure)
+    if (FMPond.value or FMGenerica.value or FallOffPond.value or FallOffGenerica.value):
+        showCharts(index, fall_off, f_measure, fall_off_g, f_measure_g)
     display(HTML(tabulate.tabulate(matrix_data, tablefmt='html')))
 
-def showCharts(name, fall_off, f_measure):
+def showCharts(name, fall_off, f_measure, fall_off_g, f_measure_g):
     # data to plot
     n_groups = len(name)
     fall_off_data = fall_off
     f_measure_data = f_measure
+    fall_off_g_data = fall_off_g
+    f_measure_g_data = f_measure_g
     
     # create plot
     fig, ax = plt.subplots(figsize=(15,5))
     index = np.arange(n_groups)
-    bar_width = 0.4
+    bar_width = 0.24
     opacity = 0.8
     
-    rects1 = plt.bar(index, [float(x) for x in fall_off_data], bar_width,
-    alpha=opacity,
-    color='r',
-    label='fall-off')
-    
-    rects2 = plt.bar(index + bar_width, [float(x) for x in f_measure_data], bar_width,
-    alpha=opacity,
-    color='b',
-    label='f-measure')
+    if FMPond.value:
+        rects1 = plt.bar(index, [float(x) for x in f_measure_data], bar_width,  
+        alpha=opacity,
+        color='#e1974c',
+        label='F-measure ponderada')
 
-    plt.title('Fall-off - F-Measure')
-    
+    if FMGenerica.value:
+        rects2 = plt.bar(index + bar_width, [float(x) for x in f_measure_g_data], bar_width,
+        alpha=opacity,
+        color='#84ba5e',
+        label='F-measure genérica')
+
+    if FallOffPond.value:
+        rects3 = plt.bar(index + (2 * bar_width), [float(x) for x in fall_off_data], bar_width,
+        alpha=opacity,
+        color='#d35e60',
+        label='Fall-Off ponderada')
+
+    if FallOffGenerica.value:
+        rects4 = plt.bar(index + (3 * bar_width), [float(x) for x in fall_off_g_data], bar_width,
+        alpha=opacity,
+        color='#7293cb',
+        label='Fall-Off genérica')
+
+    if ((FMPond.value or FMGenerica.value) and (FallOffPond.value or FallOffGenerica.value)):
+        title = 'F-Measure - Fall-off'
+    elif (FMPond.value or FMGenerica.value):
+        title = 'F-Measure'
+    else:
+        title = 'Fall-off'
+
+    plt.title(title)
     plt.xticks(index + bar_width, name)
     plt.legend()
     plt.show()
@@ -264,12 +306,16 @@ def refreshMatrix(dropdown = None):
     try:
         printData(ConjuntoDict[Conjunto.value], ModeloDict[Modelo.value], ValidacionDict[Validacion.value])
     except FileNotFoundError as fnf_error:
-        print(fnf_error)
         printNotFound()
 
 Conjunto.observe(refreshMatrix, names='value')
 Modelo.observe(refreshMatrix, names='value')
 Validacion.observe(refreshMatrix, names='value')
+FMPond.observe(refreshMatrix, names='value')
+FMGenerica.observe(refreshMatrix, names='value')
+FallOffPond.observe(refreshMatrix, names='value')
+FallOffGenerica.observe(refreshMatrix, names='value')
+
 
 # Todo
 
