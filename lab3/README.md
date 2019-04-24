@@ -19,6 +19,72 @@ Clasificadores actuales:
 -> Elija una opción:
 
 --------------------------------------------------------------------------------------------------------
+
+Para poder utilizar covertype, es necesario generar un archivo "covertype.arff" en la carpeta "data". La estructura del mismo
+consiste en un cabezal arff y los datos, tal como se encuentran en la fuente.
+
+El cabezal utilizado cuenta con la siguiente estructura:
+
+@attribute elevation numeric
+@attribute aspect numeric
+@attribute slope numeric
+@attribute horizontal_distance_to_hydrology numeric
+@attribute vertical_distance_to_hydrology numeric
+@attribute horizontal_distance_to_roadways numeric
+@attribute hillshade_9am numeric
+@attribute hillshade_noon numeric
+@attribute hillshade_3pm numeric
+@attribute horizontal_distance_to_fire_points numeric
+@attribute wilderness_area_0 {0,1}
+@attribute wilderness_area_1 {0,1}
+@attribute wilderness_area_2 {0,1}
+@attribute wilderness_area_3 {0,1}
+@attribute soil_type_0 {0,1}
+@attribute soil_type_1 {0,1}
+@attribute soil_type_2 {0,1}
+@attribute soil_type_3 {0,1}
+@attribute soil_type_4 {0,1}
+@attribute soil_type_5 {0,1}
+@attribute soil_type_6 {0,1}
+@attribute soil_type_7 {0,1}
+@attribute soil_type_8 {0,1}
+@attribute soil_type_9 {0,1}
+@attribute soil_type_10 {0,1}
+@attribute soil_type_11 {0,1}
+@attribute soil_type_12 {0,1}
+@attribute soil_type_13 {0,1}
+@attribute soil_type_14 {0,1}
+@attribute soil_type_15 {0,1}
+@attribute soil_type_16 {0,1}
+@attribute soil_type_17 {0,1}
+@attribute soil_type_18 {0,1}
+@attribute soil_type_19 {0,1}
+@attribute soil_type_20 {0,1}
+@attribute soil_type_21 {0,1}
+@attribute soil_type_22 {0,1}
+@attribute soil_type_23 {0,1}
+@attribute soil_type_24 {0,1}
+@attribute soil_type_25 {0,1}
+@attribute soil_type_26 {0,1}
+@attribute soil_type_27 {0,1}
+@attribute soil_type_28 {0,1}
+@attribute soil_type_29 {0,1}
+@attribute soil_type_30 {0,1}
+@attribute soil_type_31 {0,1}
+@attribute soil_type_32 {0,1}
+@attribute soil_type_33 {0,1}
+@attribute soil_type_34 {0,1}
+@attribute soil_type_35 {0,1}
+@attribute soil_type_36 {0,1}
+@attribute soil_type_37 {0,1}
+@attribute soil_type_38 {0,1}
+@attribute soil_type_39 {0,1}
+@attribute class {1,2,3,4,5,6,7}
+
+@data
+
+--------------------------------------------------------------------------------------------------------
+
 Para correr varios entrenamientos de manera automática y obtener sus resultados, debe ir a la carpeta
 autorun del proyecto y editar autorun.sh (en linux) o autorun.bat (en windows).
 
