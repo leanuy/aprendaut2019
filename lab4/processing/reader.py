@@ -17,7 +17,7 @@ def readDataset(filename, is_for_pca=True):
 
     if is_for_pca:
         solo_respuestas = dataset.iloc[1:, 2:28]
-        return solo_respuestas
+        return solo_respuestas.apply(pd.to_numeric,downcast='unsigned')
 
 
 # Para el ejercicio 2, necesitamos obtener el partido segun el candidato del json. TBD

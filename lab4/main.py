@@ -24,11 +24,18 @@ if __name__ == '__main__':
         op = gui.printMenuOption()
 
         if op == MenuOps.PCA:
+            # Leer tipo de PCA usado
+            pca_election = gui.printPCAOptions()
+
             # Leer dataset de respuestas a encuesta
             dataset = reader.readDataset(DATA_ENCUESTAS)
 
+            options = {
+                'pca_type': pca_election
+            }
+
             # Aplicar PCA para reducir a 2 dimensiones
-            reduced = pca.pca(dataset.values, 2)
+            reduced = pca.pca(dataset.values, 2, options)
 
             print(reduced)
 

@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps
+from .const import MenuOps, PCAOps
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -44,5 +44,24 @@ def printMenuOption():
             op = MenuOps.PCA
         elif op == 2:
             op = None
+
+    return op
+
+# 
+def printPCAOptions():
+    print ("")   
+    print ("1. Usando matriz de covarianza")
+    print ("2. Usando SVD")
+    print ("-> Elija una opción: ")
+    op = int( input() )
+
+    if op < 1 or op > 2:
+        print("ERROR: Opción fuera de rango")
+        sys.exit()
+    else:
+        if op == 1:
+            op = PCAOps.COVARIANZA
+        elif op == 2:
+            op = PCAOps.SVD
 
     return op

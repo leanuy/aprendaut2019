@@ -10,6 +10,10 @@ from enum import Enum
 class MenuOps(Enum):
     PCA = 1
 
+class PCAOps(Enum):
+    COVARIANZA = 0
+    SVD = 1
+
 # Tipos de atributos
 class AttributeType(Enum):
     DISCRETE = 0
