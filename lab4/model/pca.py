@@ -18,9 +18,8 @@ def pca(matrix, k, options):
     if options['pca_type'] == PCAOps.SVD:
 
         # Calculo SVD
-        U, S, V = svd(datac, full_matrices=False)
+        U, S, V = svd(datac.T, full_matrices=False)
 
-        # diagonalizar los valores propios, armar la matriz diagonal y extraer k x k
         sigma_matrix = np.diag(S)
         reduced_sigma = []
 
@@ -32,11 +31,7 @@ def pca(matrix, k, options):
         for u in U:
             reduced_U.append(u[:k])
 
-        reduced_V = []
-        for i in range(k):
-            reduced_V.append(V[i][:k])
-
-        T_k = np.array(reduced_U) @ np.array(reduced_sigma) @ np.array(reduced_V)
+        T_k = np.array(reduced_U) @ np.array(reduced_sigma)
         return T_k
     
     elif options['pca_type'] == PCAOps.COVARIANZA:
