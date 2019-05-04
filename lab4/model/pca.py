@@ -4,15 +4,19 @@ from numpy.linalg import svd, eig
 from utils.const import PCAOps
 
 def pca(matrix, k, options):
-    # Copia del dataset original
-    # data = deepcopy(matrix)
-    data = matrix
-    # Sustraer la media para cada atributo
-    mean = np.mean(data, axis=0)
-    datac = data - mean
 
+    # Copia del dataset original
+    data = matrix.transpose()
+
+    # Sustraer la media para cada atributo
+    mean = data.mean(axis=1, keepdims=True)
+    std = data.std(axis=1, keepdims=True)
+    var = data.var(axis=1, keepdims=True)
+
+    datac = np.subtract(data, mean)
 
     if options['pca_type'] == PCAOps.SVD:
+
         # Calculo SVD
         U, S, V = svd(datac, full_matrices=False)
 
@@ -36,17 +40,20 @@ def pca(matrix, k, options):
         return T_k
     
     elif options['pca_type'] == PCAOps.COVARIANZA:
+
         # Calculamos la matriz de covarianza de los datos
-        # puto memory error aqui...
         matrix_cov = np.cov(datac)
         
         # Obtenemos los valores y vectores propios de la matriz de covarianza
         val_prop_cov, vect_prop_cov = np.linalg.eig(matrix_cov)
 
         eig_pairs = [(np.abs(val_prop_cov[i]), vect_prop_cov[:,i]) for i in range(len(val_prop_cov))]
-
         eig_pairs.sort()
         eig_pairs.reverse()
 
-        print(eig_pairs)
-        exit()
+        matrix_w = np.hstack((eig_pairs[0][1].reshape(26,1), eig_pairs[1][1].reshape(26,1)))
+        
+        transformed = np.dot(datac.T, matrix_w)
+
+        return transformed
+      

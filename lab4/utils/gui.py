@@ -27,7 +27,7 @@ def printMenu():
     print ("#                                                                      #")
     print ("########################################################################")
     print ("")
-    print ("1. PCA a corpus Aquienvoto.uy tomando 2 dimensiones")
+    print ("1. PCA")
     print ("2. TBD")
     print ("0. Salir")
 
@@ -49,15 +49,15 @@ def printMenuOption():
 
 # 
 def printPCAOptions():
-    print ("")   
+    print ("")
+    print ("-> Elija un método de reducción PCA: ")
+    print ("-> DEFAULT: 1")
     print ("1. Usando matriz de covarianza")
     print ("2. Usando SVD")
-    print ("-> Elija una opción: ")
     op = int( input() )
 
     if op < 1 or op > 2:
-        print("ERROR: Opción fuera de rango")
-        sys.exit()
+        op = PCAOps.COVARIANZA
     else:
         if op == 1:
             op = PCAOps.COVARIANZA
