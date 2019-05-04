@@ -21,5 +21,5 @@ class AttributeType(Enum):
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'
-CANDIDATOS = 'data/candidatos.json'
+DATA_CANDIDATOS = 'data/candidatos.json'
 

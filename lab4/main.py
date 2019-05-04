@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import processing.reader as reader
 from model import pca
 import utils.gui as gui
-from utils.const import DATA_ENCUESTAS, CANDIDATOS, MenuOps
+from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -24,6 +24,7 @@ if __name__ == '__main__':
         op = gui.printMenuOption()
 
         if op == MenuOps.PCA:
+
             # Leer tipo de PCA usado
             pca_election = gui.printPCAOptions()
 
@@ -36,7 +37,6 @@ if __name__ == '__main__':
 
             # Aplicar PCA para reducir a 2 dimensiones
             reduced = pca.pca(dataset.values, 2, options)
-
             print(reduced)
 
             # Graficar el resultado de PCA en 2-d
