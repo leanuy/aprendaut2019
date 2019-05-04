@@ -63,7 +63,6 @@ def printPCAOptions():
             op = PCAOps.COVARIANZA
         elif op == 2:
             op = PCAOps.SVD
-
     return op
 
 # Lee la opción a elegir de como implementar PCA
@@ -87,3 +86,17 @@ def printPCAnalysis():
             op = PCAnalysis.EACH_PARTY
 
     return op
+
+# Imprime las opciones para K y lee la opción elegida
+def printModelK(modelType):
+    if modelType != MenuOps.KMEANS:
+        return 5
+    else:
+        print ("")
+        print ("-> Elija cantidad de clusters para generar: ")
+        print ("-> DEFAULT: 5")
+        try:
+            evaluationK = int( input() )
+            return evaluationK
+        except:
+            return 5

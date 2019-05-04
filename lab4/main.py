@@ -5,7 +5,7 @@ import sys
 import os
 import time
 
-from model import pca
+from model import pca, k_means
 import processing.reader as reader
 import processing.parser as parser
 import plotting.pcaPlotting as pcaPlotting
@@ -25,7 +25,6 @@ if __name__ == '__main__':
         op = gui.printMenuOption()
 
         if op == MenuOps.PCA:
-
             # Leer tipo de PCA usado
             pca_election = gui.printPCAOptions()
             pca_analysis = gui.printPCAnalysis()
@@ -44,5 +43,20 @@ if __name__ == '__main__':
             # Generar
             pcaPlotting.plotPCA(reducedDataset, candidates, options)
 
-            input("-> Oprima enter para volver al menú")
+        elif op == MenuOps.KMEANS:
 
+            # Leer K
+            K = gui.printModelK(op)
+
+            # Leer dataset de respuestas a encuesta
+            candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
+
+            # Ejecutar K-Means
+            (centroids, classes) = k_means.KMeans(K, dataset.values)
+
+            # Plotting
+            kMeansPlotting.plotKMeans(classes)
+
+            kMeansPlotting.plotKMeansParties(classes, candidates)
+
+        input("-> Oprima enter para volver al menú")
