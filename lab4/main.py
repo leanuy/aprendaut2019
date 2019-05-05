@@ -4,10 +4,11 @@
 import sys
 import os
 import time
-import matplotlib.pyplot as plt
 
-import processing.reader as reader
 from model import pca
+import processing.reader as reader
+import processing.parser as parser
+import plotting.pcaPlotting as pcaPlotting
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
 
@@ -27,29 +28,21 @@ if __name__ == '__main__':
 
             # Leer tipo de PCA usado
             pca_election = gui.printPCAOptions()
+            pca_analysis = gui.printPCAnalysis()
 
             # Leer dataset de respuestas a encuesta
-            dataset = reader.readDataset(DATA_ENCUESTAS)
+            candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
 
             options = {
-                'pca_type': pca_election
+                'pca_election': pca_election,
+                'pca_analysis': pca_analysis
             }
 
             # Aplicar PCA para reducir a 2 dimensiones
-            reduced = pca.pca(dataset.values, 2, options)
-            print(reduced)
+            reducedDataset = pca.reduce_pca(dataset.values, 2, options)
 
-            # Graficar el resultado de PCA en 2-d
-            # Valores para eje x.
-            x_number_list = reduced[:, 0]
-
-            # Valores para eje y.
-            y_number_list = reduced[:, 1]
-
-            # Graficamos los puntos en 2 dimensiones
-            plt.scatter(x_number_list, y_number_list, s=1)
-            plt.title("PCA a 2 Dimensiones")
-            plt.show()
+            # Generar
+            pcaPlotting.plotPCA(reducedDataset, candidates, options)
 
             input("-> Oprima enter para volver al menú")
 

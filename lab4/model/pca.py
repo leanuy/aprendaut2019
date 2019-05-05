@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import svd, eig
 from utils.const import PCAOps
 
-def pca(matrix, k, options):
+def reduce_pca(matrix, k, options):
 
     # Copia del dataset original
     data = matrix.transpose()
@@ -15,7 +15,7 @@ def pca(matrix, k, options):
 
     datac = np.subtract(data, mean)
 
-    if options['pca_type'] == PCAOps.SVD:
+    if options['pca_election'] == PCAOps.SVD:
 
         # Calculo SVD
         U, S, V = svd(datac.T, full_matrices=False)
@@ -34,7 +34,7 @@ def pca(matrix, k, options):
         T_k = np.array(reduced_U) @ np.array(reduced_sigma)
         return T_k
     
-    elif options['pca_type'] == PCAOps.COVARIANZA:
+    elif options['pca_election'] == PCAOps.COVARIANZA:
 
         # Calculamos la matriz de covarianza de los datos
         matrix_cov = np.cov(datac)
