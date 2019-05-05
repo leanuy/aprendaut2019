@@ -55,6 +55,7 @@ def KMeans(k, dataset):
     varianza_actual += sum(var for var in varianzas)
   mejor_varianza = min(mejor_varianza,varianza_actual)
   print(f'Convergencia en iteración: {countIterations}. Mejor Varianza: {mejor_varianza}')
+  print()
 
   return (centroids, classes)
 
@@ -70,7 +71,7 @@ def rowLength(dataset):
 def columnLength(dataset):
   return dataset.shape[1]
 
-def pred(dataset, centroids):
+def classify(dataset, centroids):
   distances = [np.linalg.norm(dataset - centroids[centroid]) for centroid in centroids]
   classification = distances.index(min(distances))
   return classification

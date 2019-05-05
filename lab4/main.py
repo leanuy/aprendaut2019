@@ -9,6 +9,7 @@ from model import pca, k_means
 import processing.reader as reader
 import processing.parser as parser
 import plotting.pcaPlotting as pcaPlotting
+import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
 
@@ -55,8 +56,6 @@ if __name__ == '__main__':
             (centroids, classes) = k_means.KMeans(K, dataset.values)
 
             # Plotting
-            kMeansPlotting.plotKMeans(classes)
-
-            kMeansPlotting.plotKMeansParties(classes, candidates)
+            kMeansPlotting.plotKMeansParties(dataset, candidates, centroids, classes)
 
         input("-> Oprima enter para volver al menú")

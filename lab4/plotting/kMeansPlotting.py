@@ -7,81 +7,64 @@ import matplotlib.pyplot as plt
 import processing.reader as reader
 import processing.parser as parser
 from utils.const import DATA_CANDIDATOS, PCAnalysis
+from model.k_means import classify
 
-### METODO PRINCIPAL
-### ----------------
+### METODOS PRINCIPALES
+### -------------------
 
 def plotKMeans(classes):
     classified = {}
     colors = 10*["r", "b", "g", "y", "k", "m", "c"]
-    for classification in classes:
-        classified[classification] = len(classes[classification])
+    for classification, cluster in classes.items():
+        classified[classification] = len(cluster)
     
-    plt.title("K-Means Clusters' Length")
+    plt.title("K-Means - Tamaño de clusters")
     plt.bar(range(len(classified)), list(classified.values()), align='center', color = colors)
     plt.xticks(range(len(classified)), list(classified.keys()))
     plt.show()
 
-def plotKMeansParties(classes, candidates):
-
+def plotKMeansParties(dataset, candidates, centroids, classes):
+    # Procesamiento
     partyJSON = reader.readParties(DATA_CANDIDATOS)
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
-    
-    results = np.column_stack((dataset, parsedCandidates.transpose()))
 
-    data = []
+    classified = {}
+    partyNames = []
     for party, partyName, partyCandidates in parsedParties:
-        partyResults = results[results[:,2] == party]
-        partyResults = partyResults[:,[0,1]]
-        data.append((partyName, partyResults))
+        partyNames.append(partyName)
+        classified[party] = {}
+        for classification in classes:
+            classified[party][classification] = 0
 
-    for partyName, partyResults in data:
-        x = partyResults[:, 0]
-        y = partyResults[:, 1]
+    for index, row in dataset.iterrows():
+        party = getParty(parsedParties, candidates[index])
+        classified[party][classify(row.values, centroids)] += 1
 
-        prob = (len(partyResults) / (len(results))) * 100
-        partyName += ' (' + str(round(prob, 2)) + '%)'
+    # Variables
+    colors = { 0: '#800000', 1: '#e6194B', 2: '#f58231', 3: '#ffe119', 4: '#bfef45', 5: '#3cb44b', 6: '#469990', 7: '#42d4f4', 8: '#000075', 9: '#4363d8', 10: '#911eb4' }
+    p = {}
+    bottom = np.zeros((len(classes),), dtype=int)
+    legend = []
 
-        plt.scatter(x, y, alpha=0.8, edgecolors='none', s=5, label=partyName)
-
-    plt.title('PCA - Separado por partidos')
-    plt.legend(loc=2)
+    # Plotting
+    plt.title("K-Means - Separado por partidos")
+    for party, partyName, partyCandidates in parsedParties:
+        actual = list(classified[party].values())
+        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = colors[party])
+        legend.append(p[party][0])
+        # Se guarda la altura para futuras barras.
+        bottom += np.array(actual)
+    plt.xticks(range(len(classes)), list(classes.keys()))
+    plt.legend(list(legend), list(partyNames), loc=2)
     plt.show()
 
-def plotEachPartyPCA(dataset, candidates):
-    
-    partyJSON = reader.readParties(DATA_CANDIDATOS)
-    parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
-    
-    results = np.column_stack((dataset, parsedCandidates.transpose()))
-
-    data = []
+### METODOS AUXILIARES
+### ------------------
+def getParty(parsedParties, candidate):
+    if candidate == 7: # Partido Nacional???
+        return 6 # Partido Nacional
+    if candidate == 30: # ??????
+        return 0 # Frente Amplio
     for party, partyName, partyCandidates in parsedParties:
-        partyResults = results[results[:,2] == party]
-        partyResults = partyResults[:,[0,1]]
-        data.append(partyResults)
-
-    for i in range(0, len(data)):
-
-        party, partyName, partyCandidates = parsedParties[i]
-    
-        oneParty = data[i]
-        xOneParty = oneParty[:, 0]
-        yOneParty = oneParty[:, 1]
-      
-        otherParties = list(data)
-        otherParties.pop(i)              
-        otherParties = np.concatenate( otherParties, axis=0 )
-        xOtherParties = otherParties[:, 0]
-        yOtherParties = otherParties[:, 1]
-
-        prob = (len(oneParty) / (len(otherParties) + len(oneParty))) * 100
-        partyName += ' (' + str(round(prob, 2)) + '%)'
-
-        plt.scatter(xOneParty, yOneParty, alpha=0.8, edgecolors='none', s=5, label=partyName)        
-        plt.scatter(xOtherParties, yOtherParties, alpha=0.8, edgecolors='none', s=5, label='Otros (' + str(round(100 - prob, 2)) + '%)')
-
-        plt.title('PCA - Separado para partido: ' + str(partyName))
-        plt.legend(loc=2)
-        plt.show()
-
+        if candidate in partyCandidates:
+            return party
