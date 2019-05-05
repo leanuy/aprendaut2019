@@ -9,15 +9,16 @@ from enum import Enum
 # Opciones del menú principal
 class MenuOps(Enum):
     PCA = 1
+    KMEANS = 2
 
 class PCAOps(Enum):
     COVARIANZA = 0
     SVD = 1
 
-# Tipos de atributos
-class AttributeType(Enum):
-    DISCRETE = 0
-    CONTINUOUS = 1
+class PCAnalysis(Enum):
+    GENERAL = 0
+    ALL_PARTY = 1
+    EACH_PARTY = 2
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'
