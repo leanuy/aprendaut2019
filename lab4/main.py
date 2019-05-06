@@ -12,6 +12,7 @@ import plotting.pcaPlotting as pcaPlotting
 import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
+from sklearn.metrics import silhouette_samples, silhouette_score
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -20,7 +21,7 @@ if __name__ == '__main__':
 
     op = MenuOps.PCA
 
-    while op == MenuOps.PCA:
+    while op == MenuOps.PCA or MenuOps.KMEANS:
 
         gui.printMenu()
         op = gui.printMenuOption()
@@ -53,7 +54,11 @@ if __name__ == '__main__':
             candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
 
             # Ejecutar K-Means
-            (centroids, classes) = k_means.KMeans(K, dataset.values)
+            (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
+
+            cluster_labels = dataset_classified[:, 26]
+            silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=20000)
+            print("silhouette avg: ", silhouette_avg)
 
             # Plotting
             kMeansPlotting.plotKMeansParties(dataset, candidates, centroids, classes)
