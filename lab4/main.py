@@ -12,7 +12,8 @@ import plotting.pcaPlotting as pcaPlotting
 import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
-from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.metrics import silhouette_score
+from sklearn.metrics.cluster import adjusted_rand_score
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -56,9 +57,17 @@ if __name__ == '__main__':
             # Ejecutar K-Means
             (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
 
+            # Calcular el avg del silhouette de todas las filas
             cluster_labels = dataset_classified[:, 26]
             silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=22500)
             print("silhouette avg: ", silhouette_avg)
+
+            # Calcular el Adjusted Rand Index
+            # link https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
+            # Cambiar el valor de labels_true a lo que corresponda.
+            labels_true = cluster_labels
+            ari = adjusted_rand_score(labels_true, cluster_labels)
+            print("ARI: ", ari)
 
             # Plotting
             kMeansPlotting.plotKMeansParties(dataset, candidates, centroids, classes)
