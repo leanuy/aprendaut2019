@@ -18,6 +18,7 @@ def KMeans(k, dataset):
   for i in range(maxIterations):
     print(f"Iteración número: {i}")
     countIterations += 1
+    dataset_with_class = []
 
     classes = {}
     for j in range(k):
@@ -29,6 +30,10 @@ def KMeans(k, dataset):
       distances = [np.linalg.norm(features - centroids[centroid]) for centroid in centroids]
       classification = distances.index(min(distances))
       classes[classification].append(features)
+
+      features_list = list(features)
+      features_list.append(classification)
+      dataset_with_class.append(features_list)
 
     # Average the cluster datapoints to re-calculate the centroids
     previous = dict(centroids)
@@ -57,7 +62,7 @@ def KMeans(k, dataset):
   print(f'Convergencia en iteración: {countIterations}. Mejor Varianza: {mejor_varianza}')
   print()
 
-  return (centroids, classes)
+  return (centroids, classes, np.array(dataset_with_class))
 
 def kMeans_sklearn(k, dataset):
   km = skKMeans(n_clusters=k, init='random', n_init=1, max_iter=500, tol=0.0001, n_jobs=-1).fit(dataset)
