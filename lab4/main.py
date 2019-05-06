@@ -57,7 +57,7 @@ if __name__ == '__main__':
             (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
 
             cluster_labels = dataset_classified[:, 26]
-            silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=20000)
+            silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=22500)
             print("silhouette avg: ", silhouette_avg)
 
             # Plotting
