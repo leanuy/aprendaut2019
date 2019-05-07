@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, PCAOps, PCAnalysis
+from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -23,7 +23,7 @@ def printMenu():
     printClear()
     print ("########################################################################")
     print ("#                                                                      #")
-    print ("#    MENÚ - Laboratorio 4 (PCA - K-Means - Deteccion de anomalias )    #")
+    print ("#       MENÚ - Laboratorio 4 (Análisis de datos - PCA, K-Means)        #")
     print ("#                                                                      #")
     print ("########################################################################")
     print ("")
@@ -52,40 +52,75 @@ def printPCAOptions():
     print ("")
     print ("-> Elija un método de reducción PCA: ")
     print ("-> DEFAULT: 1")
-    print ("1. Usando matriz de covarianza")
-    print ("2. Usando SVD")
-    op = int( input() )
+    print ("1. Matriz de Covarianza")
+    print ("2. Descomposición SVD")
 
-    if op < 1 or op > 2:
-        op = PCAOps.COVARIANZA
-    else:
-        if op == 1:
+    try:
+        op = int( input() )    
+        if op < 1 or op > 2:
             op = PCAOps.COVARIANZA
-        elif op == 2:
-            op = PCAOps.SVD
-    return op
+        else:
+            if op == 1:
+                op = PCAOps.COVARIANZA
+            elif op == 2:
+                op = PCAOps.SVD
+        return op
+    except:
+        return PCAOps.COVARIANZA
 
-# Lee la opción a elegir de como implementar PCA
+# Lee la opción a elegir de que datos mostrar de PCA
 def printPCAnalysis():
     print ("")
-    print ("-> Elija un método de reducción PCA: ")
-    print ("-> DEFAULT: 1")
+    print ("-> Elija que datos graficar: ")
+    print ("-> DEFAULT: 0")
     print ("1. Graficar conjunto de datos")
     print ("2. Graficar conjunto de datos diviendo por partido")
     print ("3. Graficar conjunto de datos para cada partido")
-    op = int( input() )
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 3:
+            op = PCAnalysis.NONE
+        else:
+            if op == 0:
+                op = PCAnalysis.NONE
+            elif op == 1:
+                op = PCAnalysis.GENERAL
+            elif op == 2:
+                op = PCAnalysis.ALL_PARTY
+            elif op == 3:
+                op = PCAnalysis.EACH_PARTY
+        return op
+    except:
+        return PCAnalysis.NONE
 
-    if op < 1 or op > 3:
-        op = PCAnalysis.GENERAL
-    else:
-        if op == 1:
-            op = PCAnalysis.GENERAL
-        elif op == 2:
-            op = PCAnalysis.ALL_PARTY
-        elif op == 3:
-            op = PCAnalysis.EACH_PARTY
+# Lee la opción a elegir de que datos intermedios mostrar de PCA
+def printPCAIntermediate(pca_election):
+    if pca_election != PCAOps.COVARIANZA:
+        return PCAIntermediates.NONE
 
-    return op
+    print ("")
+    print ("-> Elija que resultados intermedios mostrar: ")
+    print ("-> DEFAULT: 0")
+    print ("1. Matriz de Covarianza")
+    print ("2. Valores Propios")
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 2:
+            op = PCAIntermediates.NONE
+        else:
+            if op == 0:
+                op = PCAIntermediates.NONE
+            elif op == 1:
+                op = PCAIntermediates.COV_MATRIX
+            elif op == 2:
+                op = PCAIntermediates.EIGEN_VALUES
+        return op
+    except:
+        return PCAIntermediates.NONE
 
 # Imprime las opciones para K y lee la opción elegida
 def printModelK(modelType):
