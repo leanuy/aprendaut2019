@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 
 import processing.reader as reader
 import processing.parser as parser
-from utils.const import DATA_CANDIDATOS, PCAnalysis
+from utils.const import DATA_CANDIDATOS, PCAnalysis, PCAIntermediates
 
 ### METODO PRINCIPAL
 ### ----------------
 
-def plotPCA(dataset, candidates, options):
+def plotPCA(dataset, candidates, options, extras):
 
     if options['pca_analysis'] == PCAnalysis.GENERAL:
         plotGenericPCA(dataset)
@@ -22,8 +22,15 @@ def plotPCA(dataset, candidates, options):
     elif options['pca_analysis'] == PCAnalysis.EACH_PARTY:
         plotEachPartyPCA(dataset, candidates)
 
-### METODOS AUXILIARES
-### ------------------
+    if options['pca_intermediates'] == PCAIntermediates.COV_MATRIX:
+        plotCovMatrix(extras['cov_matrix'])
+
+    elif options['pca_intermediates'] == PCAIntermediates.EIGEN_VALUES:
+        plotEigenValues(extras['eigen_values'])
+    
+
+### METODOS AUXILIARES - Analisis
+### -----------------------------
 
 def plotGenericPCA(dataset):
     x_number_list = dataset[:, 0]
@@ -96,3 +103,27 @@ def plotEachPartyPCA(dataset, candidates):
         plt.legend(loc=2)
         plt.show()
 
+### METODOS AUXILIARES - Resultados intermedios
+### -------------------------------------------
+
+def plotCovMatrix(cov_matrix):
+
+    rows, columns = cov_matrix.shape
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(cov_matrix, interpolation='nearest')
+    fig.colorbar(cax)
+
+    plt.show()
+
+def plotEigenValues(eigen_values):
+    labels = [str(i) for i in range(0, len(eigen_values))]
+    y_pos = np.arange(len(labels))
+
+    plt.bar(y_pos, eigen_values, align='center', alpha=0.5)
+    plt.xticks(y_pos, labels)
+    plt.ylabel('Valores propios')
+    plt.title('Distribución de valores propios')
+
+    plt.show()
