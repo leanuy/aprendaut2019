@@ -52,26 +52,47 @@ if __name__ == '__main__':
 
             # Leer K
             K = gui.printModelK(op)
+            cantidadIteraciones = gui.printItersK(op)
 
             # Leer dataset de respuestas a encuesta
             candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
+            partyJSON = reader.readParties(DATA_CANDIDATOS)
+            parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
-            # Ejecutar K-Means
-            (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
+            bestSilhouette = -2
 
-            # Calcular el avg del silhouette de todas las filas
-            cluster_labels = dataset_classified[:, 26]
-            silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=22500)
-            print("silhouette avg: ", silhouette_avg)
+            # Se ejecutan n K-Means, manteniendo el mejor.
+            for i in range(cantidadIteraciones):
+                print()
+                print(f'ITERACIÓN: {i+1}')
+                # Ejecutar K-Means
+                (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
 
-            # Calcular el Adjusted Rand Index
-            # link https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
-            # Cambiar el valor de labels_true a lo que corresponda.
-            labels_true = cluster_labels
-            ari = adjusted_rand_score(labels_true, cluster_labels)
-            print("ARI: ", ari)
+                # Calcular el avg del silhouette de todas las filas
+                cluster_labels = dataset_classified[:, 26]
+                silhouette_avg = silhouette_score(dataset.values, cluster_labels)
+                print("silhouette avg: ", silhouette_avg)
+
+                if bestSilhouette < silhouette_avg:
+                    bestSilhouette = silhouette_avg
+                    bestCentroids = centroids
+                    bestClasses = classes
+                    bestClusterLabels = cluster_labels
+
+            print()
+            print(f"MEJOR SILHOUETTE AVG: {bestSilhouette}")
+
+            # Calculamos ARI sólo para 11 clusters
+            if K == 11:
+                # Calcular el Adjusted Rand Index
+                # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
+                labels_true = []
+                for index in dataset.index:
+                    labels_true.append(processor.getParty(parsedParties, candidates[index]))
+                ari = adjusted_rand_score(labels_true, bestClusterLabels)
+                print("ARI: ", ari)
 
             # Plotting
-            kMeansPlotting.plotKMeansParties(dataset, candidates, centroids, classes)
+            kMeansPlotting.plotKMeansParties(dataset, candidates, parsedParties, bestCentroids, bestClasses)
 
         input("-> Oprima enter para volver al menú")
