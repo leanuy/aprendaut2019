@@ -32,15 +32,15 @@ def reduce_pca(matrix, k, options):
             reduced_U.append(u[:k])
 
         T_k = np.array(reduced_U) @ np.array(reduced_sigma)
-        return T_k
+        return T_k, None
     
     elif options['pca_election'] == PCAOps.COVARIANZA:
 
         # Calculamos la matriz de covarianza de los datos
-        matrix_cov = np.cov(datac)
+        cov_matrix = np.cov(datac)
         
         # Obtenemos los valores y vectores propios de la matriz de covarianza
-        val_prop_cov, vect_prop_cov = np.linalg.eig(matrix_cov)
+        val_prop_cov, vect_prop_cov = np.linalg.eig(cov_matrix)
 
         eig_pairs = [(np.abs(val_prop_cov[i]), vect_prop_cov[:,i]) for i in range(len(val_prop_cov))]
         eig_pairs.sort()
@@ -49,6 +49,9 @@ def reduce_pca(matrix, k, options):
         matrix_w = np.hstack((eig_pairs[0][1].reshape(26,1), eig_pairs[1][1].reshape(26,1)))
         
         transformed = np.dot(datac.T, matrix_w)
-
-        return transformed
+        extras = {
+          'cov_matrix': cov_matrix,
+          'eigen_values': val_prop_cov,
+        }
+        return (transformed, extras)
       

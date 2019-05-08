@@ -16,9 +16,15 @@ class PCAOps(Enum):
     SVD = 1
 
 class PCAnalysis(Enum):
-    GENERAL = 0
-    ALL_PARTY = 1
-    EACH_PARTY = 2
+    NONE = 0
+    GENERAL = 1
+    ALL_PARTY = 2
+    EACH_PARTY = 3
+
+class PCAIntermediates(Enum):
+    NONE = 0
+    COV_MATRIX = 1    
+    EIGEN_VALUES = 2
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'
