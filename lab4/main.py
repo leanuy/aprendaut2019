@@ -8,6 +8,7 @@ import time
 from model import pca, k_means
 import processing.reader as reader
 import processing.parser as parser
+import processing.processor as processor
 import plotting.pcaPlotting as pcaPlotting
 import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
@@ -64,7 +65,7 @@ if __name__ == '__main__':
             # Se ejecutan n K-Means, manteniendo el mejor.
             for i in range(cantidadIteraciones):
                 print()
-                print(f'ITERACIÓN: {i+1}')
+                print(f'EJECUCIÓN N°{i+1}')
                 # Ejecutar K-Means
                 (centroids, classes, dataset_classified) = k_means.KMeans(K, dataset.values)
 
