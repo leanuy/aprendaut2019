@@ -8,6 +8,7 @@ import time
 from model import pca, k_means
 import processing.reader as reader
 import processing.parser as parser
+import processing.processor as processor
 import plotting.pcaPlotting as pcaPlotting
 import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
@@ -47,7 +48,6 @@ if __name__ == '__main__':
             pcaPlotting.plotPCA(reducedDataset, candidates, options)
 
         elif op == MenuOps.KMEANS:
-
             # Leer K
             K = gui.printModelK(op)
 
@@ -59,17 +59,23 @@ if __name__ == '__main__':
 
             # Calcular el avg del silhouette de todas las filas
             cluster_labels = dataset_classified[:, 26]
-            silhouette_avg = silhouette_score(dataset.values, cluster_labels, sample_size=22500)
+            silhouette_avg = silhouette_score(dataset.values, cluster_labels)
             print("silhouette avg: ", silhouette_avg)
 
-            # Calcular el Adjusted Rand Index
-            # link https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
-            # Cambiar el valor de labels_true a lo que corresponda.
-            labels_true = cluster_labels
-            ari = adjusted_rand_score(labels_true, cluster_labels)
-            print("ARI: ", ari)
+            partyJSON = reader.readParties(DATA_CANDIDATOS)
+            parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
+
+            # Calculamos ARI sólo para 11 clusters
+            if K == 11:
+                # Calcular el Adjusted Rand Index
+                # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
+                labels_true = []
+                for index in dataset.index:
+                    labels_true.append(processor.getParty(parsedParties, candidates[index]))
+                ari = adjusted_rand_score(labels_true, cluster_labels)
+                print("ARI: ", ari)
 
             # Plotting
-            kMeansPlotting.plotKMeansParties(dataset, candidates, centroids, classes)
+            kMeansPlotting.plotKMeansParties(dataset, candidates, parsedParties, centroids, classes)
 
         input("-> Oprima enter para volver al menú")
