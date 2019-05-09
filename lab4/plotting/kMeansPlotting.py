@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 import processing.reader as reader
 import processing.parser as parser
+import processing.processor as processor
 from utils.const import DATA_CANDIDATOS, PCAnalysis
 from model.k_means import classify
 
@@ -23,11 +24,7 @@ def plotKMeans(classes):
     plt.xticks(range(len(classified)), list(classified.keys()))
     plt.show()
 
-def plotKMeansParties(dataset, candidates, centroids, classes):
-    # Procesamiento
-    partyJSON = reader.readParties(DATA_CANDIDATOS)
-    parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
-
+def plotKMeansParties(dataset, candidates, parsedParties, centroids, classes):
     classified = {}
     partyNames = []
     for party, partyName, partyCandidates in parsedParties:
@@ -37,7 +34,7 @@ def plotKMeansParties(dataset, candidates, centroids, classes):
             classified[party][classification] = 0
 
     for index, row in dataset.iterrows():
-        party = getParty(parsedParties, candidates[index])
+        party = processor.getParty(parsedParties, candidates[index])
         classified[party][classify(row.values, centroids)] += 1
 
     # Variables
@@ -60,11 +57,3 @@ def plotKMeansParties(dataset, candidates, centroids, classes):
 
 ### METODOS AUXILIARES
 ### ------------------
-def getParty(parsedParties, candidate):
-    if candidate == 7: # Partido Nacional???
-        return 6 # Partido Nacional
-    if candidate == 30: # ??????
-        return 0 # Frente Amplio
-    for party, partyName, partyCandidates in parsedParties:
-        if candidate in partyCandidates:
-            return party
