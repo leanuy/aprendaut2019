@@ -36,6 +36,7 @@ def plotGenericPCA(dataset):
     x_number_list = dataset[:, 0]
     y_number_list = dataset[:, 1]
 
+    plt.figure(figsize=(16,6))
     plt.scatter(x_number_list, y_number_list, s=1)
     plt.title("PCA a 2 Dimensiones")
     plt.show()
@@ -53,6 +54,11 @@ def plotAllPartyPCA(dataset, candidates):
         partyResults = partyResults[:,[0,1]]
         data.append((partyName, partyResults))
 
+    fig = plt.figure(figsize=(16,6))
+    ax = plt.subplot(111)
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
     for partyName, partyResults in data:
         x = partyResults[:, 0]
         y = partyResults[:, 1]
@@ -60,10 +66,11 @@ def plotAllPartyPCA(dataset, candidates):
         prob = (len(partyResults) / (len(results))) * 100
         partyName += ' (' + str(round(prob, 2)) + '%)'
 
-        plt.scatter(x, y, alpha=0.8, edgecolors='none', s=5, label=partyName)
+        ax.scatter(x, y, alpha=0.8, edgecolors='none', s=5, label=partyName)
+
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     plt.title('PCA - Separado por partidos')
-    plt.legend(loc=2)
     plt.show()
 
 def plotEachPartyPCA(dataset, candidates):
@@ -96,6 +103,8 @@ def plotEachPartyPCA(dataset, candidates):
         prob = (len(oneParty) / (len(otherParties) + len(oneParty))) * 100
         partyName += ' (' + str(round(prob, 2)) + '%)'
 
+        plt.figure(figsize=(16,6))
+        
         plt.scatter(xOneParty, yOneParty, alpha=0.8, edgecolors='none', s=5, label=partyName)        
         plt.scatter(xOtherParties, yOtherParties, alpha=0.8, edgecolors='none', s=5, label='Otros (' + str(round(100 - prob, 2)) + '%)')
 
