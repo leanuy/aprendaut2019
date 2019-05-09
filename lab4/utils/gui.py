@@ -135,3 +135,17 @@ def printModelK(modelType):
             return evaluationK
         except:
             return 5
+
+# Imprime opciones para la cantidad de veces que se desee ejeutar K-Means
+def printItersK(modelType):
+    if modelType != MenuOps.KMEANS:
+        return 1
+    else:
+        print ("")
+        print ("-> Elija cantidad de K-Means para ejecutar: ")
+        print ("-> DEFAULT: 1")
+        try:
+            evaluationK = int( input() )
+            return evaluationK
+        except:
+            return 1
