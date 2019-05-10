@@ -8,7 +8,6 @@ import time
 from model import pca, k_means
 import processing.reader as reader
 import processing.parser as parser
-import processing.processor as processor
 import plotting.pcaPlotting as pcaPlotting
 import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
@@ -31,8 +30,9 @@ if __name__ == '__main__':
         if op == MenuOps.PCA:
 
             pca_election = gui.printPCAOptions()
+            pca_intermediates = gui.printPCAIntermediate(pca_election)            
             pca_analysis = gui.printPCAnalysis()
-            pca_intermediates = gui.printPCAIntermediate(pca_election)
+            candidate_division = gui.printCandidateDivision(pca_analysis)
 
             # Leer dataset de respuestas a encuesta
             candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
@@ -40,7 +40,8 @@ if __name__ == '__main__':
             options = {
                 'pca_election': pca_election,
                 'pca_analysis': pca_analysis,
-                'pca_intermediates': pca_intermediates
+                'pca_intermediates': pca_intermediates,
+                'candidate_division': candidate_division
             }
 
             # Aplicar PCA para reducir a 2 dimensiones
@@ -89,7 +90,7 @@ if __name__ == '__main__':
                 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
                 labels_true = []
                 for index in dataset.index:
-                    labels_true.append(processor.getParty(parsedParties, candidates[index]))
+                    labels_true.append(parser.getParty(parsedParties, candidates[index]))
                 ari = adjusted_rand_score(labels_true, bestClusterLabels)
                 print("ARI: ", ari)
 

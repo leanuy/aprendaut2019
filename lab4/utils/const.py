@@ -25,8 +25,17 @@ class PCAIntermediates(Enum):
     NONE = 0
     COV_MATRIX = 1    
     EIGEN_VALUES = 2
+    VARIANCE_RATIO = 3
+
+class CandidateDivision(Enum):
+    PARTIES = 0
+    SPECTRUM = 1
+    NOLAN = 2
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'
 DATA_CANDIDATOS = 'data/candidatos.json'
+DATA_CANDIDATOS_ESPECTRO = 'data/candidatosEspectro.json'
+DATA_CANDIDATOS_NOLAN = 'data/candidatosNolan.json'
+
 

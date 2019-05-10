@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 import processing.reader as reader
 import processing.parser as parser
-import processing.processor as processor
 from utils.const import DATA_CANDIDATOS, PCAnalysis
 from model.k_means import classify
 
@@ -34,7 +33,7 @@ def plotKMeansParties(dataset, candidates, parsedParties, centroids, classes):
             classified[party][classification] = 0
 
     for index, row in dataset.iterrows():
-        party = processor.getParty(parsedParties, candidates[index])
+        party = parser.getParty(parsedParties, candidates[index])
         classified[party][classify(row.values, centroids)] += 1
 
     # Variables

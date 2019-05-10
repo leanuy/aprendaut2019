@@ -1,6 +1,6 @@
 [
     {
-        "party": "Frente Amplio",
+        "party": "Progresismo",
         "candidates": [
             {
                 "name": "Carolina Cosse",
@@ -17,59 +17,45 @@
             {
                 "name": "Óscar Andrade",
                 "id": 1
+            },
+            {
+                "name": "Rafael Fernández",
+                "id": 22
+            },
+            {
+                "name": "Gonzalo Abella",
+                "id": 19
             }
         ]
     },
     {
-        "party": "La Alternativa",
+        "party": "Centro",
         "candidates": [
             {
                 "name": "Pablo Mieres",
                 "id": 18
-            }
-        ]
-    },
-    {
-        "party": "Partido Colorado",
-        "candidates": [
-            {
-                "name": "Edgardo Martínez Zimarioff",
-                "id": 14
             },
-            {
-                "name": "Ernesto Talvi",
-                "id": 17
-            },
-            {
-                "name": "Héctor Rovira",
-                "id": 15
-            },
-            {
-                "name": "José Amorín Batlle",
-                "id": 12
-            },
-            {
-                "name": "Julio María Sanguinetti",
-                "id": 16
-            },
-            {
-                "name": "Pedro Etchegaray",
-                "id": 13
-            }
-        ]
-    },
-    {
-        "party": "Partido Ecologista Radical Intransigente",
-        "candidates": [
             {
                 "name": "César Vega",
                 "id": 21
+            },
+            {
+                "name": "Gustavo Salle",
+                "id": 24
+            },
+            {
+                "name": "Carlos Techera",
+                "id": 25
             }
         ]
     },
     {
-        "party": "Partido Digital",
+        "party": "Liberalismo",
         "candidates": [
+            {
+                "name": "Edgardo Novick",
+                "id": 20
+            },
             {
                 "name": "Justin Graside",
                 "id": 23
@@ -77,16 +63,7 @@
         ]
     },
     {
-        "party": "Partido de la Gente",
-        "candidates": [
-            {
-                "name": "Edgardo Novick",
-                "id": 20
-            }
-        ]
-    },
-    {
-        "party": "Partido Nacional",
+        "party": "Conservadurismo",
         "candidates": [
             {
                 "name": "Carlos Iafigliola",
@@ -111,42 +88,30 @@
             {
                 "name": "Verónica Alonso",
                 "id": 5
-            }
-        ]
-    },
-    {
-        "party": "Partido de los Trabajadores",
-        "candidates": [
+            },
             {
-                "name": "Rafael Fernández",
-                "id": 22
-            }
-        ]
-    },
-    {
-        "party": "Partido Verde Animalista",
-        "candidates": [
+                "name": "Edgardo Martínez Zimarioff",
+                "id": 14
+            },
             {
-                "name": "Gustavo Salle",
-                "id": 24
-            }
-        ]
-    },
-    {
-        "party": "Unidad Popular",
-        "candidates": [
+                "name": "Ernesto Talvi",
+                "id": 17
+            },
             {
-                "name": "Gonzalo Abella",
-                "id": 19
-            }
-        ]
-    },
-    {
-        "party": "Partido de Todos",
-        "candidates": [
+                "name": "Héctor Rovira",
+                "id": 15
+            },
             {
-                "name": "Carlos Techera",
-                "id": 25
+                "name": "José Amorín Batlle",
+                "id": 12
+            },
+            {
+                "name": "Julio María Sanguinetti",
+                "id": 16
+            },
+            {
+                "name": "Pedro Etchegaray",
+                "id": 13
             }
         ]
     }

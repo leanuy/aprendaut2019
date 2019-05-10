@@ -33,3 +33,13 @@ def parseCandidates(candidates, partyJSON):
                 break
 
     return pairs, parties
+
+# Dado un candidato, devuelve su partido en caso de no encontrarse en parsedParties
+def getParty(parsedParties, candidate):
+    if candidate == 7: # Partido Nacional???
+        return 6 # Partido Nacional
+    if candidate == 30: # ??????
+        return 0 # Frente Amplio
+    for party, partyName, partyCandidates in parsedParties:
+        if candidate in partyCandidates:
+            return party
