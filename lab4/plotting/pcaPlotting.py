@@ -32,8 +32,7 @@ def plotPCA(dataset, candidates, options, extras):
 
     elif options['pca_intermediates'] == PCAIntermediates.VARIANCE_RATIO:
         plotVarianceRatio(extras['explained_variance_ratio'])
-      
-    
+        
 ### METODOS AUXILIARES - Analisis
 ### -----------------------------
 
@@ -173,17 +172,15 @@ def plotCovMatrix(cov_matrix):
 
 def plotEigenValues(eigen_values):
 
-    # Generar etiquetas del eje x
-    labels = [str(i) for i in range(0, len(eigen_values))]
-
     # Generar metadatos para la gráfica
     meta = {
       'title': 'Matriz de Covarianza del Corpus - Distribución de valores propios',
+      'xlabels': [str(i) for i in range(0, len(eigen_values))],
       'colors': ['#f58231']
     }
 
     # Generar única gráfica
-    plotBars(eigen_values, labels, meta)
+    plotBars(eigen_values, None, meta)
     
 def plotVarianceRatio(variance_ratio):
 

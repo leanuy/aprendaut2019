@@ -27,6 +27,16 @@ class PCAIntermediates(Enum):
     EIGEN_VALUES = 2
     VARIANCE_RATIO = 3
 
+class KmeansAnalysis(Enum):
+    NONE = 0
+    GENERAL = 1
+    PARTIES = 2
+
+class KmeansEvaluations(Enum):
+    NONE = 0
+    SILHOUETTE = 1
+    ARI = 2
+
 class CandidateDivision(Enum):
     PARTIES = 0
     SPECTRUM = 1

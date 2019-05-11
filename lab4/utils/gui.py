@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates, CandidateDivision
+from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates, KmeansAnalysis, KmeansEvaluations, CandidateDivision
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -153,9 +153,61 @@ def printItersK(modelType):
         except:
             return 1
 
+# Lee la opción a elegir de que datos mostrar de KMeans
+def printKmeansAnalysis():
+    print ("")
+    print ("-> Elija que datos graficar: ")
+    print ("-> DEFAULT: 0")
+    print ("1. Graficar candidatos en cada cluster")
+    print ("2. Graficar partidos en cada cluster")
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 2:
+            op = KmeansAnalysis.NONE
+        else:
+            if op == 0:
+                op = KmeansAnalysis.NONE
+            elif op == 1:
+                op = KmeansAnalysis.GENERAL
+            elif op == 2:
+                op = KmeansAnalysis.PARTIES
+        return op
+    except:
+        return KmeansAnalysis.NONE
+
+# Lee la opción a elegir de que evaluaciones realizar a los clusters de Kmeans
+def printKmeansEvaluations(k):
+    showARI = k == 3 or k == 5 or k == 11 
+    print ("")
+    print ("-> Elija que evaluación calcular: ")
+    print ("-> DEFAULT: 0")
+    print ("1. Coeficiente Silhouette")
+    if showARI:
+        print ("2. Adjusted Random Index")
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 2:
+            op = KmeansEvaluations.NONE
+        else:
+            if op == 0:
+                op = KmeansEvaluations.NONE
+            elif op == 1:
+                op = KmeansEvaluations.SILHOUETTE
+            elif op == 2 and showARI:
+                op = KmeansEvaluations.ARI
+            else:
+                op = KmeansEvaluations.NONE
+        return op
+    except:
+        return KmeansEvaluations.NONE
+
 # Lee la opción a elegir de que división utilizar para los candidatos
 def printCandidateDivision(analisis):
-    if analisis != PCAnalysis.ALL_PARTY:
+    if analisis != PCAnalysis.ALL_PARTY and analisis != KmeansAnalysis.PARTIES:
         return CandidateDivision.PARTIES
 
     print ("")

@@ -1,7 +1,14 @@
+### DEPENDENCIAS
+### ------------------
+
 from copy import deepcopy
 import numpy as np
 from numpy.linalg import svd, eig
+
 from utils.const import PCAOps
+
+### METODOS PRINCIPALES
+### --------------------
 
 def reduce_pca(matrix, k, options):
 

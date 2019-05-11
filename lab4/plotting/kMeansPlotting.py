@@ -6,13 +6,25 @@ import matplotlib.pyplot as plt
 
 import processing.reader as reader
 import processing.parser as parser
-from utils.const import DATA_CANDIDATOS, PCAnalysis
+from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, KmeansAnalysis, KmeansEvaluations, CandidateDivision
 from model.k_means import classify
 
-### METODOS PRINCIPALES
+### METODO PRINCIPAL
 ### -------------------
 
-def plotKMeans(classes):
+def plotKMeans(dataset, candidates, centroids, classes, options, extras):
+
+    if options['kmeans_analysis'] == KmeansAnalysis.GENERAL:
+        plotGenericKMeans(classes)
+
+    elif options['kmeans_analysis'] == KmeansAnalysis.PARTIES:
+        plotPartiesKMeans(dataset, candidates, centroids, classes, options['candidate_division'])
+
+
+### METODOS AUXILIARES - Analisis
+### -----------------------------
+
+def plotGenericKMeans(classes):
     classified = {}
     colors = 10*["r", "b", "g", "y", "k", "m", "c"]
     for classification, cluster in classes.items():
@@ -23,7 +35,22 @@ def plotKMeans(classes):
     plt.xticks(range(len(classified)), list(classified.keys()))
     plt.show()
 
-def plotKMeansParties(dataset, candidates, parsedParties, centroids, classes):
+def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
+
+    # Leer archivo JSON de candidatos para parsear candidatos del dataset 
+    partyJSON = None
+    if division == CandidateDivision.PARTIES:
+        partyJSON = reader.readParties(DATA_CANDIDATOS)
+    elif division == CandidateDivision.SPECTRUM:
+        partyJSON = reader.readParties(DATA_CANDIDATOS_ESPECTRO)
+    elif division == CandidateDivision.NOLAN:
+        partyJSON = reader.readParties(DATA_CANDIDATOS_NOLAN)
+
+    # Obtener partidos y candidatos parseados
+    # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
+    # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
+    parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
+
     classified = {}
     partyNames = []
     for party, partyName, partyCandidates in parsedParties:
@@ -54,5 +81,5 @@ def plotKMeansParties(dataset, candidates, parsedParties, centroids, classes):
     plt.legend(list(legend), list(partyNames), loc=2)
     plt.show()
 
-### METODOS AUXILIARES
-### ------------------
+### METODOS AUXILIARES - Resultados
+### -----------------------------
