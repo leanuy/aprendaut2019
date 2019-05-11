@@ -37,7 +37,6 @@ def plotPCA(dataset, candidates, options, extras):
 ### -----------------------------
 
 def plotGenericPCA(dataset):
-
     # Generar metadatos de la gráficar
     meta = {
       'title': 'Corpus en 2 dimensiones (PCA)',
@@ -48,7 +47,6 @@ def plotGenericPCA(dataset):
     plotScatter(dataset, None, meta)
 
 def plotAllPartyPCA(dataset, candidates, division):
-
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
     partyJSON = None
     if division == CandidateDivision.PARTIES:

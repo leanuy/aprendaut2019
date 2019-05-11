@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 ### ------------------
 
 def plotScatter(dataset, labels, meta):
-
     # Tamaño fijo para que entren etiquetas
     plt.figure(figsize=(16,6)) 
 
@@ -24,7 +23,6 @@ def plotScatter(dataset, labels, meta):
     
     # Si hay etiqueta, hay múltiples grupos
     else:
-
         # Reducir ancho para que entren etiquetas
         ax = plt.subplot(111)
         box = ax.get_position()

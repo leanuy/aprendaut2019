@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from operator import itemgetter
 
 import processing.reader as reader
 import processing.parser as parser
@@ -51,29 +52,42 @@ def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
+    parties = []
+    unique, counts = np.unique(parsedCandidates, return_counts=True)
+    partiesCount = dict(zip(unique, counts))
+    for party, partyName, partyCandidates in parsedParties:
+        parties.append((party, partyName, partyCandidates, partiesCount[party]))
+    
+    parties = sorted(parties, key=itemgetter(3), reverse=True)
+
     classified = {}
     partyNames = []
-    for party, partyName, partyCandidates in parsedParties:
+    for party, partyName, partyCandidates, partyCount in parties:
         partyNames.append(partyName)
         classified[party] = {}
         for classification in classes:
             classified[party][classification] = 0
 
     for index, row in dataset.iterrows():
-        party = parser.getParty(parsedParties, candidates[index])
+        party = parser.getParty(parsedParties, candidates[index], division)
         classified[party][classify(row.values, centroids)] += 1
+    
+    # Generar metadatos de la gráfica
+    meta = {
+      'title': 'K-Means - División por partido político',
+      'colors': ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF']
+    }
 
     # Variables
-    colors = { 0: '#800000', 1: '#e6194B', 2: '#f58231', 3: '#ffe119', 4: '#bfef45', 5: '#3cb44b', 6: '#469990', 7: '#42d4f4', 8: '#000075', 9: '#4363d8', 10: '#911eb4' }
     p = {}
     bottom = np.zeros((len(classes),), dtype=int)
     legend = []
 
     # Plotting
-    plt.title("K-Means - Separado por partidos")
+    plt.title(meta['title'])
     for party, partyName, partyCandidates in parsedParties:
         actual = list(classified[party].values())
-        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = colors[party])
+        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = meta['colors'][party])
         legend.append(p[party][0])
         # Se guarda la altura para futuras barras.
         bottom += np.array(actual)
