@@ -68,7 +68,7 @@ if __name__ == '__main__':
                 'candidate_division': candidate_division
             }
 
-            # Aplicar PCA para reducir a 2 dimensiones
+            # Aplicar K-Means
             centroids, classes = k_means.k_means(dataset, k, options, candidates)
 
             # Generar gráficas si es necesario
