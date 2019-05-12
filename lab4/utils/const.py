@@ -30,7 +30,8 @@ class PCAIntermediates(Enum):
 class KmeansAnalysis(Enum):
     NONE = 0
     GENERAL = 1
-    PARTIES = 2
+    CANDIDATES = 2
+    PARTIES = 3
 
 class KmeansEvaluations(Enum):
     NONE = 0
@@ -47,5 +48,6 @@ DATA_ENCUESTAS = 'data/data.csv'
 DATA_CANDIDATOS = 'data/candidatos.json'
 DATA_CANDIDATOS_ESPECTRO = 'data/candidatosEspectro.json'
 DATA_CANDIDATOS_NOLAN = 'data/candidatosNolan.json'
+DATA_CANDIDATOS_SIN_PARTIDO = 'data/candidatosSinPartido.json'
 
 

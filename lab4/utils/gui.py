@@ -158,13 +158,14 @@ def printKmeansAnalysis():
     print ("")
     print ("-> Elija que datos graficar: ")
     print ("-> DEFAULT: 0")
-    print ("1. Graficar candidatos en cada cluster")
-    print ("2. Graficar partidos en cada cluster")
+    print ("1. Graficar distribución de cada cluster")
+    print ("2. Graficar distribución de candidatos en cada cluster")
+    print ("3. Graficar distribución de partidos en cada cluster")
     print ("0. Ninguno")
     
     try:
         op = int( input() )
-        if op < 0 or op > 2:
+        if op < 0 or op > 3:
             op = KmeansAnalysis.NONE
         else:
             if op == 0:
@@ -172,6 +173,8 @@ def printKmeansAnalysis():
             elif op == 1:
                 op = KmeansAnalysis.GENERAL
             elif op == 2:
+                op = KmeansAnalysis.CANDIDATES
+            elif op == 3:
                 op = KmeansAnalysis.PARTIES
         return op
     except:

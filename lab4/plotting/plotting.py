@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 ### ------------------
 
 def plotScatter(dataset, labels, meta):
-
     # Tamaño fijo para que entren etiquetas
     plt.figure(figsize=(16,6)) 
 
@@ -24,7 +23,6 @@ def plotScatter(dataset, labels, meta):
     
     # Si hay etiqueta, hay múltiples grupos
     else:
-
         # Reducir ancho para que entren etiquetas
         ax = plt.subplot(111)
         box = ax.get_position()
@@ -49,34 +47,64 @@ def plotScatter(dataset, labels, meta):
     plt.title(meta['title'])
     plt.show()
 
-def plotBars(dataset, labels, meta):
-
+def plotBars(dataset, meta):
     plt.figure(figsize=(12,6)) 
-
-    y_pos = np.arange(len(labels))      
+    y_pos = np.arange(len(meta['xlabels']))      
     plt.bar(y_pos, dataset, align='center', alpha=0.8, color=meta['colors'][0])
-    plt.xticks(y_pos, labels)
-    
+    plt.xticks(y_pos, meta['xlabels'])
     plt.title(meta['title'])
     plt.show()
 
 def plotCurve(dataset, meta):
-
     plt.figure(figsize=(12,6)) 
-
     plt.plot(np.cumsum(dataset), alpha=0.8, color=meta['colors'][0])
-
     plt.xlabel(meta['xlabel'])
     plt.ylabel(meta['ylabel'])    
     plt.title(meta['title'])
     plt.show()
 
 def plotHeatmap(dataset, meta):
-
     fig = plt.figure(figsize=(10,8))
     ax = fig.add_subplot(111)
     cax = ax.matshow(dataset, interpolation='nearest')
     fig.colorbar(cax)
+    plt.title(meta['title'])
+    plt.show()
 
+def plotPie(dataset, labels, meta):
+    plt.figure(figsize=(10,8))
+    patches, texts = plt.pie(dataset, colors=meta['colors'], startangle=meta['angle'])
+    plt.legend(patches, labels, loc="best")
+    plt.title(meta['title'])
+    plt.show()
+
+def plotStackedBars(dataset, meta):
+
+    data, classified = dataset
+
+    legend = []
+    labels = []
+    bottom = np.zeros(meta['lengthClasses'], dtype=int)
+    index = 0
+    
+    # Plotting
+    plt.figure(figsize=(16,6))
+    ax = plt.subplot(111)
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+    for id, name, _, count in data:
+        actual = list(classified[id].values())
+        barResult = ax.bar(range(meta['lengthClasses']), actual, bottom=bottom, align='center', color=meta['colors'][index])
+        
+        legend.append(barResult[0])
+        labels.append(f"{name} ({round(100*(count/meta['lengthDataset']), 2)}%)")
+
+        # Se guarda la altura para futuras barras.
+        bottom += np.array(actual)
+        index += 1
+
+    plt.xticks(range(meta['lengthClasses']), meta['classes'])
+    plt.legend(list(legend), list(labels), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.title(meta['title'])
     plt.show()

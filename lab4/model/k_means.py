@@ -9,7 +9,7 @@ from sklearn.metrics.cluster import adjusted_rand_score
 
 import processing.reader as reader
 import processing.parser as parser
-from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, KmeansAnalysis, KmeansEvaluations, CandidateDivision
+from utils.const import KmeansAnalysis, KmeansEvaluations, CandidateDivision
 
 ### METODOS PRINCIPALES
 ### --------------------
@@ -49,22 +49,17 @@ def k_means(dataset, k, options, candidates):
 
     bestClusterLabels = dataset_classified[:, 26]
 
-    silhouette = None
-    if options['kmeans_evaluations'] == KmeansEvaluations.SILHOUETTE and options['kmeans_iters'] > 1:
-        silhouette = bestSilhouette
-    elif options['kmeans_evaluations'] == KmeansEvaluations.SILHOUETTE and options['kmeans_iters'] == 1:
+    if options['kmeans_evaluations'] == KmeansEvaluations.SILHOUETTE and options['kmeans_iters'] == 1:
         silhouette = silhouette_score(dataset.values, bestClusterLabels)
+        print(f"Coeficiente Silhouette: {silhouette}")
+        print()
 
-    ari = None
     if options['kmeans_evaluations'] == KmeansEvaluations.ARI:
         ari = getARI(dataset, candidates, bestClusterLabels, options['candidate_division'])
+        print(f"Adjusted Random Index (ARI): {ari}")
+        print()
 
-    extras = {
-      'silhouette': silhouette,
-      'ari': ari
-    }
-
-    return (bestCentroids, bestClasses, extras)
+    return (bestCentroids, bestClasses)
 
 def train(dataset, k):
 
@@ -123,6 +118,7 @@ def train(dataset, k):
       varianza_actual += sum(var for var in varianzas)
   mejor_varianza = min(mejor_varianza,varianza_actual)
   print(f'-> Iteración N° {countIterations} - Convergencia (Varianza = {mejor_varianza})')
+  print()
 
   return (centroids, classes, np.array(dataset_with_class))
 
@@ -136,18 +132,12 @@ def classify(dataset, centroids):
 
 def getARI(dataset, candidates, labels, division):
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
-    partyJSON = None
-    if division == CandidateDivision.PARTIES:
-        partyJSON = reader.readParties(DATA_CANDIDATOS)
-    elif division == CandidateDivision.SPECTRUM:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_ESPECTRO)
-    elif division == CandidateDivision.NOLAN:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_NOLAN)
-
-    # Obtener partidos y candidatos parseados
+    # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
+    partyJSON = reader.readParties(division)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
+
     labels_true = []
     for index in dataset.index:
         labels_true.append(parsedCandidates[index-1])
