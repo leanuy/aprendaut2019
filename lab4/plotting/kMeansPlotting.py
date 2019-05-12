@@ -9,6 +9,7 @@ import processing.reader as reader
 import processing.parser as parser
 from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, KmeansAnalysis, KmeansEvaluations, CandidateDivision
 from model.k_means import classify
+from .plotting import plotStackedBars
 
 ### METODO PRINCIPAL
 ### -------------------
@@ -39,61 +40,49 @@ def plotGenericKMeans(classes):
 def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
 
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
-    partyJSON = None
-    if division == CandidateDivision.PARTIES:
-        partyJSON = reader.readParties(DATA_CANDIDATOS)
-    elif division == CandidateDivision.SPECTRUM:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_ESPECTRO)
-    elif division == CandidateDivision.NOLAN:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_NOLAN)
+    partyJSON = getJSON(division)
 
     # Obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
+    # Ordenamiento de parsedParties según la proporción de votos de cada una.
     parties = []
     unique, counts = np.unique(parsedCandidates, return_counts=True)
     partiesCount = dict(zip(unique, counts))
     for party, partyName, partyCandidates in parsedParties:
         parties.append((party, partyName, partyCandidates, partiesCount[party]))
-    
     parties = sorted(parties, key=itemgetter(3), reverse=True)
 
+    # Inicialización estructuras
     classified = {}
-    partyNames = []
     for party, partyName, partyCandidates, partyCount in parties:
-        partyNames.append(partyName)
         classified[party] = {}
         for classification in classes:
             classified[party][classification] = 0
 
+    # Re-clasificación del dataset acorde a los centroides y recolección de proporción de cada party en cada cluster.
     for index, row in dataset.iterrows():
         party = parser.getParty(parties, candidates[index], division)
         classified[party][classify(row.values, centroids)] += 1
     
     # Generar metadatos de la gráfica
+    # TODO: Esto puede ser movido para una función auxiliar o inclusive cambiar getJSON por getData (que devuelva (json, meta)) y de los colores correctos para cada división (En el orden del json)
     meta = {
       'title': 'K-Means - División por partido político',
-      'colors': ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF']
+      'colors': ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF'],
+      'lengthDataset': len(dataset)
     }
-
-    # Variables
-    p = {}
-    bottom = np.zeros((len(classes),), dtype=int)
-    legend = []
-
-    # Plotting
-    plt.title(meta['title'])
-    for party, partyName, partyCandidates, partyCount in parties:
-        actual = list(classified[party].values())
-        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = meta['colors'][party])
-        legend.append(p[party][0])
-        # Se guarda la altura para futuras barras.
-        bottom += np.array(actual)
-    plt.xticks(range(len(classes)), list(classes.keys()))
-    plt.legend(list(legend), list(partyNames), loc=2)
-    plt.show()
+    plotStackedBars(classes, parties, classified, meta)
 
 ### METODOS AUXILIARES - Resultados
 ### -----------------------------
+
+def getJSON(division):
+    if division == CandidateDivision.PARTIES:
+        return reader.readParties(DATA_CANDIDATOS)
+    elif division == CandidateDivision.SPECTRUM:
+        return reader.readParties(DATA_CANDIDATOS_ESPECTRO)
+    elif division == CandidateDivision.NOLAN:
+        return reader.readParties(DATA_CANDIDATOS_NOLAN)

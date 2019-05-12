@@ -78,3 +78,25 @@ def plotHeatmap(dataset, meta):
 
     plt.title(meta['title'])
     plt.show()
+
+def plotStackedBars(classes, parties, classified, meta):
+    # Variables
+    p = {}
+    bottom = np.zeros((len(classes),), dtype=int)
+    legend = []
+    labels = []
+
+    # Plotting
+    plt.title(meta['title'])
+    for party, partyName, partyCandidates, partyCount in parties:
+        actual = list(classified[party].values())
+        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = meta['colors'][party])
+        
+        legend.append(p[party][0])
+        labels.append(f"{partyName} ({round(100*(partyCount/meta['lengthDataset']), 2)}%)")
+
+        # Se guarda la altura para futuras barras.
+        bottom += np.array(actual)
+    plt.xticks(range(len(classes)), list(classes.keys()))
+    plt.legend(list(legend), list(labels), loc=2)
+    plt.show()
