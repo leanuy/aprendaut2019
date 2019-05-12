@@ -3,57 +3,125 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from operator import itemgetter
 
+from .plotting import plotPie, plotStackedBars
 import processing.reader as reader
 import processing.parser as parser
-import processing.processor as processor
-from utils.const import DATA_CANDIDATOS, PCAnalysis
+from utils.const import KmeansAnalysis, KmeansEvaluations, CandidateDivision
 from model.k_means import classify
+from .plotting import plotStackedBars
 
-### METODOS PRINCIPALES
+### CONSTANTES
+### ------------------
+
+COLORS = ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF', '#f68261', '#43D3D8', '#C5694B', '#00BD4b', '#4BBBB0', '#FFEE0F']
+
+### METODO PRINCIPAL
 ### -------------------
 
-def plotKMeans(classes):
+def plotKMeans(dataset, candidates, centroids, classes, options):
+
+    if options['kmeans_analysis'] == KmeansAnalysis.GENERAL:
+        plotGenericKMeans(dataset, candidates, centroids, classes)
+
+    if options['kmeans_analysis'] == KmeansAnalysis.CANDIDATES:
+        plotCandidatesKMeans(dataset, candidates, centroids, classes)
+
+    elif options['kmeans_analysis'] == KmeansAnalysis.PARTIES:
+        plotPartiesKMeans(dataset, candidates, centroids, classes, options['candidate_division'])
+
+### METODOS AUXILIARES - Analisis
+### -----------------------------
+
+def plotGenericKMeans(dataset, candidates, centroids, classes):
+    
+    # Generar datos para la gráfica
     classified = {}
-    colors = 10*["r", "b", "g", "y", "k", "m", "c"]
+    labels = []
     for classification, cluster in classes.items():
         classified[classification] = len(cluster)
+        labels.append(f'{classification} ({round(len(cluster) * 100 / len(dataset),2)}%)')
     
-    plt.title("K-Means - Tamaño de clusters")
-    plt.bar(range(len(classified)), list(classified.values()), align='center', color = colors)
-    plt.xticks(range(len(classified)), list(classified.keys()))
-    plt.show()
+    # Generar metadatos para la gráfica
+    meta = {
+      'title': 'K-Means - Distribución por clusters',
+      'colors': COLORS,
+      'angle': 90
+    }
 
-def plotKMeansParties(dataset, candidates, parsedParties, centroids, classes):
+    plotPie(classified.values(), labels, meta)
+
+def plotCandidatesKMeans(dataset, candidates, centroids, classes):
+
+    candidatesAux = []
+    unique, counts = np.unique(candidates, return_counts=True)
+    candidatesCount = dict(zip(unique, counts))
+
+    candidatesJSON = reader.readCandidates()   
+    candidatesParsed = parser.parseCandidatesFromParties(candidatesJSON, unique)
+  
+    for candidate, candidateName in candidatesParsed:
+        candidatesAux.append((candidate, candidateName, 'dummy', candidatesCount[candidate]))
+    candidatesAux = sorted(candidatesAux, key=itemgetter(2), reverse=True)
+
+    # Inicialización estructuras
     classified = {}
-    partyNames = []
+    for candidate, candidateName, _, _ in candidatesAux:
+        classified[candidate] = {}
+        for classification in classes:
+            classified[candidate][classification] = 0
+
+    # Re-clasificación del dataset acorde a los centroides y recolección de proporción de cada party en cada cluster.
+    for index, row in dataset.iterrows():
+        candidate = candidates[index]
+        classified[candidate][classify(row.values, centroids)] += 1
+    
+    # Generar metadatos de la gráfica
+    meta = {
+      'title': 'K-Means - División por candidato',
+      'colors': 2*COLORS,
+      'lengthDataset': len(dataset),
+      'lengthClasses': len(classes),
+      'classes': list(classes.keys())
+    }
+    plotStackedBars((candidatesAux, classified), meta)
+
+def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
+
+    # Leer archivo JSON de candidatos para parsear candidatos del dataset 
+    # Luego, obtener partidos y candidatos parseados
+    # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
+    # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
+    partyJSON = reader.readParties(division)    
+    parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
+
+    # Ordenamiento de parsedParties según la proporción de votos de cada una.
+    parties = []
+    unique, counts = np.unique(parsedCandidates, return_counts=True)
+    partiesCount = dict(zip(unique, counts))
     for party, partyName, partyCandidates in parsedParties:
-        partyNames.append(partyName)
+        parties.append((party, partyName, partyCandidates, partiesCount[party]))
+    parties = sorted(parties, key=itemgetter(3), reverse=True)
+
+    # Inicialización estructuras
+    classified = {}
+    for party, partyName, partyCandidates, partyCount in parties:
         classified[party] = {}
         for classification in classes:
             classified[party][classification] = 0
 
+    # Re-clasificación del dataset acorde a los centroides y recolección de proporción de cada party en cada cluster.
     for index, row in dataset.iterrows():
-        party = processor.getParty(parsedParties, candidates[index])
+        party = parser.getParty(parties, candidates[index], division)
         classified[party][classify(row.values, centroids)] += 1
-
-    # Variables
-    colors = { 0: '#800000', 1: '#e6194B', 2: '#f58231', 3: '#ffe119', 4: '#bfef45', 5: '#3cb44b', 6: '#469990', 7: '#42d4f4', 8: '#000075', 9: '#4363d8', 10: '#911eb4' }
-    p = {}
-    bottom = np.zeros((len(classes),), dtype=int)
-    legend = []
-
-    # Plotting
-    plt.title("K-Means - Separado por partidos")
-    for party, partyName, partyCandidates in parsedParties:
-        actual = list(classified[party].values())
-        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = colors[party])
-        legend.append(p[party][0])
-        # Se guarda la altura para futuras barras.
-        bottom += np.array(actual)
-    plt.xticks(range(len(classes)), list(classes.keys()))
-    plt.legend(list(legend), list(partyNames), loc=2)
-    plt.show()
-
-### METODOS AUXILIARES
-### ------------------
+    
+    # Generar metadatos de la gráfica
+    meta = {
+      'title': 'K-Means - División por partido político',
+      'colors': COLORS,
+      'lengthDataset': len(dataset),
+      'lengthClasses': len(classes),
+      'classes': list(classes.keys())
+    }
+    plotStackedBars((parties, classified), meta)

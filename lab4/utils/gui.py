@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates
+from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates, KmeansAnalysis, KmeansEvaluations, CandidateDivision
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -105,11 +105,12 @@ def printPCAIntermediate(pca_election):
     print ("-> DEFAULT: 0")
     print ("1. Matriz de Covarianza")
     print ("2. Valores Propios")
+    print ("3. Ratio de Varianza")
     print ("0. Ninguno")
     
     try:
         op = int( input() )
-        if op < 0 or op > 2:
+        if op < 0 or op > 3:
             op = PCAIntermediates.NONE
         else:
             if op == 0:
@@ -118,6 +119,8 @@ def printPCAIntermediate(pca_election):
                 op = PCAIntermediates.COV_MATRIX
             elif op == 2:
                 op = PCAIntermediates.EIGEN_VALUES
+            elif op == 3:
+                op = PCAIntermediates.VARIANCE_RATIO
         return op
     except:
         return PCAIntermediates.NONE
@@ -149,3 +152,85 @@ def printItersK(modelType):
             return evaluationK
         except:
             return 1
+
+# Lee la opción a elegir de que datos mostrar de KMeans
+def printKmeansAnalysis():
+    print ("")
+    print ("-> Elija que datos graficar: ")
+    print ("-> DEFAULT: 0")
+    print ("1. Graficar distribución de cada cluster")
+    print ("2. Graficar distribución de candidatos en cada cluster")
+    print ("3. Graficar distribución de partidos en cada cluster")
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 3:
+            op = KmeansAnalysis.NONE
+        else:
+            if op == 0:
+                op = KmeansAnalysis.NONE
+            elif op == 1:
+                op = KmeansAnalysis.GENERAL
+            elif op == 2:
+                op = KmeansAnalysis.CANDIDATES
+            elif op == 3:
+                op = KmeansAnalysis.PARTIES
+        return op
+    except:
+        return KmeansAnalysis.NONE
+
+# Lee la opción a elegir de que evaluaciones realizar a los clusters de Kmeans
+def printKmeansEvaluations(k):
+    showARI = k == 3 or k == 5 or k == 11 
+    print ("")
+    print ("-> Elija que evaluación calcular: ")
+    print ("-> DEFAULT: 0")
+    print ("1. Coeficiente Silhouette")
+    if showARI:
+        print ("2. Adjusted Random Index")
+    print ("0. Ninguno")
+    
+    try:
+        op = int( input() )
+        if op < 0 or op > 2:
+            op = KmeansEvaluations.NONE
+        else:
+            if op == 0:
+                op = KmeansEvaluations.NONE
+            elif op == 1:
+                op = KmeansEvaluations.SILHOUETTE
+            elif op == 2 and showARI:
+                op = KmeansEvaluations.ARI
+            else:
+                op = KmeansEvaluations.NONE
+        return op
+    except:
+        return KmeansEvaluations.NONE
+
+# Lee la opción a elegir de que división utilizar para los candidatos
+def printCandidateDivision(analisis):
+    if analisis != PCAnalysis.ALL_PARTY and analisis != KmeansAnalysis.PARTIES:
+        return CandidateDivision.PARTIES
+
+    print ("")
+    print ("-> Elija como dividir a los candidatos: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Por Partido (FA, PN, PC, etc.)")
+    print ("2. Por Espectro General (Izquierda, Centro, Derecha)")
+    print ("3. Por Espectro de Nolan (Progresismo, Totalitarismo, Conservadurismo, Liberalismo, Centro)")
+    
+    try:
+        op = int( input() )
+        if op < 1 or op > 3:
+            op = CandidateDivision.PARTIES
+        else:
+            if op == 1:
+                op = CandidateDivision.PARTIES
+            elif op == 2:
+                op = CandidateDivision.SPECTRUM
+            elif op == 3:
+                op = CandidateDivision.NOLAN
+        return op
+    except:
+        return CandidateDivision.PARTIES
