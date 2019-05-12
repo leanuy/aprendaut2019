@@ -176,9 +176,12 @@ def plotEigenValues(eigen_values):
       'xlabels': [str(i) for i in range(0, len(eigen_values))],
       'colors': ['#f58231']
     }
+    labels = []
+    for i in range(0, len(eigen_values)):
+        labels.append(f'{i}')
 
     # Generar única gráfica
-    plotBars(eigen_values, None, meta)
+    plotBars(eigen_values, labels, meta)
     
 def plotVarianceRatio(variance_ratio):
 

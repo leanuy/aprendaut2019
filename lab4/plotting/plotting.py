@@ -51,7 +51,7 @@ def plotBars(dataset, labels, meta):
 
     plt.figure(figsize=(12,6)) 
 
-    y_pos = np.arange(len(labels))      
+    y_pos = np.arange(len(labels))
     plt.bar(y_pos, dataset, align='center', alpha=0.8, color=meta['colors'][0])
     plt.xticks(y_pos, labels)
     
