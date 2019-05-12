@@ -53,6 +53,6 @@ def getParty(parsedParties, candidate, division):
             return 3 # Conservadurismo
         if candidate == 30: # ??????
             return 0 # Progresismo
-    for party, partyName, partyCandidates in parsedParties:
+    for party, partyName, partyCandidates, partyCount in parsedParties:
         if candidate in partyCandidates:
             return party

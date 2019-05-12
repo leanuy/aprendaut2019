@@ -69,7 +69,7 @@ def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
             classified[party][classification] = 0
 
     for index, row in dataset.iterrows():
-        party = parser.getParty(parsedParties, candidates[index], division)
+        party = parser.getParty(parties, candidates[index], division)
         classified[party][classify(row.values, centroids)] += 1
     
     # Generar metadatos de la gráfica
@@ -85,7 +85,7 @@ def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
 
     # Plotting
     plt.title(meta['title'])
-    for party, partyName, partyCandidates in parsedParties:
+    for party, partyName, partyCandidates, partyCount in parties:
         actual = list(classified[party].values())
         p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = meta['colors'][party])
         legend.append(p[party][0])
