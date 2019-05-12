@@ -47,56 +47,64 @@ def plotScatter(dataset, labels, meta):
     plt.title(meta['title'])
     plt.show()
 
-def plotBars(dataset, labels, meta):
-
+def plotBars(dataset, meta):
     plt.figure(figsize=(12,6)) 
-
-    y_pos = np.arange(len(labels))      
+    y_pos = np.arange(len(meta['xlabels']))      
     plt.bar(y_pos, dataset, align='center', alpha=0.8, color=meta['colors'][0])
-    plt.xticks(y_pos, labels)
-    
+    plt.xticks(y_pos, meta['xlabels'])
     plt.title(meta['title'])
     plt.show()
 
 def plotCurve(dataset, meta):
-
     plt.figure(figsize=(12,6)) 
-
     plt.plot(np.cumsum(dataset), alpha=0.8, color=meta['colors'][0])
-
     plt.xlabel(meta['xlabel'])
     plt.ylabel(meta['ylabel'])    
     plt.title(meta['title'])
     plt.show()
 
 def plotHeatmap(dataset, meta):
-
     fig = plt.figure(figsize=(10,8))
     ax = fig.add_subplot(111)
     cax = ax.matshow(dataset, interpolation='nearest')
     fig.colorbar(cax)
-
     plt.title(meta['title'])
     plt.show()
 
-def plotStackedBars(classes, parties, classified, meta):
-    # Variables
-    p = {}
-    bottom = np.zeros((len(classes),), dtype=int)
+def plotPie(dataset, labels, meta):
+    plt.figure(figsize=(10,8))
+    patches, texts = plt.pie(dataset, colors=meta['colors'], startangle=meta['angle'])
+    plt.legend(patches, labels, loc="best")
+    plt.title(meta['title'])
+    plt.show()
+
+def plotStackedBars(dataset, meta):
+
+    data, classified = dataset
+
     legend = []
     labels = []
-
+    bottom = np.zeros(meta['lengthClasses'], dtype=int)
+    index = 0
+    
     # Plotting
-    plt.title(meta['title'])
-    for party, partyName, partyCandidates, partyCount in parties:
-        actual = list(classified[party].values())
-        p[party] = plt.bar(range(len(classes)), actual, bottom=bottom, align='center', color = meta['colors'][party])
+    plt.figure(figsize=(16,6))
+    ax = plt.subplot(111)
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+    for id, name, _, count in data:
+        actual = list(classified[id].values())
+        barResult = ax.bar(range(meta['lengthClasses']), actual, bottom=bottom, align='center', color=meta['colors'][index])
         
-        legend.append(p[party][0])
-        labels.append(f"{partyName} ({round(100*(partyCount/meta['lengthDataset']), 2)}%)")
+        legend.append(barResult[0])
+        labels.append(f"{name} ({round(100*(count/meta['lengthDataset']), 2)}%)")
 
         # Se guarda la altura para futuras barras.
         bottom += np.array(actual)
-    plt.xticks(range(len(classes)), list(classes.keys()))
-    plt.legend(list(legend), list(labels), loc=2)
+        index += 1
+
+    plt.xticks(range(meta['lengthClasses']), meta['classes'])
+    plt.legend(list(legend), list(labels), loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.title(meta['title'])
     plt.show()

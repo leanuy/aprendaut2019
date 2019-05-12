@@ -69,9 +69,9 @@ if __name__ == '__main__':
             }
 
             # Aplicar PCA para reducir a 2 dimensiones
-            centroids, classes, extras = k_means.k_means(dataset, k, options, candidates)
+            centroids, classes = k_means.k_means(dataset, k, options, candidates)
 
             # Generar gráficas si es necesario
-            kMeansPlotting.plotKMeans(dataset, candidates, centroids, classes, options, extras)
+            kMeansPlotting.plotKMeans(dataset, candidates, centroids, classes, options)
             
         input("-> Oprima enter para volver al menú")

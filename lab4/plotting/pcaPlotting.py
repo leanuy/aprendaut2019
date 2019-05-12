@@ -8,7 +8,12 @@ from operator import itemgetter
 from .plotting import plotScatter, plotHeatmap, plotBars, plotCurve
 import processing.reader as reader
 import processing.parser as parser
-from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, PCAnalysis, PCAIntermediates, CandidateDivision
+from utils.const import PCAnalysis, PCAIntermediates, CandidateDivision
+
+### CONSTANTES
+### ------------------
+
+COLORS = ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF']
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -48,17 +53,10 @@ def plotGenericPCA(dataset):
 
 def plotAllPartyPCA(dataset, candidates, division):
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
-    partyJSON = None
-    if division == CandidateDivision.PARTIES:
-        partyJSON = reader.readParties(DATA_CANDIDATOS)
-    elif division == CandidateDivision.SPECTRUM:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_ESPECTRO)
-    elif division == CandidateDivision.NOLAN:
-        partyJSON = reader.readParties(DATA_CANDIDATOS_NOLAN)
-
-    # Obtener partidos y candidatos parseados
+    # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
+    partyJSON = reader.readParties(division)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     # Agregar partidos al dataset
@@ -90,7 +88,7 @@ def plotAllPartyPCA(dataset, candidates, division):
     meta = {
       'title': 'Corpus en 2 dimensiones (PCA) - División por partido político',
       'size': 8,
-      'colors': ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#000075', '#bfef45', '#42d4f4', '#9F8BE5', '#9400FF']
+      'colors': COLORS
     }
 
     # Generar gráfica general de puntos
@@ -99,11 +97,10 @@ def plotAllPartyPCA(dataset, candidates, division):
 def plotEachPartyPCA(dataset, candidates):
 
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
-    partyJSON = reader.readParties(DATA_CANDIDATOS)
-
-    # Obtener partidos y candidatos parseados
+    # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
+    partyJSON = reader.readParties(CandidateDivision.PARTIES)   
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     # Agregar partidos al dataset
@@ -137,7 +134,7 @@ def plotEachPartyPCA(dataset, candidates):
     meta = {
       'title': 'Corpus en 2 dimensiones (PCA) - División para cada partido político',
       'size': 4,
-      'colors': ['#f58231', '#4363d8']
+      'colors': [COLORS[0], COLORS[1]]
     }
 
     # Graficar para cada partido
@@ -174,11 +171,11 @@ def plotEigenValues(eigen_values):
     meta = {
       'title': 'Matriz de Covarianza del Corpus - Distribución de valores propios',
       'xlabels': [str(i) for i in range(0, len(eigen_values))],
-      'colors': ['#f58231']
+      'colors': [COLORS[0]]
     }
 
     # Generar única gráfica
-    plotBars(eigen_values, None, meta)
+    plotBars(eigen_values, meta)
     
 def plotVarianceRatio(variance_ratio):
 
@@ -187,7 +184,7 @@ def plotVarianceRatio(variance_ratio):
       'title': 'Ratio de Varianza',
       'xlabel': 'Número de Componentes',
       'ylabel': '% Varianza',
-      'colors': ['#f58231']
+      'colors': [COLORS[0]]
     }
 
     # Generar única gráfica

@@ -1,8 +1,9 @@
 ### DEPENDENCIAS
 ### ------------------
-
 import json
 import pandas as pd
+
+from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, DATA_CANDIDATOS_SIN_PARTIDO, CandidateDivision
 
 ### METODOS PRINCIPALES
 ### -------------------
@@ -15,8 +16,23 @@ def readDataset(filename, is_for_pca=True):
     return candidates.apply(pd.to_numeric, downcast='unsigned'), answers.apply(pd.to_numeric, downcast='unsigned')
 
 # Lee 'filename' y lo devuelve como archivo JSON
-def readParties(filename):
+def readParties(division):
+
+    if division == CandidateDivision.PARTIES:
+        filename = DATA_CANDIDATOS
+    elif division == CandidateDivision.SPECTRUM:
+        filename = DATA_CANDIDATOS_ESPECTRO
+    elif division == CandidateDivision.NOLAN:
+        filename = DATA_CANDIDATOS_NOLAN
+    else:
+        filename = DATA_CANDIDATOS
+
     with open(filename) as json_file:  
+        data = json.load(json_file)
+    return data
+
+def readCandidates():
+    with open(DATA_CANDIDATOS_SIN_PARTIDO) as json_file:  
         data = json.load(json_file)
     return data
             

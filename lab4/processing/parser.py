@@ -36,6 +36,21 @@ def parseCandidates(candidates, partyJSON):
 
     return pairs, parties
 
+# El proceso inverso a la función anterior
+def parseCandidatesFromParties(candidatesJSON, candidates):
+    auxDict = {}
+    for i in range(0, len(candidatesJSON)):
+        auxDict[candidatesJSON[i]['id']] = candidatesJSON[i]['name']
+
+    res = []
+    for candidate in candidates:
+        if not candidate in auxDict.keys():
+            res.append((candidate, 'Candidato desconocido'))
+        else:
+            res.append((candidate, auxDict[candidate]))
+
+    return res
+
 # Dado un candidato, devuelve su partido en caso de no encontrarse en parsedParties
 def getParty(parsedParties, candidate, division):
     if division == CandidateDivision.PARTIES:
