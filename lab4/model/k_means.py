@@ -55,7 +55,7 @@ def k_means(dataset, k, options, candidates):
         print()
 
     if options['kmeans_evaluations'] == KmeansEvaluations.ARI:
-        ari = getARI(dataset, candidates, bestClusterLabels, options['candidate_division'])
+        ari = getARI(dataset, candidates, bestClusterLabels, options)
         print(f"Adjusted Random Index (ARI): {ari}")
         print()
 
@@ -130,12 +130,13 @@ def classify(dataset, centroids):
 ### METODOS AUXILIARES
 ### --------------------
 
-def getARI(dataset, candidates, labels, division):
+def getARI(dataset, candidates, labels, options):
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
     # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
-    partyJSON = reader.readParties(division)    
+
+    partyJSON = reader.readParties(options['candidate_division'], options)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     labels_true = []

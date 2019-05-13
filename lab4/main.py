@@ -40,7 +40,8 @@ if __name__ == '__main__':
                 'pca_election': pca_election,
                 'pca_analysis': pca_analysis,
                 'pca_intermediates': pca_intermediates,
-                'candidate_division': candidate_division
+                'candidate_division': candidate_division,
+                'from_notebook': False
             }
 
             # Aplicar PCA para reducir a 2 dimensiones
@@ -65,7 +66,8 @@ if __name__ == '__main__':
                 'kmeans_iters': iters,
                 'kmeans_analysis': kmeans_analysis,
                 'kmeans_evaluations': kmeans_evaluations,
-                'candidate_division': candidate_division
+                'candidate_division': candidate_division,
+                'from_notebook': False
             }
 
             # Aplicar K-Means
