@@ -4,6 +4,7 @@
 from copy import deepcopy
 import numpy as np
 from numpy.linalg import svd, eig
+from operator import itemgetter
 
 from utils.const import PCAOps
 
@@ -56,6 +57,7 @@ def reduce_pca(matrix, k, options):
         matrix_w = np.hstack((eig_pairs[0][1].reshape(26,1), eig_pairs[1][1].reshape(26,1)))
         
         explained_variance_ratio = [np.abs(i)/np.sum(val_prop_cov) for i in val_prop_cov]
+        explained_variance_ratio = sorted(explained_variance_ratio, reverse=True)
 
         transformed = np.dot(datac.T, matrix_w)
         extras = {
