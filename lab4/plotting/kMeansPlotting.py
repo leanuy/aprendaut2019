@@ -26,7 +26,7 @@ def plotKMeans(dataset, candidates, centroids, classes, options):
         plotGenericKMeans(dataset, candidates, centroids, classes)
 
     if options['kmeans_analysis'] == KmeansAnalysis.CANDIDATES:
-        plotCandidatesKMeans(dataset, candidates, centroids, classes)
+        plotCandidatesKMeans(dataset, candidates, centroids, classes, options)
 
     elif options['kmeans_analysis'] == KmeansAnalysis.PARTIES:
         plotPartiesKMeans(dataset, candidates, centroids, classes, options)
@@ -52,13 +52,13 @@ def plotGenericKMeans(dataset, candidates, centroids, classes):
 
     plotPie(classified.values(), labels, meta)
 
-def plotCandidatesKMeans(dataset, candidates, centroids, classes):
+def plotCandidatesKMeans(dataset, candidates, centroids, classes, options):
 
     candidatesAux = []
     unique, counts = np.unique(candidates, return_counts=True)
     candidatesCount = dict(zip(unique, counts))
 
-    candidatesJSON = reader.readCandidates()   
+    candidatesJSON = reader.readCandidates(options)   
     candidatesParsed = parser.parseCandidatesFromParties(candidatesJSON, unique)
   
     for candidate, candidateName in candidatesParsed:

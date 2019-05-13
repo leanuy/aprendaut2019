@@ -36,8 +36,13 @@ def readParties(division, options):
         data = json.load(json_file)
     return data
 
-def readCandidates():
-    with open(DATA_CANDIDATOS_SIN_PARTIDO) as json_file:  
+def readCandidates(options):
+    if options['from_notebook']:
+        filename = '../' + DATA_CANDIDATOS_SIN_PARTIDO
+    else:
+        filename = DATA_CANDIDATOS_SIN_PARTIDO
+
+    with open(filename) as json_file:  
         data = json.load(json_file)
     return data
             
