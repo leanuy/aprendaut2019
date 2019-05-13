@@ -4,7 +4,6 @@
 from copy import deepcopy
 import numpy as np
 from numpy.linalg import svd, eig
-from operator import itemgetter
 
 from utils.const import PCAOps
 
