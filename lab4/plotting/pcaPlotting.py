@@ -24,10 +24,10 @@ def plotPCA(dataset, candidates, options, extras):
         plotGenericPCA(dataset)
 
     elif options['pca_analysis'] == PCAnalysis.ALL_PARTY:
-        plotAllPartyPCA(dataset, candidates, options['candidate_division'])
+        plotAllPartyPCA(dataset, candidates, options)
 
     elif options['pca_analysis'] == PCAnalysis.EACH_PARTY:
-        plotEachPartyPCA(dataset, candidates)
+        plotEachPartyPCA(dataset, candidates, options)
 
     if options['pca_intermediates'] == PCAIntermediates.COV_MATRIX:
         plotCovMatrix(extras['cov_matrix'])
@@ -51,12 +51,12 @@ def plotGenericPCA(dataset):
     # Generar gráfica general de puntos
     plotScatter(dataset, None, meta)
 
-def plotAllPartyPCA(dataset, candidates, division):
+def plotAllPartyPCA(dataset, candidates, options):
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
     # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
-    partyJSON = reader.readParties(division)    
+    partyJSON = reader.readParties(options['candidate_division'], options)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     # Agregar partidos al dataset
@@ -94,13 +94,13 @@ def plotAllPartyPCA(dataset, candidates, division):
     # Generar gráfica general de puntos
     plotScatter(data, labels, meta)
 
-def plotEachPartyPCA(dataset, candidates):
+def plotEachPartyPCA(dataset, candidates, options):
 
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
     # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
-    partyJSON = reader.readParties(CandidateDivision.PARTIES)   
+    partyJSON = reader.readParties(CandidateDivision.PARTIES, options)   
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     # Agregar partidos al dataset

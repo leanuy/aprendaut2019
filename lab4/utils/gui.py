@@ -182,7 +182,7 @@ def printKmeansAnalysis():
 
 # Lee la opción a elegir de que evaluaciones realizar a los clusters de Kmeans
 def printKmeansEvaluations(k):
-    showARI = k == 3 or k == 5 or k == 11 
+    showARI = k == 2 or k == 5 or k == 11 
     print ("")
     print ("-> Elija que evaluación calcular: ")
     print ("-> DEFAULT: 0")
