@@ -16,16 +16,21 @@ def readDataset(filename, is_for_pca=True):
     return candidates.apply(pd.to_numeric, downcast='unsigned'), answers.apply(pd.to_numeric, downcast='unsigned')
 
 # Lee 'filename' y lo devuelve como archivo JSON
-def readParties(division):
+def readParties(division, options):
+
+    if options['from_notebook']:
+        filename = '../'
+    else:
+        filename = ''
 
     if division == CandidateDivision.PARTIES:
-        filename = DATA_CANDIDATOS
+        filename += DATA_CANDIDATOS
     elif division == CandidateDivision.SPECTRUM:
-        filename = DATA_CANDIDATOS_ESPECTRO
+        filename += DATA_CANDIDATOS_ESPECTRO
     elif division == CandidateDivision.NOLAN:
-        filename = DATA_CANDIDATOS_NOLAN
+        filename += DATA_CANDIDATOS_NOLAN
     else:
-        filename = DATA_CANDIDATOS
+        filename += DATA_CANDIDATOS
 
     with open(filename) as json_file:  
         data = json.load(json_file)
