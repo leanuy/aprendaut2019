@@ -26,10 +26,10 @@ def plotKMeans(dataset, candidates, centroids, classes, options):
         plotGenericKMeans(dataset, candidates, centroids, classes)
 
     if options['kmeans_analysis'] == KmeansAnalysis.CANDIDATES:
-        plotCandidatesKMeans(dataset, candidates, centroids, classes)
+        plotCandidatesKMeans(dataset, candidates, centroids, classes, options)
 
     elif options['kmeans_analysis'] == KmeansAnalysis.PARTIES:
-        plotPartiesKMeans(dataset, candidates, centroids, classes, options['candidate_division'])
+        plotPartiesKMeans(dataset, candidates, centroids, classes, options)
 
 ### METODOS AUXILIARES - Analisis
 ### -----------------------------
@@ -52,13 +52,13 @@ def plotGenericKMeans(dataset, candidates, centroids, classes):
 
     plotPie(classified.values(), labels, meta)
 
-def plotCandidatesKMeans(dataset, candidates, centroids, classes):
+def plotCandidatesKMeans(dataset, candidates, centroids, classes, options):
 
     candidatesAux = []
     unique, counts = np.unique(candidates, return_counts=True)
     candidatesCount = dict(zip(unique, counts))
 
-    candidatesJSON = reader.readCandidates()   
+    candidatesJSON = reader.readCandidates(options)   
     candidatesParsed = parser.parseCandidatesFromParties(candidatesJSON, unique)
   
     for candidate, candidateName in candidatesParsed:
@@ -87,13 +87,13 @@ def plotCandidatesKMeans(dataset, candidates, centroids, classes):
     }
     plotStackedBars((candidatesAux, classified), meta)
 
-def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
+def plotPartiesKMeans(dataset, candidates, centroids, classes, options):
 
     # Leer archivo JSON de candidatos para parsear candidatos del dataset 
     # Luego, obtener partidos y candidatos parseados
     # - parsedParties: Lista de tuplas (idPartido, nombrePartido, candidatosPartido)
     # - parsedCandidates: Lista de partidos que preserva el orden de candidatos en el dataset original
-    partyJSON = reader.readParties(division)    
+    partyJSON = reader.readParties(options['candidate_division'], options)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
     # Ordenamiento de parsedParties según la proporción de votos de cada una.
@@ -113,7 +113,7 @@ def plotPartiesKMeans(dataset, candidates, centroids, classes, division):
 
     # Re-clasificación del dataset acorde a los centroides y recolección de proporción de cada party en cada cluster.
     for index, row in dataset.iterrows():
-        party = parser.getParty(parties, candidates[index], division)
+        party = parser.getParty(parties, candidates[index], options['candidate_division'])
         classified[party][classify(row.values, centroids)] += 1
     
     # Generar metadatos de la gráfica
