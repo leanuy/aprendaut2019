@@ -63,6 +63,11 @@ def getParty(parsedParties, candidate, division):
             return 2 # Derecha
         if candidate == 30: # ??????
             return 0 # Izquierda
+    elif division == CandidateDivision.DUAL_SPECTRUM:
+        if candidate == 7: # Partido Nacional???
+            return 1 # Derecha
+        if candidate == 30: # ??????
+            return 0 # Izquierda
     elif division == CandidateDivision.NOLAN:
         if candidate == 7: # Partido Nacional???
             return 3 # Conservadurismo

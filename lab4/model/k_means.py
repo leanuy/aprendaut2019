@@ -18,7 +18,7 @@ def k_means(dataset, k, options, candidates):
     print()
     if options['kmeans_iters'] == 1:
         (bestCentroids, bestClasses, dataset_classified) = train(dataset.values, k)
-
+        bestClusterLabels = dataset_classified[:, 26]
     else:
         # Se ejecutan n K-Means, manteniendo el mejor.
         bestSilhouette = -2
@@ -45,8 +45,6 @@ def k_means(dataset, k, options, candidates):
         print(f'Mejor modelo: N° {bestIndex}')
         print(f'Mejor coeficiente silhouette: {bestSilhouette}')
         print()
-
-    bestClusterLabels = dataset_classified[:, 26]
 
     if options['kmeans_evaluations'] == KmeansEvaluations.SILHOUETTE and options['kmeans_iters'] == 1:
         silhouette = silhouette_score(dataset.values, bestClusterLabels)
@@ -138,8 +136,20 @@ def getARI(dataset, candidates, labels, options):
     partyJSON = reader.readParties(options['candidate_division'], options)    
     parsedParties, parsedCandidates = parser.parseCandidates(candidates.values, partyJSON)
 
+    unique, counts = np.unique(labels, return_counts=True)
+    labelsCount = dict(zip(unique, counts))
+
+    unique, counts = np.unique(parsedCandidates, return_counts=True)
+    labelsTrueCount = dict(zip(unique, counts))
+
+    print(labelsTrueCount)
+    print(labelsCount)
+
     labels_true = []
-    for index in dataset.index:
-        labels_true.append(parsedCandidates[index-1])
+    labels = []
+    for party in labelsTrueCount:
+        labels_true = np.append(labels_true, (np.ones(labelsTrueCount[party])*party))
+    for party in labelsCount:
+        labels = np.append(labels, (np.ones(labelsCount[party])*party))
 
     return adjusted_rand_score(labels_true, labels)

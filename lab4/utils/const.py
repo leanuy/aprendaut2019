@@ -42,11 +42,13 @@ class CandidateDivision(Enum):
     PARTIES = 0
     SPECTRUM = 1
     NOLAN = 2
+    DUAL_SPECTRUM = 3
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'
 DATA_CANDIDATOS = 'data/candidatos.json'
 DATA_CANDIDATOS_ESPECTRO = 'data/candidatosEspectro.json'
+DATA_CANDIDATOS_ESPECTRO_DUAL = 'data/candidatosEspectroDual.json'
 DATA_CANDIDATOS_NOLAN = 'data/candidatosNolan.json'
 DATA_CANDIDATOS_SIN_PARTIDO = 'data/candidatosSinPartido.json'
 
