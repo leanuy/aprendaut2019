@@ -3,7 +3,6 @@
 
 import numpy as np
 from random import randint
-from sklearn.cluster import KMeans as skKMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics.cluster import adjusted_rand_score
 
@@ -144,9 +143,3 @@ def getARI(dataset, candidates, labels, options):
         labels_true.append(parsedCandidates[index-1])
 
     return adjusted_rand_score(labels_true, labels)
-    
-def kMeans_sklearn(k, dataset):
-  km = skKMeans(n_clusters=k, init='random', n_init=1, max_iter=500, tol=0.0001, n_jobs=-1).fit(dataset)
-  print(km.inertia_)
-  for centroid in km.cluster_centers_:
-      print(centroid)
