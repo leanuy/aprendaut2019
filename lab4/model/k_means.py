@@ -142,9 +142,6 @@ def getARI(dataset, candidates, labels, options):
     unique, counts = np.unique(parsedCandidates, return_counts=True)
     labelsTrueCount = dict(zip(unique, counts))
 
-    print(labelsTrueCount)
-    print(labelsCount)
-
     labels_true = []
     labels = []
     for party in labelsTrueCount:
