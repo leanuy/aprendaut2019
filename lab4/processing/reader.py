@@ -3,7 +3,7 @@
 import json
 import pandas as pd
 
-from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, DATA_CANDIDATOS_SIN_PARTIDO, CandidateDivision
+from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDATOS_NOLAN, DATA_CANDIDATOS_SIN_PARTIDO, DATA_CANDIDATOS_ESPECTRO_DUAL, CandidateDivision
 
 ### METODOS PRINCIPALES
 ### -------------------
@@ -27,6 +27,8 @@ def readParties(division, options):
         filename += DATA_CANDIDATOS
     elif division == CandidateDivision.SPECTRUM:
         filename += DATA_CANDIDATOS_ESPECTRO
+    elif division == CandidateDivision.DUAL_SPECTRUM:
+        filename += DATA_CANDIDATOS_ESPECTRO_DUAL
     elif division == CandidateDivision.NOLAN:
         filename += DATA_CANDIDATOS_NOLAN
     else:
