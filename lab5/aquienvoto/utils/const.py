@@ -8,8 +8,21 @@ from enum import Enum
 
 # Opciones del menú principal
 class MenuOps(Enum):
-    PCA = 1
-    KMEANS = 2
+    LOGISTIC_REGRESSION = 1
+    PCA = 2
+
+class SOLVEROps(Enum):
+    LIBLINEAR = "liblinear"
+    LBFGS = "lbfgs"
+    SAG = "sag"
+    SAGA = "saga"
+    NEWTON_CG = "newton-cg"
+
+class PENALTYOps(Enum):
+    NONE = 'None'
+    L1 = 'l1'
+    L2 = 'l2'
+    ELASTICNET = 'elasticnet'
 
 class PCAOps(Enum):
     COVARIANZA = 0

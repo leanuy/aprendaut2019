@@ -9,10 +9,19 @@ from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDAT
 ### -------------------
 
 # Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
-def readDataset(filename, is_for_pca=True):
+def readDataset(filename, more_than_1000=True):
     dataset = pd.read_csv(filename)
     candidates = dataset.iloc[1:, 1]
     answers = dataset.iloc[1:, 2:28]
+
+    # Solo candidatos con mas de mil votos
+    if more_than_1000:
+        dataset['candidateID'] = candidates            
+        filtered = dataset[dataset.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
+        candidates_filtered = filtered['candidateID']
+        filtered.pop('candidateID')
+        return candidates_filtered, filtered
+    
     return candidates.apply(pd.to_numeric, downcast='unsigned'), answers.apply(pd.to_numeric, downcast='unsigned')
 
 # Lee 'filename' y lo devuelve como archivo JSON

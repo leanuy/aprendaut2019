@@ -19,38 +19,39 @@ from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
 
 if __name__ == '__main__':
 
-    op = MenuOps.PCA
+    op = MenuOps.LOGISTIC_REGRESSION
 
-    while op == MenuOps.PCA or MenuOps.KMEANS:
+    while op == MenuOps.LOGISTIC_REGRESSION or MenuOps.PCA:
 
         gui.printMenu()
         op = gui.printMenuOption()
 
-        if op == MenuOps.PCA:
+        if op == MenuOps.LOGISTIC_REGRESSION:
 
-            pca_election = gui.printPCAOptions()
-            pca_intermediates = gui.printPCAIntermediate(pca_election)            
-            pca_analysis = gui.printPCAnalysis()
-            candidate_division = gui.printCandidateDivision(pca_analysis)
+            solver_election = gui.printSOLVEROptions()
+            penalty_election = gui.printPENALTYOptions(solver_election)            
+            max_iter = gui.printMaxIterations()
+            regulation_strength = gui.printRegulationStrength()
 
             # Leer dataset de respuestas a encuesta
             candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
 
             options = {
-                'pca_election': pca_election,
-                'pca_analysis': pca_analysis,
-                'pca_intermediates': pca_intermediates,
-                'candidate_division': candidate_division,
-                'from_notebook': False
+                'solver_election': solver_election,
+                'penalty_election': penalty_election,
+                'max_iter': max_iter,
+                'regulation_strength': regulation_strength,
             }
-
+            
+            print(options)
+            exit()
             # Aplicar PCA para reducir a 2 dimensiones
-            reducedDataset, extras = pca.reduce_pca(dataset.values, 2, options)
+            reducedDataset, extras = logistic_regression.train(dataset.values, candidates.values, options)
 
             # Generar gráficas si es necesario
             pcaPlotting.plotPCA(reducedDataset, candidates, options, extras)
 
-        elif op == MenuOps.KMEANS:
+        elif op == MenuOps.PCA:
 
             # Leer K
             k = gui.printModelK(op)
