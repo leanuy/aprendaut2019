@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -49,6 +49,26 @@ def printMenuOption():
             op = MenuOps.PLAY
 
     return op
+
+# Lee la opcion a elegir del menu principal
+def printModelOptions():
+    print ("")   
+    print ("-> Decida el tipo de modelo: ")
+    print ("1. Aprendizaje conceptual (lab1)")
+    print ("2. Q-Training profundo: Board")
+    print ("3. Q-Training profundo: Metricas")
+    model = int( input() )
+
+    if model < 1 or model > 3:
+        sys.exit()
+    else:
+        if model == 1:
+            model = ModelTypes.CONCEPT
+        elif model == 2:
+            model = ModelTypes.NEURAL_BOARD
+        elif model == 3:
+            model = ModelTypes.NEURAL_METRICS
+    return model
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):

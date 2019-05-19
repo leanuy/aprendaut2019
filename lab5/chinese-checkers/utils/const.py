@@ -11,6 +11,12 @@ class MenuOps(Enum):
     TRAIN = 1
     PLAY = 2
 
+# Tipos de modelos
+class ModelTypes(Enum):
+    CONCEPT = 1
+    NEURAL_BOARD = 2
+    NEURAL_METRICS = 3
+
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
     RANDOM = 0

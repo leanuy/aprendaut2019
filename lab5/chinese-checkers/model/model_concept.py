@@ -7,7 +7,7 @@ import random
 ### CLASE PRINCIPAL
 ### ------------------
 
-class Model():
+class ModelConcept():
 
     ### CONSTRUCTOR
     ### -------------------

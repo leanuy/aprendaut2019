@@ -4,12 +4,13 @@
 import copy
 import matplotlib.pyplot as plt
 
-from .model import Model
+from .model_concept import ModelConcept
+# from .model_neural import ModelNeural
 
 from game.game import Game
 from game.player import Player
 
-from utils.const import PlayerType, GameMode, GameTokens, GameResults
+from utils.const import PlayerType, GameMode, GameTokens, GameResults, ModelTypes
 
 
 ### CLASE PRINCIPAL
@@ -17,87 +18,64 @@ from utils.const import PlayerType, GameMode, GameTokens, GameResults
 
 class Training():
 
-    ### METODOS AUXILIARES
+    ### CONSTRUCTOR
     ### -------------------
 
-    def printResultsPlot(self, axis, iterations):
-        (x_axis, y_axis) = axis
-        plt.plot(x_axis, y_axis, 'ro')
-        plt.axis([0, iterations - 1, -2, 2])
-        plt.show()
+    def __init__(self, playerToken, options):
 
-    def generateErrorSublist(self, iterations):
-        if iterations <= 10:
-            return list(range(0, iterations))
-        elif iterations <= 100:
-            return list(range(0, iterations, 10))
-        else:
-            return list(range(0, iterations, 100))
+        self.modelType = options['modelType']
 
-    def printErrorPlot(self, plots, iterations):
-        sublist = self.generateErrorSublist(iterations)
-        sublistPlots = [x for x in plots if plots.index(x) in sublist]
-        fig, ax = plt.subplots()
-        for pairs in sublistPlots:
-            (x_axis, y_axis) = pairs
-            ax.plot(x_axis, y_axis, label="Iter " + str(sublistPlots.index(pairs)))
-        ax.legend()
+        # Tipo de jugador a entrenar (basado en su oponente)
+        self.playerType = options['playerType']
 
-        plt.show()
+        # Cantidad de iteraciones en el entrenamiento
+        self.iters = options['iters']
 
-    ### METODOS PRINCIPALES
-    ### -------------------
+        # Cantidad de turnos antes de declarar empate
+        self.maxRounds = options['maxRounds']
 
-    def __init__(self, playerToken, playerType, iters, learningRate, weights, maxRounds, normalize_weights, notDraw):
-        self.notDraw = notDraw
+        self.notDraw = options['notDraw']
 
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
-        self.opponentToken = None
         if playerToken == GameTokens.PLAYER1:
             self.opponentToken = GameTokens.PLAYER2
         else:
             self.opponentToken = GameTokens.PLAYER1
 
-        # Crea al jugador a entrenar y su respectivo modelo
-        self.player = Player(self.playerToken, playerType, Model(normalize_weights, weights))
-        
-        # Crea al oponente y su respectivo modelo en base al playerType, es decir
-        # al tipo de jugador que se quiere entrenar
-        self.opponent = None
-        if playerType == PlayerType.TRAINED_RANDOM:
+        if self.modelType == ModelTypes.CONCEPT:
+            # Ratio de aprendizaje en el entrenamiento
+            self.learningRate = options['learningRate']
+
+            self.weights = options['weights']
+            self.normalize_weights = options['normalize_weights']
+
+            # Crea al jugador a entrenar y su respectivo modelo
+            self.player = Player(self.playerToken, self.playerType, ModelConcept(self.normalize_weights, self.weights))
+        else:
+            print("To be determined")
+
+        # Crea al oponente y su respectivo modelo en base al playerType, (al tipo de jugador que se quiere entrenar)
+        if self.playerType == PlayerType.TRAINED_RANDOM:
             self.opponent = Player(self.opponentToken, PlayerType.RANDOM)
-        elif playerType == PlayerType.TRAINED_SELF:
-            self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, Model(normalize_weights, weights))
-
-        # Tipo de jugador a entrenar (basado en su oponente)
-        self.playerType = playerType
-
-        # Cantidad de iteraciones en el entrenamiento
-        self.iters = iters
-
-        # Ratio de aprendizaje en el entrenamiento
-        self.learningRate = learningRate
-
-        # Cantidad de turnos antes de declarar empate
-        self.maxRounds = maxRounds
+        elif self.playerType == PlayerType.TRAINED_SELF:
+            if self.modelType == ModelTypes.CONCEPT:
+                self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(self.normalize_weights, self.weights))
+            else:
+                print("To be determined")
 
     # Entrenamiento del modelo
     def training(self):
-
         results = [0,0,0]
-
         results_x_axis = []
         results_y_axis = []
-
         errors = []
-
         variable = self.learningRate == 'var'
 
         if variable:
             self.learningRate = 1
             count = 100
-        
+
         i = 0
         while i < self.iters:
             if variable:

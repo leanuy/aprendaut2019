@@ -3,7 +3,7 @@
 
 import random
 
-from model.model import Model
+from model.model_concept import ModelConcept
 from random import randint
 
 from utils.const import PlayerType

@@ -6,13 +6,14 @@ import os
 import time
 
 from model.training import Training
-from model.model import Model
+from model.model_concept import ModelConcept
 
 from game.game import Game
 from game.player import Player
 
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults
+import processing.plotter as plotter
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -32,18 +33,27 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
+            modelType = gui.printModelOptions()
             (playerType, playerName) = gui.printPlayerType()
-            iters = gui.printTrainingIterations()
-            maxRounds = gui.printMaxRounds()
-            learningRate = gui.printLearningRate()
-            weights = gui.printInitialWeights()
-            normalize_weights = gui.printNormalizeWeights()
-            notDraw = gui.printSkipOnDraw()
+
+            options = {
+                'modelType': modelType,
+                'playerType': playerType,
+                'iters': gui.printTrainingIterations(),
+                'maxRounds': gui.printMaxRounds(),
+                'notDraw': gui.printSkipOnDraw(),
+            }
+            if modelType == ModelTypes.CONCEPT:
+                options['learningRate'] = gui.printLearningRate()
+                options['weights'] = gui.printInitialWeights()
+                options['normalize_weights'] = gui.printNormalizeWeights()
+            else:
+                options['a'] = ''    
+            
+            t = Training(GameTokens.PLAYER1, options)
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
-
-            t = Training(GameTokens.PLAYER1, playerType, iters, learningRate, weights, maxRounds, normalize_weights, notDraw)
 
             tic = time.time()
             (player, results, resultsPlot, errorsPlot) = t.training()
@@ -52,25 +62,29 @@ if __name__ == '__main__':
             print("-> FIN DEL ENTRENAMIENTO")
             print()
 
-            historial_weigths.append(player.getModel().getWeights())
-
-            player = {
+            playerData = {
                 'player': player,
                 'type': playerType,
                 'name': playerName,
                 'time': toc-tic,
-                'iterations': iters,
-                'maxRounds': maxRounds,
-                'learningRate': learningRate,
-                'initialWeights': weights,
-                'finalWeights': player.getModel().getWeights(),
-                'results': results,
+                'iterations': options['iters'],
+                'maxRounds': options['maxRounds'],
+                'results': results
             }
-            players.append(player)
+            if modelType == ModelTypes.CONCEPT:
+                historial_weigths.append(player.getModel().getWeights())
+                playerData['learningRate'] = options['learningRate']
+                playerData['initialWeights'] = options['weights']
+                playerData['finalWeights'] = player.getModel().getWeights()
+            else:
+                playerData['a'] = ''
 
-            gui.printTrainedPlayer(player)
-            t.printResultsPlot(resultsPlot, iters)
-            t.printErrorPlot(errorsPlot, iters)
+            players.append(playerData)
+
+            gui.printTrainedPlayer(playerData)
+            plotter.printResultsPlot(resultsPlot, options['iters'])
+            plotter.printErrorPlot(errorsPlot, options['iters'])
+
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.PLAY:
