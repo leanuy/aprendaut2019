@@ -12,7 +12,7 @@ class ModelConcept():
     ### CONSTRUCTOR
     ### -------------------
 
-    def __init__(self, normalize_weights, initialWeights = [0.9, 0.9, 0.9, 0.9, 0.9]):
+    def __init__(self, normalize_weights, initialWeights = [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]):
         self.weights = initialWeights
         self.normalize_weights = normalize_weights
 

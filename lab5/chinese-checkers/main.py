@@ -42,9 +42,9 @@ if __name__ == '__main__':
                 'iters': gui.printTrainingIterations(),
                 'maxRounds': gui.printMaxRounds(),
                 'notDraw': gui.printSkipOnDraw(),
+                'learningRate': gui.printLearningRate()
             }
             if modelType == ModelTypes.CONCEPT:
-                options['learningRate'] = gui.printLearningRate()
                 options['weights'] = gui.printInitialWeights()
                 options['normalize_weights'] = gui.printNormalizeWeights()
             else:
@@ -69,11 +69,11 @@ if __name__ == '__main__':
                 'time': toc-tic,
                 'iterations': options['iters'],
                 'maxRounds': options['maxRounds'],
-                'results': results
+                'results': results,
+                'learningRate': options['learningRate']
             }
             if modelType == ModelTypes.CONCEPT:
                 historial_weigths.append(player.getModel().getWeights())
-                playerData['learningRate'] = options['learningRate']
                 playerData['initialWeights'] = options['weights']
                 playerData['finalWeights'] = player.getModel().getWeights()
             else:

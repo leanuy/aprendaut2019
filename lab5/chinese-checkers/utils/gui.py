@@ -168,15 +168,17 @@ def printLearningRate():
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
     print ("")
-    print ("-> Ingrese la lista de pesos iniciales: [w0, wA, wB, wC, wD]")
-    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9, 0.9]")
+    print ("-> Ingrese la lista de pesos iniciales: [w0, wA1, wA2, wB1, wB2, wC1, wC2, wD1, wD2]")
+    print ("-> DEFAULT: [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]")
     try:
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
+        if len(weights != 9):
+            return [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
         return weights
     except:
-        return [0.9, 0.9, 0.9, 0.9, 0.9]
+        return [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
 
 # Pregunta al usuario si desea normalizar el modelo
 def printNormalizeWeights():
@@ -219,11 +221,12 @@ def printTrainedPlayer(player):
     print("--> Ratio de aprendizaje: ", end="")
     print(player['learningRate'])
 
-    print("--> Pesos iniciales: ", end="")
-    print(player['initialWeights'])
+    if 'initialWeights' in player:
+        print("--> Pesos iniciales: ", end="")
+        print(player['initialWeights'])
 
-    print("--> Pesos finales: ", end="")
-    print(player['finalWeights'])
+        print("--> Pesos finales: ", end="")
+        print(player['finalWeights'])
 
     print("--> Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
     print(player['results'])
@@ -235,10 +238,10 @@ def printTrainedPlayer(player):
 
 # Imprime los features ingresados
 def printFeatures(features):
-    print("Suma cuadrada de distancia al extremo: " + str(features[0]))
-    print("Suma cuadrada de distancia al centro: " + str(features[1]))
-    print("Suma de maxima cantidad de saltos: " + str(features[2]))
-    print("Suma cuadrada de distancia al hex del goal vacio mas cercano: " + str(features[3]))
+    print("Suma cuadrada de distancia al extremo: " + str(features[1])) + ', ' + str(features[2])
+    print("Suma cuadrada de distancia al centro: " + str(features[3])) + ', ' + str(features[4])
+    print("Suma de maxima cantidad de saltos: " + str(features[5])) + ', ' + str(features[6])
+    print("Suma cuadrada de distancia al hex del goal vacio mas cercano: " + str(features[7])) + ', ' + str(features[8])
     print()
 
 ### METODOS AUXILIARES - TABLERO

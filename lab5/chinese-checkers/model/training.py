@@ -5,7 +5,7 @@ import copy
 import matplotlib.pyplot as plt
 
 from .model_concept import ModelConcept
-# from .model_neural import ModelNeural
+from .model_neural import ModelNeural
 
 from game.game import Game
 from game.player import Player
@@ -36,6 +36,9 @@ class Training():
 
         self.notDraw = options['notDraw']
 
+        # Ratio de aprendizaje en el entrenamiento
+        self.learningRate = options['learningRate']
+
         # Guarda el numero de ficha del jugador y de su oponente
         self.playerToken = playerToken
         if playerToken == GameTokens.PLAYER1:
@@ -44,16 +47,13 @@ class Training():
             self.opponentToken = GameTokens.PLAYER1
 
         if self.modelType == ModelTypes.CONCEPT:
-            # Ratio de aprendizaje en el entrenamiento
-            self.learningRate = options['learningRate']
-
             self.weights = options['weights']
             self.normalize_weights = options['normalize_weights']
 
             # Crea al jugador a entrenar y su respectivo modelo
             self.player = Player(self.playerToken, self.playerType, ModelConcept(self.normalize_weights, self.weights))
         else:
-            print("To be determined")
+            self.player = Player(self.playerToken, self.playerType, ModelNeural(options, self.playerToken))
 
         # Crea al oponente y su respectivo modelo en base al playerType, (al tipo de jugador que se quiere entrenar)
         if self.playerType == PlayerType.TRAINED_RANDOM:
@@ -62,7 +62,7 @@ class Training():
             if self.modelType == ModelTypes.CONCEPT:
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(self.normalize_weights, self.weights))
             else:
-                print("To be determined")
+                self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelNeural(options, self.opponentToken))
 
     # Entrenamiento del modelo
     def training(self):
@@ -101,8 +101,7 @@ class Training():
                 nextFeatures = nextBoard.getFeatures(self.playerToken)
                 trainingExamples.append([features, model.evaluate(nextFeatures)])
 
-            # Se checkea el resultado del juego para setear la evaluación
-            # del último tablero
+            # Se checkea el resultado del juego para setear la evaluación del último tablero
             if res == GameResults.WIN:
                 lastEvaluation = 1
                 results[0] = results[0] + 1
@@ -131,8 +130,7 @@ class Training():
             errors.append(([], []))
             (error_x_axis, error_y_axis) = errors[-1]
 
-            # Se actualizan los pesos del modelo utilizando los datos de la
-            # última partida
+            # Se actualizan los pesos del modelo utilizando los datos de la última partida
             index = 0
             for t in trainingExamples:
                 new_model.update(t[0], t[1], self.learningRate)

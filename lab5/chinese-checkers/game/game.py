@@ -172,7 +172,8 @@ class Game():
         res = False
 
         while not finished:
-            # gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
+            gui.printClear()
+            gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
             # El jugador a entrenar elige su movimiento y juega
             ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
             b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
@@ -200,4 +201,3 @@ class Game():
             # input()
         print("Partida finalizada con resultado " + str(res))
         return res
-                
