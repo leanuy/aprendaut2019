@@ -9,9 +9,8 @@ from enum import Enum
 # Opciones del menú principal
 class MenuOps(Enum):
     TRAIN = 1
-    CLASSIFY = 2
-    EVALUATE = 3
-    PLOT = 4  
+    EVALUATE = 2
+    PLOT = 3
 
 class SolverOps(Enum):
     LIBLINEAR = "liblinear"

@@ -29,9 +29,8 @@ def printMenu(classifiers):
     print ("")
     printClassifiers(classifiers)
     print ("1. Entrenar")
-    print ("2. Clasificar")
-    print ("3. Evaluar")
-    print ("4. Graficar")
+    print ("2. Evaluar")
+    print ("3. Graficar")
     print ("0. Salir")
 
 # Lee la opción a elegir del menu principal
@@ -46,9 +45,9 @@ def printMenuOption():
         if op == 1:
             op = MenuOps.TRAIN
         elif op == 2:
-            op = MenuOps.CLASSIFY
-        elif op == 3:
             op = MenuOps.EVALUATE
+        elif op == 3:
+            op = MenuOps.PLOT
 
     return op
 
@@ -63,22 +62,22 @@ def printClassifiers(classifiers):
         print(" - ", end="")
         print("Clasificadores por Regresión Logística (candidato/partido)")
 
-        print("   Dimensionalidad del corpus (PCA): ", end="")
+        print("   Dimensionalidad: ", end="")
         if c.options['pca_dimension'] == 0:
             print('26 (Sin PCA)')
         else:
             print(c.options['pca_dimension'])
 
-        print("   Algoritmo de implementación: ", end="")
+        print("   Algoritmo: ", end="")
         print(c.options['solver'])
 
-        print("   Algoritmo de penalización: ", end="")
+        print("   Penalización: ", end="")
         print(c.options['penalty'])
 
-        print("   Máximo de iteraciones: ", end="")
+        print("   Iteraciones: ", end="")
         print(c.options['max_iter'])
 
-        print("   Parámeto de regularización: ", end="")
+        print("   Regularización: ", end="")
         print(c.options['regulation_strength'])
 
         index = index + 1
@@ -129,7 +128,7 @@ def printSolverOptions():
 
 # Lee la opción a elegir de que penalización usar en la regularización
 def printPenaltyOptions(solver_election):
-    
+    print ("")
     print ("-> Elija una estrategia de penalización para la regularización: ")
     print ("-> DEFAULT: 1")
 
@@ -140,7 +139,6 @@ def printPenaltyOptions(solver_election):
     elif solver_election == SolverOps.SAGA:
         print ("1. L2 (Regresión Ridge)")
         print ("2. L1 (Regresión Lasso)")
-        print ("3. Elastic Net (Combinación de L1 y L2)")
         print ("0. Ninguna")
 
     elif solver_election == SolverOps.LIBLINEAR:
@@ -149,7 +147,7 @@ def printPenaltyOptions(solver_election):
 
     try:
         op = int( input() )
-        if op < 0 or (op > 2 and solver_election != SolverOps.SAGA):
+        if op < 0 or op > 2:
             if solver_election == SolverOps.LIBLINEAR:
                 op = PenaltyOps.L2
             else:
@@ -161,8 +159,6 @@ def printPenaltyOptions(solver_election):
                 op = PenaltyOps.L2
             elif op == 2:
                 op = PenaltyOps.L1
-            elif solver_election == SolverOps.SAGA and op == 3:
-                op = PenaltyOps.ELASTICNET
         return op
     except:
         if solver_election == SolverOps.LIBLINEAR:
@@ -191,3 +187,30 @@ def printRegulationStrength():
         return C
     except:
         return 1.0
+
+# Lee la cantidad de particiones para la validación cruzada
+def printCrossK():
+    print ("")
+    print ("-> Ingrese cantidad de particiones para evaluación cruzada: ")
+    print ("-> DEFAULT: 0 (Validación normal)")
+    try:
+        k = int( input() )
+        return k
+    except:
+        return 0
+
+# Imprime los datos de la evaluación 'evaluation'
+def printEvaluation(evaluation):
+
+    print("-> Accuracy: ", end="")
+    print(evaluation['accuracy'])
+  
+    print("-> Matriz de Confusión: ")
+    print()
+    print(evaluation['confusion_matrix'])
+    print()
+
+    print("-> Métricas: ")
+    print()
+    print(evaluation['report'])
+    print()

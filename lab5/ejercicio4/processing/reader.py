@@ -18,9 +18,8 @@ def readDataset(filename, more_than_1000=True):
     if more_than_1000:
         dataset['candidateID'] = candidates            
         filtered = dataset[dataset.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
-        candidates_filtered = filtered['candidateID']
-        filtered.pop('candidateID')
-        return candidates_filtered, filtered
+        candidates = filtered.iloc[1:, 1]
+        answers = filtered.iloc[1:, 2:28]
     
     return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned')
     
