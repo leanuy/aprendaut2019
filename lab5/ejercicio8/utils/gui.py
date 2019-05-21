@@ -263,7 +263,7 @@ def printToken(slot):
 def printSlot(slot):
     (x,y) = slot.getVPos()
     token = slot.getToken()
-    print("(", end="")         
+    print("(", end="")
     if x > 0:
         cprint("+", 'red', end="")
         cprint(x, 'red', end=' ')
