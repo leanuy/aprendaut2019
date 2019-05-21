@@ -7,7 +7,7 @@ import re
 import copy
 
 import utils.gui as gui 
-from utils.const import GameMode, GameTokens, GameTokenMoves, GameResults
+from utils.const import GameMode, GameTokens, GameTokenMoves, GameResults, ModelTypes
 
 from .board import Board
 from .player import Player
@@ -20,7 +20,7 @@ class Game():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, mode, players, maxRounds = 100):
+    def __init__(self, mode, players, modelType, maxRounds = 100):
         
         # Modo de juego
         # 1. Entrenamiento
@@ -33,6 +33,9 @@ class Game():
 
         # Historial de tableros por turno
         self.boards = []
+
+        # Modelo usado para el entrenamiento
+        self.modelType = modelType
 
         # Cantidad de turnos antes de declarar empate
         self.maxRounds = maxRounds
@@ -51,7 +54,6 @@ class Game():
 
     # Simulación de un juego
     def play(self):
-
         if self.mode == GameMode.PLAYING:
             res = self.playUI()
 
@@ -62,8 +64,7 @@ class Game():
 
 
     def playUI(self):
-
-        b = Board()
+        b = Board(self.modelType)
         player = self.players
         keyboard = ''
 
@@ -167,13 +168,13 @@ class Game():
     def playTraining(self):
 
         (player1, player2) = self.players
-        b = Board()
+        b = Board(self.modelType)
         finished = False
         res = False
 
         while not finished:
-            gui.printClear()
-            gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
+            #gui.printClear()
+            #gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
             # El jugador a entrenar elige su movimiento y juega
             ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
             b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)

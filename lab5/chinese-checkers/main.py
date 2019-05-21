@@ -65,6 +65,7 @@ if __name__ == '__main__':
             playerData = {
                 'player': player,
                 'type': playerType,
+                'model': modelType,
                 'name': playerName,
                 'time': toc-tic,
                 'iterations': options['iters'],
@@ -102,11 +103,11 @@ if __name__ == '__main__':
 
                 # Se eligio un jugador aleatorio sin entrenar
                 if c == 0:
-                    g = Game(GameMode.PLAYING, Player(GameTokens.PLAYER1, PlayerType.RANDOM))
+                    g = Game(GameMode.PLAYING, Player(GameTokens.PLAYER1, PlayerType.RANDOM), ModelTypes.CONCEPT)
 
                 # Se eligió un jugador previamente entrenado
                 else:
-                    g = Game(GameMode.PLAYING, players[c-1]['player'])
+                    g = Game(GameMode.PLAYING, players[c-1]['player'], players[c-1]['modelType'])
 
                 # Se juega la partida y se imprime el mensaje segun el resultado
                 res = g.play()

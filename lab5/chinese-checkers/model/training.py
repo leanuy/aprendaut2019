@@ -1,8 +1,10 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import csv
 import copy
 import matplotlib.pyplot as plt
+import numpy as np
 
 from .model_concept import ModelConcept
 from .model_neural import ModelNeural
@@ -85,7 +87,7 @@ class Training():
                     # print("Learning rate = ", str(self.learningRate))
             
             # Se genera un juego nuevo para cada iteración
-            g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)
+            g = Game(GameMode.TRAINING, (self.player, self.opponent), self.modelType, self.maxRounds)
             res = g.play()
 
             # Obtener tableros del juego
@@ -130,6 +132,9 @@ class Training():
             errors.append(([], []))
             (error_x_axis, error_y_axis) = errors[-1]
 
+            # if self.modelType == ModelTypes.CONCEPT:
+            #    self.recordBoards(trainingExamples, historial)
+
             # Se actualizan los pesos del modelo utilizando los datos de la última partida
             index = 0
             for t in trainingExamples:
@@ -151,3 +156,18 @@ class Training():
 
         return (self.player, results, (results_x_axis, results_y_axis), errors)
 
+    def recordBoards(self, trainingExamples, historial):
+        with open(r'metrics.csv', 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            for t in trainingExamples:
+                fieldsMetrics = t[0]
+                fieldsMetrics= np.append(fieldsMetrics, t[1])
+                writer.writerow(fieldsMetrics)
+            writer.writerow([])
+        with open(r'boards.csv', 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            for i, board in enumerate(historial):
+                fieldsBoard = board.getBoard()
+                fieldsBoard = np.append(fieldsBoard, trainingExamples[i][1])
+                writer.writerow(fieldsBoard)
+            writer.writerow([])

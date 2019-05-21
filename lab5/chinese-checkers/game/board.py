@@ -4,7 +4,7 @@
 import numpy as np
 import random
 
-from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections
+from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections, ModelTypes
 
 ### CLASE AUXILIAR
 ### ------------------
@@ -52,6 +52,152 @@ class Slot():
 
 class Board():
 
+    ### CONSTRUCTOR
+    ### -------------------
+
+    def __init__(self, model):
+        
+        # Radio del hexagono
+        self.radius = 4
+        
+        # Largo de extremo a extremo
+        self.length = 9
+        
+        # Representación del tablero hexagonal en matriz cuadrada
+        self.matrix = np.zeros((self.length, self.length), dtype=object)
+        
+        # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
+        self.slots = []
+
+        self.model = model
+
+        # Rellenado del tablero
+        for y in range(0, self.length):
+            for x in range(0, self.length):
+                self.matrix[x,y] = Slot((x,y), self.restriction1(x,y), 0)
+        for y in range(0, self.length):
+            for x in range(0, self.length):
+                (x2, y2) = self.matrix[x,y].getVPos()
+                self.matrix[x,y].setVPos(self.restriction2(x2,y2))
+                self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
+                self.slots.append(self.matrix[x,y].getVPos())
+
+    ### GETTERS y SETTERS
+    ### -------------------
+
+    def getMatrix(self):
+        return self.matrix
+
+    def getRadius(self):
+        return self.radius
+    
+    def getLength(self):
+        return self.length
+
+    ### METODOS PRINCIPALES
+    ### -------------------
+
+    # Devuelve una lista con las coordenadas virtuales de las piezas del jugador
+    def getPlayerSlots(self, player):
+        slots = []
+        for x in range(0, self.length):
+            for y in range(0, self.length):
+                if self.matrix[x,y].getToken() == player:
+                    slots.append(self.matrix[x,y].getVPos())
+        return slots
+
+    # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
+    # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
+    def getPossibleMoves(self, player, vX, vY):
+        
+        (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
+
+        visitedJumps = []
+        for jump in jumps:
+            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
+
+        return moves
+
+    # Dado un jugador y un movimiento de un par de coordenadas virtuales a otro
+    # comprueba si es posible y lo hace en caso de serlo, o devuelve el error correspondiente
+    def moveToken(self, player, fromVX, fromVY, toVX, toVY):
+        
+        # Obtener las coordenadas en la matriz para FROM
+        (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
+
+        # Comprobar si las coordenadas FROM son validas
+        if not self.isInVirtualBounds((fromVX, fromVY)):
+            return GameTokenMoves.INVALID_COORDS
+
+        # Comprobar si en FROM hay una ficha del jugador PLAYER
+        if self.matrix[fromRX,fromRY].getToken() != player:
+            return GameTokenMoves.TOKEN_FROM
+
+        # Obtener las coordenadas en la matriz para TO
+        (toRX, toRY) = self.fromVirtual((toVX, toVY))
+
+        # Comprobar si las coordenadas TO son validas
+        if not self.isInVirtualBounds((toVX, toVY)):
+            return GameTokenMoves.INVALID_COORDS
+
+        # Comprobar si en TO hay una ficha o esta vacío
+        if not self.matrix[toRX,toRY].isEmpty():
+            return GameTokenMoves.TOKEN_TO
+        
+        # Comprobar si es posible moverse de FROM a TO
+        isPossible = False
+        moves = self.getPossibleMoves(player, fromVX, fromVY)
+        for x in moves:
+            if x == (toVX, toVY):
+                isPossible = True
+        if not isPossible:
+            return GameTokenMoves.INVALID_MOVE
+
+        # Realizar el movimiento
+        self.matrix[fromRX,fromRY].setToken(GameTokens.EMPTY)
+        self.matrix[toRX,toRY].setToken(player)
+
+        return GameTokenMoves.VALID_MOVE
+
+    # Checkea si el jugador 'player' ganó en el tablero actual 
+    def checkWin(self, player):
+        playerSlots = self.getPlayerSlots(player)
+        if player == GameTokens.PLAYER1:
+            for slot in playerSlots:
+                (x, y) = slot
+                if y <= self.radius:
+                    return False
+        else:
+            for slot in playerSlots:
+                (x, y) = slot
+                if y >= -self.radius:
+                    return False
+
+        return True
+
+    
+    def getFeatures(self, player):
+        if self.model == ModelTypes.NEURAL_BOARD:
+            # Devuelve el tablero como array
+            return self.getBoard()
+        else:
+            # Obtiene los coeficientes de la representacion actual del tablero
+            # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
+            # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
+            # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
+            # Penalizar D: Cuanto mas lejos estas de la casilla cercana mas vacia del objetivo, peor estas
+            (A1, B1, C1, D1) = self.getPlayerFeatures(GameTokens.PLAYER1)
+            (A2, B2, C2, D2) = self.getPlayerFeatures(GameTokens.PLAYER2)
+
+            if player == GameTokens.PLAYER1:
+                featuresPlayer = [1, A1, A2, B1, B2, C1, C2, D1, D2]
+                # featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2, D2 - D1]
+            else:
+                featuresPlayer = [1, A2, A1, B2, B1, C2, C1, D2, D1]
+                # featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1, D1 - D2]
+
+            return self.normalize(featuresPlayer)
+    
     ### METODOS AUXILIARES
     ### REPRESENTACION
     ### -------------------
@@ -97,12 +243,20 @@ class Board():
         elif x + y < -self.radius:
             return GameTokens.PLAYER2
         return GameTokens.EMPTY
+    
+    # Devuelve el tablero como array
+    def getBoard(self):
+        board = np.zeros((self.length*self.length), dtype=object)
+        for y in range(0, self.length):
+            for x in range(0, self.length):
+                board[y*self.length + x] = self.matrix[x,y].getToken().value
+        return board
 
     ### METODOS AUXILIARES
     ### JUGADA
     ### -------------------
 
-        # Dado un par de coordenadas virtuales genera un par compuesto por unalista 
+    # Dado un par de coordenadas virtuales genera un par compuesto por unalista 
     # de posibles movimientos a casillas adyacentes o de posibles casillas a saltar
     def getPossibleAdjacentMoves(self, player, position):
         moves = []
@@ -317,144 +471,3 @@ class Board():
         # Deshacer el movimiento
         self.matrix[fromRX,fromRY].setToken(player)
         self.matrix[toRX,toRY].setToken(GameTokens.EMPTY)
-
-
-    ### CONSTRUCTOR
-    ### -------------------
-
-    def __init__(self):
-        
-        # Radio del hexagono
-        self.radius = 4
-        
-        # Largo de extremo a extremo
-        self.length = 9
-        
-        # Representación del tablero hexagonal en matriz cuadrada
-        self.matrix = np.zeros((self.length, self.length), dtype=object)
-        
-        # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
-        self.slots = []
-
-        # Rellenado del tablero
-        for y in range(0, self.length):
-            for x in range(0, self.length):
-                self.matrix[x,y] = Slot((x,y), self.restriction1(x,y), 0)
-        for y in range(0, self.length):
-            for x in range(0, self.length):
-                (x2, y2) = self.matrix[x,y].getVPos()
-                self.matrix[x,y].setVPos(self.restriction2(x2,y2))
-                self.matrix[x,y].setToken(self.fillPlayers(x2,y2))
-                self.slots.append(self.matrix[x,y].getVPos())
-                
-
-    ### GETTERS y SETTERS
-    ### -------------------
-
-    def getMatrix(self):
-        return self.matrix
-
-    def getRadius(self):
-        return self.radius
-    
-    def getLength(self):
-        return self.length
-
-    ### METODOS PRINCIPALES
-    ### -------------------
-
-    # Devuelve una lista con las coordenadas virtuales de las piezas del jugador
-    def getPlayerSlots(self, player):
-        slots = []
-        for x in range(0, self.length):
-            for y in range(0, self.length):
-                if self.matrix[x,y].getToken() == player:
-                    slots.append(self.matrix[x,y].getVPos())
-        return slots
-
-    # Dado un par de coordenadas virtuales genera una lista de posibles movimientos
-    # para la pieza en las coordenadas dadas, teniendo en cuenta su jugador
-    def getPossibleMoves(self, player, vX, vY):
-        
-        (moves, jumps) = self.getPossibleAdjacentMoves(player, (vX, vY))
-
-        visitedJumps = []
-        for jump in jumps:
-            moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
-
-        return moves
-
-    # Dado un jugador y un movimiento de un par de coordenadas virtuales a otro
-    # comprueba si es posible y lo hace en caso de serlo, o devuelve el error correspondiente
-    def moveToken(self, player, fromVX, fromVY, toVX, toVY):
-        
-        # Obtener las coordenadas en la matriz para FROM
-        (fromRX, fromRY) = self.fromVirtual((fromVX, fromVY))
-
-        # Comprobar si las coordenadas FROM son validas
-        if not self.isInVirtualBounds((fromVX, fromVY)):
-            return GameTokenMoves.INVALID_COORDS
-
-        # Comprobar si en FROM hay una ficha del jugador PLAYER
-        if self.matrix[fromRX,fromRY].getToken() != player:
-            return GameTokenMoves.TOKEN_FROM
-
-        # Obtener las coordenadas en la matriz para TO
-        (toRX, toRY) = self.fromVirtual((toVX, toVY))
-
-        # Comprobar si las coordenadas TO son validas
-        if not self.isInVirtualBounds((toVX, toVY)):
-            return GameTokenMoves.INVALID_COORDS
-
-        # Comprobar si en TO hay una ficha o esta vacío
-        if not self.matrix[toRX,toRY].isEmpty():
-            return GameTokenMoves.TOKEN_TO
-        
-        # Comprobar si es posible moverse de FROM a TO
-        isPossible = False
-        moves = self.getPossibleMoves(player, fromVX, fromVY)
-        for x in moves:
-            if x == (toVX, toVY):
-                isPossible = True
-        if not isPossible:
-            return GameTokenMoves.INVALID_MOVE
-
-        # Realizar el movimiento
-        self.matrix[fromRX,fromRY].setToken(GameTokens.EMPTY)
-        self.matrix[toRX,toRY].setToken(player)
-
-        return GameTokenMoves.VALID_MOVE
-
-    # Checkea si el jugador 'player' ganó en el tablero actual 
-    def checkWin(self, player):
-        playerSlots = self.getPlayerSlots(player)
-        if player == GameTokens.PLAYER1:
-            for slot in playerSlots:
-                (x, y) = slot
-                if y <= self.radius:
-                    return False
-        else:
-            for slot in playerSlots:
-                (x, y) = slot
-                if y >= -self.radius:
-                    return False
-
-        return True
-
-    # Obtiene los coeficientes de la representacion actual del tablero
-    # Penalizar A: Cuanto mas lejos estas de la esquina opuesta en comparacion a tu contricante, peor estas
-    # Penalizar B: Cuanto mas lejos estas de la linea en comparacion a tu contricante, peor estas
-    # Bonificar C: Cuanto mayor es el posible avance vertical, mejor estas
-    # Penalizar D: Cuanto mas lejos estas de la casilla cercana mas vacia del objetivo, peor estas
-    def getFeatures(self, player):
-        (A1, B1, C1, D1) = self.getPlayerFeatures(GameTokens.PLAYER1)
-        (A2, B2, C2, D2) = self.getPlayerFeatures(GameTokens.PLAYER2)
-
-        if player == GameTokens.PLAYER1:
-            featuresPlayer = [1, A1, A2, B1, B2, C1, C2, D1, D2]
-            # featuresPlayer = [1, A2 - A1, B2 - B1, C1 - C2, D2 - D1]
-        else:
-            featuresPlayer = [1, A2, A1, B2, B1, C2, C1, D2, D1]
-            # featuresPlayer = [1, A1 - A2, B1 - B2, C2 - C1, D1 - D2]
-
-        return self.normalize(featuresPlayer)
