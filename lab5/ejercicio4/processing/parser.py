@@ -50,29 +50,3 @@ def parseCandidatesFromParties(candidatesJSON, candidates):
             res.append((candidate, auxDict[candidate]))
 
     return res
-
-# Dado un candidato, devuelve su partido en caso de no encontrarse en parsedParties
-def getParty(parsedParties, candidate, division):
-    if division == CandidateDivision.PARTIES:
-        if candidate == 7: # Partido Nacional???
-            return 6 # Partido Nacional
-        if candidate == 30: # ??????
-            return 0 # Frente Amplio
-    elif division == CandidateDivision.SPECTRUM:
-        if candidate == 7: # Partido Nacional???
-            return 2 # Derecha
-        if candidate == 30: # ??????
-            return 0 # Izquierda
-    elif division == CandidateDivision.DUAL_SPECTRUM:
-        if candidate == 7: # Partido Nacional???
-            return 1 # Derecha
-        if candidate == 30: # ??????
-            return 0 # Izquierda
-    elif division == CandidateDivision.NOLAN:
-        if candidate == 7: # Partido Nacional???
-            return 3 # Conservadurismo
-        if candidate == 30: # ??????
-            return 0 # Progresismo
-    for party, partyName, partyCandidates, partyCount in parsedParties:
-        if candidate in partyCandidates:
-            return party
