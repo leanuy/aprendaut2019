@@ -9,35 +9,32 @@ from utils.const import DATA_CANDIDATOS, DATA_CANDIDATOS_ESPECTRO, DATA_CANDIDAT
 ### -------------------
 
 # Lee 'filename' y lo devuelve como un dataframe de pandas optimizado
-def readDataset(filename, is_for_pca=True):
+def readDataset(filename, more_than_1000=True):
     dataset = pd.read_csv(filename)
     candidates = dataset.iloc[1:, 1]
     answers = dataset.iloc[1:, 2:28]
-    return candidates.apply(pd.to_numeric, downcast='unsigned'), answers.apply(pd.to_numeric, downcast='unsigned')
 
-# Lee 'filename' y lo devuelve como archivo JSON
-def readParties(division, options):
-
+    # Solo candidatos con mas de mil votos
+    if more_than_1000:
+        dataset['candidateID'] = candidates            
+        filtered = dataset[dataset.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
+        candidates = filtered.iloc[1:, 1]
+        answers = filtered.iloc[1:, 2:28]
+    
+    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned')
+    
+# Lee partidos de DATA_CANDIDATOS y lo devuelve como archivo JSON
+def readParties(options):
     if options['from_notebook']:
-        filename = '../'
+        filename = '../' + DATA_CANDIDATOS
     else:
-        filename = ''
-
-    if division == CandidateDivision.PARTIES:
-        filename += DATA_CANDIDATOS
-    elif division == CandidateDivision.SPECTRUM:
-        filename += DATA_CANDIDATOS_ESPECTRO
-    elif division == CandidateDivision.DUAL_SPECTRUM:
-        filename += DATA_CANDIDATOS_ESPECTRO_DUAL
-    elif division == CandidateDivision.NOLAN:
-        filename += DATA_CANDIDATOS_NOLAN
-    else:
-        filename += DATA_CANDIDATOS
+        filename = DATA_CANDIDATOS
 
     with open(filename) as json_file:  
         data = json.load(json_file)
     return data
 
+# Lee partidos de DATA_CANDIDATOS_SIN_PARTIDO y lo devuelve como archivo JSON
 def readCandidates(options):
     if options['from_notebook']:
         filename = '../' + DATA_CANDIDATOS_SIN_PARTIDO
