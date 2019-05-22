@@ -133,8 +133,8 @@ def printPenaltyOptions(solver_election):
     print ("-> DEFAULT: 1")
 
     if solver_election == SolverOps.LBFGS or solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
-        print ("1. L2 (Regresión Ridge)")        
-        print ("0. Ninguna")
+        print ("1. L2 (Regresión Ridge). Única opción para solver {}".format(solver_election))        
+
 
     elif solver_election == SolverOps.SAGA:
         print ("1. L2 (Regresión Ridge)")
@@ -161,7 +161,8 @@ def printPenaltyOptions(solver_election):
                 op = PenaltyOps.L1
         return op
     except:
-        if solver_election == SolverOps.LIBLINEAR:
+        if solver_election == SolverOps.LIBLINEAR or solver_election == SolverOps.LBFGS or \
+                solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
             return PenaltyOps.L2
         else:
             return PenaltyOps.NONE
@@ -200,20 +201,34 @@ def printCrossK():
         return 0
 
 # Imprime los datos de la evaluación 'evaluation'
-def printEvaluation(evaluation):
+def printEvaluation(evaluation, k):
+    # Imprimir normal
+    if k == 0:
+        print("-> Accuracy: ", end="")
+        print(evaluation['accuracy'])
+    
+        print("-> Matriz de Confusión: ")
+        print()
+        print(evaluation['confusion_matrix'])
+        print()
 
-    print("-> Accuracy: ", end="")
-    print(evaluation['accuracy'])
-  
-    print("-> Matriz de Confusión: ")
-    print()
-    print(evaluation['confusion_matrix'])
-    print()
+        print("-> Métricas: ")
+        print()
+        print(evaluation['report'])
+        print()
+    else:
+        print("-> Accuracy cross validation: ", end="")
+        print(evaluation['cv_accuracy'])
+    
+        print("-> Matriz de Confusión cross validation: ")
+        print()
+        print(evaluation['cv_confusion_matrix'])
+        print()
 
-    print("-> Métricas: ")
-    print()
-    print(evaluation['report'])
-    print()
+        print("-> Métricas cross validation: ")
+        print()
+        print(evaluation['cv_report'])
+        print()
 
     if evaluation['explained_variance_ratio'] is not None:
         print("-> Proporción de varianza explicada: ")

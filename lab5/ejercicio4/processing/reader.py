@@ -16,8 +16,8 @@ def readDataset(filename, more_than_1000=True):
 
     # Solo candidatos con mas de mil votos
     if more_than_1000:
-        dataset['candidateID'] = candidates            
-        filtered = dataset[dataset.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
+        answers['candidateID'] = candidates
+        filtered = answers[answers.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
         candidates = filtered.iloc[1:, 1]
         answers = filtered.iloc[1:, 2:28]
     

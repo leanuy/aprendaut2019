@@ -80,8 +80,8 @@ if __name__ == '__main__':
                     print("-> Evaluación del modelo " + str(c+1))
                     print()
 
-                    evaluation = m.evaluate()
-                    gui.printEvaluation(evaluation)
+                    evaluation = m.evaluate(k)
+                    gui.printEvaluation(evaluation, k)
 
                     trainNew = False
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
                 print("-> Evaluación del modelo")
                 print()
                 
-                evaluation = m.evaluate()
-                gui.printEvaluation(evaluation)
+                evaluation = m.evaluate(k)
+                gui.printEvaluation(evaluation, k)
 
         input("-> Oprima enter para volver al menú")
