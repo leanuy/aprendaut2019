@@ -214,3 +214,9 @@ def printEvaluation(evaluation):
     print()
     print(evaluation['report'])
     print()
+
+    if evaluation['explained_variance_ratio'] is not None:
+        print("-> Proporción de varianza explicada: ")
+        print()
+        print(evaluation['explained_variance_ratio'])
+        print()
