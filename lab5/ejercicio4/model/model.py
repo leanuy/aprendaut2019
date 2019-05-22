@@ -88,6 +88,3 @@ class Model():
             self.all_dataset = pca.fit_transform(self.all_dataset)
             self.explained_variance_ratio = pca.explained_variance_ratio_
 
-
-
-
