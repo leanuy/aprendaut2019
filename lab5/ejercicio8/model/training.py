@@ -81,10 +81,8 @@ class Training():
         i = 0
         while i < self.iters:
             if variable:
-                # print("Iteracion numero: ", str(i))
                 if count != 100 and count % 10 == 0:
                     self.learningRate -= 0.1
-                    # print("Learning rate = ", str(self.learningRate))
             
             # Se genera un juego nuevo para cada iteración
             g = Game(GameMode.TRAINING, (self.player, self.opponent), self.modelType, self.maxRounds)
@@ -104,6 +102,7 @@ class Training():
                 trainingExamples.append([features, model.evaluate(nextFeatures)])
 
             # Se checkea el resultado del juego para setear la evaluación del último tablero
+            # TODO: Bonificar según cantidad de turnos?
             if res == GameResults.WIN:
                 lastEvaluation = 1
                 results[0] = results[0] + 1

@@ -35,6 +35,10 @@ class Player():
         # es None y no se usa
         self.model = model
 
+        # Último movimiento para no hacer loops
+        self.historialFrom = []
+        self.historialTo = []
+
     ### GETTERS y SETTERS
     ### -------------------
 
@@ -81,7 +85,14 @@ class Player():
 
                 # Obtener la lista de posibles movimientos desde FROM y si existe alguno
                 # elegir aleatoriamente entre ellos y devolverlo
-                moves = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
+                (movesForward, movesBackward) = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
+
+                # Preferimos movimientos hacia adelante siempre que estos sean posibles
+                if movesForward:
+                    moves = movesForward
+                else:
+                    moves = movesBackward
+
                 if moves:
                     return ((fromVX, fromVY), random.choice(moves))
 
@@ -92,34 +103,57 @@ class Player():
             bestFrom = None
             bestTo = None
             bestEvaluation = 0
+            allMovesForward = []
+            allMovesBackward = []
 
             # Se recorre todas las piezas del jugador
             for token in playerTokens:
                 
                 # Se obtiene la lista de posibles movimientos desde FROM
                 (fromVX, fromVY) = token
-                moves = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
+                (movesForward, movesBackward) = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
 
-                # Se recorre todos los posibles movimientos para la pieza en FROM
-                for move in moves:
+                for movef in movesForward:
+                    allMovesForward.append((token, movef))
+                for moveb in movesBackward:
+                    allMovesBackward.append((token, moveb))
 
-                    # Se realiza un movimiento y se evalua el tablero
-                    (toVX, toVY) = move
-                    board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
-                    features = board.getFeatures(self.playerNumber)
-                    evaluation = self.model.evaluate(features)
+            # Preferimos movimientos hacia adelante siempre que estos sean posibles
+            if allMovesForward:
+                moves = allMovesForward
+            else:
+                moves = allMovesBackward
 
-                    # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida
-                    # hasta ahora, se guarda como el mejor movimiento
-                    if bestTo == None or evaluation >= bestEvaluation:
-                        if bestTo == None or evaluation > bestEvaluation:
-                            best_moves = []
-                        bestFrom = (fromVX, fromVY)
-                        bestTo = (toVX, toVY)
-                        bestEvaluation = evaluation
-                        best_moves.append((bestFrom, bestTo))
-                    # Se deja el tablero en el estado anterior
-                    board.undoToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
+            # Se recorre todos los posibles movimientos, evaluando el tablero tras cada uno
+            for (fromVX, fromVY), (toVX, toVY) in moves:
+                # No permitimos movimientos inversos a los últimos 3
+                if (self.historialFrom) and ((toVX,toVY) in self.historialFrom[-3:]):
+                    continue
 
-            return best_moves[randint(0,len(best_moves)-1)]
+                board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
+                features = board.getFeatures(self.playerNumber)
+                evaluation = self.model.evaluate(features)
+
+                # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida
+                # hasta ahora, se guarda como el mejor movimiento
+                if bestTo == None or evaluation >= bestEvaluation:
+                    if bestTo == None or evaluation > bestEvaluation:
+                        best_moves = []
+                    bestFrom = (fromVX, fromVY)
+                    bestTo = (toVX, toVY)
+                    bestEvaluation = evaluation
+                    best_moves.append((bestFrom, bestTo))
+                # Se deja el tablero en el estado anterior
+                board.undoToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
+
+            try:
+                move = best_moves[randint(0,len(best_moves)-1)]
+            except:
+                # HACK: A veces pasa que todos los movimientos posibles son inversos a movimientos ya hechos
+                # (por lo general con otra pieza). Entonces elegimos un movimiento aleatorio
+                move = moves[randint(0,len(moves)-1)]
+            ((fromX, fromY), (toX, toY)) = move
+            self.historialFrom.append((fromX,fromY))
+            self.historialTo.append((toX, toY))
+            return move
         

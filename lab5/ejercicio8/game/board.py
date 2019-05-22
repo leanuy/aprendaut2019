@@ -115,8 +115,14 @@ class Board():
         visitedJumps = []
         for jump in jumps:
             moves.extend(self.getPossibleJumpMoves(player, (vX, vY), jump, visitedJumps))
-
-        return moves
+        
+        if player == GameTokens.PLAYER1:
+            movesForward = [ (toX, toY) for (toX, toY) in moves if toY >= vY ]
+            movesBackward = [ (toX, toY) for (toX, toY) in moves if toY < vY ]
+        else:
+            movesForward = [ (toX, toY) for (toX, toY) in moves if toY <= vY ]
+            movesBackward = [ (toX, toY) for (toX, toY) in moves if toY > vY ]
+        return (movesForward, movesBackward)
 
     # Dado un jugador y un movimiento de un par de coordenadas virtuales a otro
     # comprueba si es posible y lo hace en caso de serlo, o devuelve el error correspondiente
@@ -146,7 +152,8 @@ class Board():
         
         # Comprobar si es posible moverse de FROM a TO
         isPossible = False
-        moves = self.getPossibleMoves(player, fromVX, fromVY)
+        (movesForward, movesBackward) = self.getPossibleMoves(player, fromVX, fromVY)
+        moves = movesForward + movesBackward
         for x in moves:
             if x == (toVX, toVY):
                 isPossible = True
@@ -400,7 +407,8 @@ class Board():
     
     def maxHopsToGoal(self, from_hex, player, goal):
         (fromX, fromY) = from_hex
-        moves = self.getPossibleMoves(player, fromX, fromY)
+        (movesForward, movesBackward) = self.getPossibleMoves(player, fromX, fromY)
+        moves = movesForward + movesBackward
         best_distance_to_goal = self.hexDistance(from_hex, goal)
         best_move = None
         for move in moves:

@@ -65,7 +65,7 @@ if __name__ == '__main__':
             playerData = {
                 'player': player,
                 'type': playerType,
-                'model': modelType,
+                'modelType': modelType,
                 'name': playerName,
                 'time': toc-tic,
                 'iterations': options['iters'],

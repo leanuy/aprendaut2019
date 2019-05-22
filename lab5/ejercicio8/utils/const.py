@@ -57,3 +57,7 @@ AxialDirections = {
     'east': (1,0),
     'northeast': (1,-1)
 }
+
+# Datasets y sus ubicaciones
+DATA_BOARDS = 'data/boards.csv'
+DATA_METRICS = 'data/metrics.csv'
