@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import cross_val_predict
+from sklearn.decomposition import PCA
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -26,6 +27,7 @@ class Model():
         self.all_dataset = dataset
         self.all_results = results
         self.options = options
+        self.explained_variance_ratio = None
 
     ### METODOS PRINCIPALES
     ### -------------------
@@ -61,6 +63,7 @@ class Model():
             self.evaluation['cv_accuracy'] = accuracy_score(self.all_results, results)
             self.evaluation['cv_confusion_matrix'] = confusion_matrix(self.all_results, results)
             self.evaluation['cv_report'] = classification_report(self.all_results, results)
+            self.evaluation['explained_variance_ratio'] = self.explained_variance_ratio
 
         else:
             # Clasificar el conjunto 'test'
@@ -71,6 +74,7 @@ class Model():
             self.evaluation['accuracy'] = accuracy_score(self.testset_results, testset_results)
             self.evaluation['confusion_matrix'] = confusion_matrix(self.testset_results, testset_results)
             self.evaluation['report'] = classification_report(self.testset_results, testset_results)
+            self.evaluation['explained_variance_ratio'] = self.explained_variance_ratio
 
         return self.evaluation
 
@@ -78,6 +82,9 @@ class Model():
     ### -------------------
 
     def transform(self):
-        return 0
-
+        # Si pca_dimension mayor a 0, se aplica la reducción
+        if self.options['pca_dimension'] > 0:
+            pca = PCA(n_components=self.options['pca_dimension'])
+            self.all_dataset = pca.fit_transform(self.all_dataset)
+            self.explained_variance_ratio = pca.explained_variance_ratio_
 
