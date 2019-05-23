@@ -50,3 +50,10 @@ def parseCandidatesFromParties(candidatesJSON, candidates):
             res.append((candidate, auxDict[candidate]))
 
     return res
+
+# retorna el partido del cantidato pasado por parametro
+def candidates_party(candidate, candidates_parties):
+    try:
+        return candidates_parties[candidate]
+    except:
+        return 0
