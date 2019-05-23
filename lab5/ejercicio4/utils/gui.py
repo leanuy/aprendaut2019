@@ -1,14 +1,10 @@
 ### DEPENDENCIAS
 ### ------------------
-
 import os
 import sys
-
-from .const import MenuOps, PCAOps, PCAnalysis, PCAIntermediates, KmeansAnalysis, KmeansEvaluations, CandidateDivision
-
+from .const import MenuOps, SolverOps, PenaltyOps, CandidateDivision
 ### METODOS AUXILIARES - MENU
 ### -------------------------
-
 # Limpia la consola
 def printClear():
     if os.name == 'nt':
@@ -17,220 +13,234 @@ def printClear():
     else:
         clear = lambda : os.system('clear')
         clear()
-
 # Imprime el menu principal
-def printMenu():
+def printMenu(classifiers):
     printClear()
-    print ("########################################################################")
-    print ("#                                                                      #")
-    print ("#       MENÚ - Laboratorio 4 (Análisis de datos - PCA, K-Means)        #")
-    print ("#                                                                      #")
-    print ("########################################################################")
+    print ("##########################################################")
+    print ("#                                                        #")
+    print ("#    MENÚ - Laboratorio 5 (Regresión Logística - PCA)    #")
+    print ("#                                                        #")
+    print ("##########################################################")
     print ("")
-    print ("1. Reducir dimensiones (PCA)")
-    print ("2. Generar clusters (K-Means)")
+    printClassifiers(classifiers)
+    print ("1. Entrenar")
+    print ("2. Evaluar")
+    print ("3. Graficar")
     print ("0. Salir")
-
 # Lee la opción a elegir del menu principal
 def printMenuOption():
     print ("")   
     print ("-> Elija una opción: ")
     op = int( input() )
-
-    if op < 1 or op > 2:
+    if op < 1 or op > 3:
         sys.exit()
     else:
         if op == 1:
-            op = MenuOps.PCA
+            op = MenuOps.TRAIN
         elif op == 2:
-            op = MenuOps.KMEANS
-
+            op = MenuOps.EVALUATE
+        elif op == 3:
+            op = MenuOps.PLOT
     return op
-
-# Lee la opción a elegir de como implementar PCA
-def printPCAOptions():
+# Imprime la lista de clasificadores entrenados
+def printClassifiers(classifiers):
+    print ("Clasificadores actuales:")
+    index = 1
+    for c in classifiers:
+        print("")
+        print("-> ", end="")
+        print(str(index), end="")
+        print(" - ", end="")
+        print("Clasificadores por Regresión Logística (candidato/partido)")
+        print("   Dimensionalidad: ", end="")
+        if c.options['pca_dimension'] == 0:
+            print('26 (Sin PCA)')
+        else:
+            print(c.options['pca_dimension'])
+        print("   Algoritmo: ", end="")
+        print(c.options['solver'])
+        print("   Penalización: ", end="")
+        print(c.options['penalty'])
+        print("   Iteraciones: ", end="")
+        print(c.options['max_iter'])
+        print("   Regularización: ", end="")
+        print(c.options['regulation_strength'])
+        index = index + 1
+        
     print ("")
-    print ("-> Elija un método de reducción PCA: ")
+# Lee la cantidad de dimensiones a reducir con PCA (0 si no se quiere aplicar PCA)
+def printPCADimension():
+    print ("")
+    print ("-> Ingrese cantidad de dimensiones a obtener con PCA:")
+    print ("-> DEFAULT: 0 (No se aplica PCA)")
+    print ("-> (Máximo 25)")
+    try:
+        dimensions = int( input() )
+        return dimensions
+    except:
+        return 0
+# Lee la opción a elegir de que algoritmo implementar
+def printSolverOptions():
+    print ("")
+    print ("-> Elija un algoritmo para implementar la regresión: ")
     print ("-> DEFAULT: 1")
-    print ("1. Matriz de Covarianza")
-    print ("2. Descomposición SVD")
-
+    print ("1. liblinear")
+    print ("2. lbfgs")
+    print ("3. sag")
+    print ("4. saga")
+    print ("5. newton-cg")
     try:
         op = int( input() )    
-        if op < 1 or op > 2:
-            op = PCAOps.COVARIANZA
+        if op < 1 or op > 5:
+            op = SOLVEROps.LIBLINEAR
         else:
             if op == 1:
-                op = PCAOps.COVARIANZA
+                op = SolverOps.LIBLINEAR
             elif op == 2:
-                op = PCAOps.SVD
-        return op
-    except:
-        return PCAOps.COVARIANZA
-
-# Lee la opción a elegir de que datos mostrar de PCA
-def printPCAnalysis():
-    print ("")
-    print ("-> Elija que datos graficar: ")
-    print ("-> DEFAULT: 0")
-    print ("1. Graficar conjunto de datos")
-    print ("2. Graficar conjunto de datos diviendo por partido")
-    print ("3. Graficar conjunto de datos para cada partido")
-    print ("0. Ninguno")
-    
-    try:
-        op = int( input() )
-        if op < 0 or op > 3:
-            op = PCAnalysis.NONE
-        else:
-            if op == 0:
-                op = PCAnalysis.NONE
-            elif op == 1:
-                op = PCAnalysis.GENERAL
-            elif op == 2:
-                op = PCAnalysis.ALL_PARTY
+                op = SolverOps.LBFGS
             elif op == 3:
-                op = PCAnalysis.EACH_PARTY
+                op = SolverOps.SAG
+            elif op == 4:
+                op = SolverOps.SAGA
+            elif op == 5:
+                op = SolverOps.NEWTON_CG
         return op
     except:
-        return PCAnalysis.NONE
-
-# Lee la opción a elegir de que datos intermedios mostrar de PCA
-def printPCAIntermediate(pca_election):
-    if pca_election != PCAOps.COVARIANZA:
-        return PCAIntermediates.NONE
-
+        return SolverOps.LIBLINEAR
+# Lee la opción a elegir de que penalización usar en la regularización
+def printPenaltyOptions(solver_election):
     print ("")
-    print ("-> Elija que resultados intermedios mostrar: ")
-    print ("-> DEFAULT: 0")
-    print ("1. Matriz de Covarianza")
-    print ("2. Valores Propios")
-    print ("3. Ratio de Varianza")
-    print ("0. Ninguno")
-    
-    try:
-        op = int( input() )
-        if op < 0 or op > 3:
-            op = PCAIntermediates.NONE
-        else:
-            if op == 0:
-                op = PCAIntermediates.NONE
-            elif op == 1:
-                op = PCAIntermediates.COV_MATRIX
-            elif op == 2:
-                op = PCAIntermediates.EIGEN_VALUES
-            elif op == 3:
-                op = PCAIntermediates.VARIANCE_RATIO
-        return op
-    except:
-        return PCAIntermediates.NONE
-
-# Imprime las opciones para K y lee la opción elegida
-def printModelK(modelType):
-    if modelType != MenuOps.KMEANS:
-        return 5
-    else:
-        print ("")
-        print ("-> Elija cantidad de clusters para generar: ")
-        print ("-> DEFAULT: 5")
-        try:
-            evaluationK = int( input() )
-            return evaluationK
-        except:
-            return 5
-
-# Imprime opciones para la cantidad de veces que se desee ejeutar K-Means
-def printItersK(modelType):
-    if modelType != MenuOps.KMEANS:
-        return 1
-    else:
-        print ("")
-        print ("-> Elija cantidad de K-Means para ejecutar: ")
-        print ("-> DEFAULT: 1")
-        try:
-            evaluationK = int( input() )
-            return evaluationK
-        except:
-            return 1
-
-# Lee la opción a elegir de que datos mostrar de KMeans
-def printKmeansAnalysis():
-    print ("")
-    print ("-> Elija que datos graficar: ")
-    print ("-> DEFAULT: 0")
-    print ("1. Graficar distribución de cada cluster")
-    print ("2. Graficar distribución de candidatos en cada cluster")
-    print ("3. Graficar distribución de partidos en cada cluster")
-    print ("0. Ninguno")
-    
-    try:
-        op = int( input() )
-        if op < 0 or op > 3:
-            op = KmeansAnalysis.NONE
-        else:
-            if op == 0:
-                op = KmeansAnalysis.NONE
-            elif op == 1:
-                op = KmeansAnalysis.GENERAL
-            elif op == 2:
-                op = KmeansAnalysis.CANDIDATES
-            elif op == 3:
-                op = KmeansAnalysis.PARTIES
-        return op
-    except:
-        return KmeansAnalysis.NONE
-
-# Lee la opción a elegir de que evaluaciones realizar a los clusters de Kmeans
-def printKmeansEvaluations(k):
-    showARI = k == 2 or k == 5 or k == 11 
-    print ("")
-    print ("-> Elija que evaluación calcular: ")
-    print ("-> DEFAULT: 0")
-    print ("1. Coeficiente Silhouette")
-    if showARI:
-        print ("2. Adjusted Random Index")
-    print ("0. Ninguno")
-    
+    print ("-> Elija una estrategia de penalización para la regularización: ")
+    print ("-> DEFAULT: 1")
+    if solver_election == SolverOps.LBFGS or solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
+        print ("1. L2 (Regresión Ridge). Única opción para solver {}".format(solver_election))        
+    elif solver_election == SolverOps.SAGA:
+        print ("1. L2 (Regresión Ridge)")
+        print ("2. L1 (Regresión Lasso)")
+        print ("0. Ninguna")
+    elif solver_election == SolverOps.LIBLINEAR:
+        print ("1. L2 (Regresión Ridge)")
+        print ("2. L1 (Regresión Lasso)")
     try:
         op = int( input() )
         if op < 0 or op > 2:
-            op = KmeansEvaluations.NONE
+            if solver_election == SolverOps.LIBLINEAR:
+                op = PenaltyOps.L2
+            else:
+                op = PenaltyOps.NONE
         else:
             if op == 0:
-                op = KmeansEvaluations.NONE
+                op = PenaltyOps.NONE
             elif op == 1:
-                op = KmeansEvaluations.SILHOUETTE
-            elif op == 2 and showARI:
-                op = KmeansEvaluations.ARI
-            else:
-                op = KmeansEvaluations.NONE
-        return op
-    except:
-        return KmeansEvaluations.NONE
-
-# Lee la opción a elegir de que división utilizar para los candidatos
-def printCandidateDivision(analisis):
-    if analisis != PCAnalysis.ALL_PARTY and analisis != KmeansAnalysis.PARTIES:
-        return CandidateDivision.PARTIES
-
-    print ("")
-    print ("-> Elija como dividir a los candidatos: ")
-    print ("-> DEFAULT: 1")
-    print ("1. Por Partido (FA, PN, PC, etc.)")
-    print ("2. Por Espectro General (Izquierda, Centro, Derecha)")
-    print ("3. Por Espectro de Nolan (Progresismo, Totalitarismo, Conservadurismo, Liberalismo, Centro)")
-    
-    try:
-        op = int( input() )
-        if op < 1 or op > 3:
-            op = CandidateDivision.PARTIES
-        else:
-            if op == 1:
-                op = CandidateDivision.PARTIES
+                op = PenaltyOps.L2
             elif op == 2:
-                op = CandidateDivision.SPECTRUM
-            elif op == 3:
-                op = CandidateDivision.NOLAN
+                op = PenaltyOps.L1
         return op
     except:
-        return CandidateDivision.PARTIES
+        if solver_election == SolverOps.LIBLINEAR or solver_election == SolverOps.LBFGS or \
+                solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
+            return PenaltyOps.L2
+        else:
+            return PenaltyOps.NONE
+# Lee el máximo de iteraciones a hacer en caso de no converger
+def printIterations():
+    print ("")
+    print ("-> Ingrese cantidad maxima de iteraciones en caso de no converger: ")
+    print ("-> DEFAULT: 1000")
+    try:
+        max_iter = int( input() )
+        return max_iter
+    except:
+        return 1000
+# Lee parámetro de regularización
+def printRegulationStrength():
+    print ("")
+    print ("-> Ingrese (inverso de) parámetro de regularización: ")
+    print ("-> DEFAULT: 1.0")
+    try:
+        C = float( input() )
+        return C
+    except:
+        return 1.0
+# Lee la cantidad de particiones para la validación cruzada
+def printCrossK():
+    print ("")
+    print ("-> Ingrese cantidad de particiones para evaluación cruzada: ")
+    print ("-> DEFAULT: 0 (Validación normal)")
+    try:
+        k = int( input() )
+        return k
+    except:
+        return 0
+# Imprime los datos de la evaluación 'evaluation'
+def printEvaluation(evaluation, k):
+    # Imprimir normal
+    if k == 0:
+        print("---------- Clasificación según candidatos ----------")
+        print("-> Accuracy: ", end="")
+        print(evaluation['accuracy'])
+        print(evaluation['accuracy_candidates'])
+
+        print("-> Matriz de Confusión: ")
+        print()
+        print(evaluation['confusion_matrix'])
+        print(evaluation['confusion_matrix_candidates'])
+        print()
+
+        print("-> Métricas: ")
+        print()
+        print(evaluation['report'])
+        print(evaluation['report_candidates'])
+        print()
+        print("---------- Clasificación según partidos ----------")
+        print("-> Accuracy: ", end="")
+        print(evaluation['accuracy_parties'])
+
+        print("-> Matriz de Confusión: ")
+        print()
+        print(evaluation['confusion_matrix_parties'])
+        print()
+
+        print("-> Métricas: ")
+        print()
+        print(evaluation['report_parties'])
+        print()
+    else:
+        print("-> Accuracy cross validation: ", end="")
+        print(evaluation['cv_accuracy'])
+        print("---------- Clasificación según candidatos ----------")
+        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print(evaluation['cv_accuracy_candidates'])
+
+        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_confusion_matrix_candidates'])
+        print()
+
+        print("-> Métricas cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_report_candidates'])
+        print()
+        print("---------- Clasificación según partidos ----------")
+        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print(evaluation['cv_accuracy_parties'])
+
+        print("-> Matriz de Confusión cross validation: ")
+        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_confusion_matrix'])
+        print(evaluation['cv_confusion_matrix_parties'])
+        print()
+
+        print("-> Métricas cross validation: ")
+        print("-> Métricas cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_report'])
+        print(evaluation['cv_report_parties'])
+        print()
+
+    if evaluation['explained_variance_ratio'] is not None:
+        print("-> Proporción de varianza explicada: ")
+        print()
+        print(evaluation['explained_variance_ratio'])
+        print()

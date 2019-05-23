@@ -1,79 +1,103 @@
 ### DEPENDENCIAS
 ### ------------------
-
 import sys
 import os
 import time
-
-from model import pca, k_means
+from model.model import Model
 import processing.reader as reader
-import processing.parser as parser
-import plotting.pcaPlotting as pcaPlotting
-import plotting.kMeansPlotting as kMeansPlotting
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
-
-
 ### METODO PRINCIPAL
 ### ----------------
-
 if __name__ == '__main__':
-
-    op = MenuOps.PCA
-
-    while op == MenuOps.PCA or MenuOps.KMEANS:
-
-        gui.printMenu()
+    op = MenuOps.TRAIN
+    classifiers = []
+    while op == MenuOps.TRAIN or op == MenuOps.EVALUATE or op == MenuOps.PLOT:
+        gui.printMenu(classifiers)
         op = gui.printMenuOption()
-
-        if op == MenuOps.PCA:
-
-            pca_election = gui.printPCAOptions()
-            pca_intermediates = gui.printPCAIntermediate(pca_election)            
-            pca_analysis = gui.printPCAnalysis()
-            candidate_division = gui.printCandidateDivision(pca_analysis)
-
-            # Leer dataset de respuestas a encuesta
-            candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
-
-            options = {
-                'pca_election': pca_election,
-                'pca_analysis': pca_analysis,
-                'pca_intermediates': pca_intermediates,
-                'candidate_division': candidate_division,
-                'from_notebook': False
-            }
-
-            # Aplicar PCA para reducir a 2 dimensiones
-            reducedDataset, extras = pca.reduce_pca(dataset.values, 2, options)
-
-            # Generar gráficas si es necesario
-            pcaPlotting.plotPCA(reducedDataset, candidates, options, extras)
-
-        elif op == MenuOps.KMEANS:
-
-            # Leer K
-            k = gui.printModelK(op)
-            iters = gui.printItersK(op)
-            kmeans_analysis = gui.printKmeansAnalysis()
-            candidate_division = gui.printCandidateDivision(kmeans_analysis)
-            kmeans_evaluations = gui.printKmeansEvaluations(k)            
+        if op == MenuOps.TRAIN:
+            pca_dimension = gui.printPCADimension()
+            solver_election = gui.printSolverOptions()
+            penalty_election = gui.printPenaltyOptions(solver_election)            
+            max_iter = gui.printIterations()
+            regulation_strength = gui.printRegulationStrength()
 
             # Leer dataset de respuestas a encuesta
-            candidates, dataset = reader.readDataset(DATA_ENCUESTAS)
+            dataset, candidates = reader.readDataset(DATA_ENCUESTAS)
+            dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
             options = {
-                'kmeans_iters': iters,
-                'kmeans_analysis': kmeans_analysis,
-                'kmeans_evaluations': kmeans_evaluations,
-                'candidate_division': candidate_division,
-                'from_notebook': False
+                'pca_dimension': pca_dimension,                
+                'solver': solver_election,
+                'penalty': penalty_election,
+                'max_iter': max_iter,
+                'regulation_strength': regulation_strength
             }
 
-            # Aplicar K-Means
-            centroids, classes = k_means.k_means(dataset, k, options, candidates)
+            m = Model(dataset.values, candidates.values, options)
+            m = Model(dataset.values, candidates.values, parties.values, options)
 
-            # Generar gráficas si es necesario
-            kMeansPlotting.plotKMeans(dataset, candidates, centroids, classes, options)
-            
+            print()
+            print("-> COMIENZO DEL ENTRENAMIENTO")
+            m.train()
+            print("-> FIN DEL ENTRENAMIENTO")
+            print()
+            classifiers.append(m)
+        elif op == MenuOps.EVALUATE:
+            trainNew = True
+            if len(classifiers) > 0:
+                gui.printClear()
+                gui.printClassifiers(classifiers)
+                print("-> Elija un modelo por el índice: ")
+                print("-> DEFAULT: 0 (Entrenar modelo nuevo)")
+                try:
+                    c = int( input() )
+                except:
+                    c = 0
+                c -= 1
+                if c >= 0 and c < len(classifiers):
+                    k = gui.printCrossK()
+                    print()
+                    print("-> Evaluación del modelo " + str(c+1))
+                    print()
+                    evaluation = m.evaluate(k)
+                    gui.printEvaluation(evaluation, k)
+                    trainNew = False
+            if trainNew:
+                print()
+                print("-> Parte 1 - Entrenamiento")
+                pca_dimension = gui.printPCADimension()
+                solver_election = gui.printSolverOptions()
+                penalty_election = gui.printPenaltyOptions(solver_election)            
+                max_iter = gui.printIterations()
+                regulation_strength = gui.printRegulationStrength()
+
+                # Leer dataset de respuestas a encuesta
+                dataset, candidates = reader.readDataset(DATA_ENCUESTAS)
+                dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
+
+                options = {
+                    'pca_dimension': pca_dimension,                
+                    'solver': solver_election,
+                    'penalty': penalty_election,
+                    'max_iter': max_iter,
+                    'regulation_strength': regulation_strength
+                }
+
+                m = Model(dataset.values, candidates.values, options)
+                m = Model(dataset.values, candidates.values, parties.values, options)
+
+                print()
+                print("-> COMIENZO DEL ENTRENAMIENTO")
+                m.train()
+                print("-> FIN DEL ENTRENAMIENTO")
+                print()
+                classifiers.append(m)
+                print("-> Parte 2 - Evaluación")
+                k = gui.printCrossK()
+                print("-> Evaluación del modelo")
+                print()
+                
+                evaluation = m.evaluate(k)
+                gui.printEvaluation(evaluation, k)
         input("-> Oprima enter para volver al menú")
