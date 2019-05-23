@@ -65,6 +65,7 @@ if __name__ == '__main__':
 
                 print("-> Elija un modelo por el índice: ")
                 print("-> DEFAULT: 0 (Entrenar modelo nuevo)")
+
                 try:
                     c = int( input() )
                 except:
