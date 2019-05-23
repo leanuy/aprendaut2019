@@ -1,10 +1,14 @@
 ### DEPENDENCIAS
 ### ------------------
+
 import os
 import sys
+
 from .const import MenuOps, SolverOps, PenaltyOps, CandidateDivision
+
 ### METODOS AUXILIARES - MENU
 ### -------------------------
+
 # Limpia la consola
 def printClear():
     if os.name == 'nt':
@@ -13,6 +17,7 @@ def printClear():
     else:
         clear = lambda : os.system('clear')
         clear()
+
 # Imprime el menu principal
 def printMenu(classifiers):
     printClear()
@@ -27,11 +32,13 @@ def printMenu(classifiers):
     print ("2. Evaluar")
     print ("3. Graficar")
     print ("0. Salir")
+
 # Lee la opción a elegir del menu principal
 def printMenuOption():
     print ("")   
     print ("-> Elija una opción: ")
     op = int( input() )
+
     if op < 1 or op > 3:
         sys.exit()
     else:
@@ -41,7 +48,9 @@ def printMenuOption():
             op = MenuOps.EVALUATE
         elif op == 3:
             op = MenuOps.PLOT
+
     return op
+
 # Imprime la lista de clasificadores entrenados
 def printClassifiers(classifiers):
     print ("Clasificadores actuales:")
@@ -52,22 +61,29 @@ def printClassifiers(classifiers):
         print(str(index), end="")
         print(" - ", end="")
         print("Clasificadores por Regresión Logística (candidato/partido)")
+
         print("   Dimensionalidad: ", end="")
         if c.options['pca_dimension'] == 0:
             print('26 (Sin PCA)')
         else:
             print(c.options['pca_dimension'])
+
         print("   Algoritmo: ", end="")
         print(c.options['solver'])
+
         print("   Penalización: ", end="")
         print(c.options['penalty'])
+
         print("   Iteraciones: ", end="")
         print(c.options['max_iter'])
+
         print("   Regularización: ", end="")
         print(c.options['regulation_strength'])
+
         index = index + 1
         
     print ("")
+
 # Lee la cantidad de dimensiones a reducir con PCA (0 si no se quiere aplicar PCA)
 def printPCADimension():
     print ("")
@@ -79,6 +95,7 @@ def printPCADimension():
         return dimensions
     except:
         return 0
+
 # Lee la opción a elegir de que algoritmo implementar
 def printSolverOptions():
     print ("")
@@ -89,6 +106,7 @@ def printSolverOptions():
     print ("3. sag")
     print ("4. saga")
     print ("5. newton-cg")
+
     try:
         op = int( input() )    
         if op < 1 or op > 5:
@@ -107,20 +125,26 @@ def printSolverOptions():
         return op
     except:
         return SolverOps.LIBLINEAR
+
 # Lee la opción a elegir de que penalización usar en la regularización
 def printPenaltyOptions(solver_election):
     print ("")
     print ("-> Elija una estrategia de penalización para la regularización: ")
     print ("-> DEFAULT: 1")
+
     if solver_election == SolverOps.LBFGS or solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
         print ("1. L2 (Regresión Ridge). Única opción para solver {}".format(solver_election))        
+
+
     elif solver_election == SolverOps.SAGA:
         print ("1. L2 (Regresión Ridge)")
         print ("2. L1 (Regresión Lasso)")
         print ("0. Ninguna")
+
     elif solver_election == SolverOps.LIBLINEAR:
         print ("1. L2 (Regresión Ridge)")
         print ("2. L1 (Regresión Lasso)")
+
     try:
         op = int( input() )
         if op < 0 or op > 2:
@@ -142,6 +166,7 @@ def printPenaltyOptions(solver_election):
             return PenaltyOps.L2
         else:
             return PenaltyOps.NONE
+
 # Lee el máximo de iteraciones a hacer en caso de no converger
 def printIterations():
     print ("")
@@ -152,6 +177,7 @@ def printIterations():
         return max_iter
     except:
         return 1000
+
 # Lee parámetro de regularización
 def printRegulationStrength():
     print ("")
@@ -162,6 +188,7 @@ def printRegulationStrength():
         return C
     except:
         return 1.0
+
 # Lee la cantidad de particiones para la validación cruzada
 def printCrossK():
     print ("")
@@ -172,30 +199,28 @@ def printCrossK():
         return k
     except:
         return 0
+
 # Imprime los datos de la evaluación 'evaluation'
 def printEvaluation(evaluation, k):
     # Imprimir normal
     if k == 0:
         print("---------- Clasificación según candidatos ----------")
         print("-> Accuracy: ", end="")
-        print(evaluation['accuracy'])
         print(evaluation['accuracy_candidates'])
-
+    
         print("-> Matriz de Confusión: ")
         print()
-        print(evaluation['confusion_matrix'])
         print(evaluation['confusion_matrix_candidates'])
         print()
 
         print("-> Métricas: ")
         print()
-        print(evaluation['report'])
         print(evaluation['report_candidates'])
         print()
         print("---------- Clasificación según partidos ----------")
         print("-> Accuracy: ", end="")
         print(evaluation['accuracy_parties'])
-
+    
         print("-> Matriz de Confusión: ")
         print()
         print(evaluation['confusion_matrix_parties'])
@@ -206,12 +231,10 @@ def printEvaluation(evaluation, k):
         print(evaluation['report_parties'])
         print()
     else:
-        print("-> Accuracy cross validation: ", end="")
-        print(evaluation['cv_accuracy'])
         print("---------- Clasificación según candidatos ----------")
         print("-> Accuracy cross validation con k = {}: ".format(k), end="")
         print(evaluation['cv_accuracy_candidates'])
-
+    
         print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
         print()
         print(evaluation['cv_confusion_matrix_candidates'])
@@ -224,18 +247,14 @@ def printEvaluation(evaluation, k):
         print("---------- Clasificación según partidos ----------")
         print("-> Accuracy cross validation con k = {}: ".format(k), end="")
         print(evaluation['cv_accuracy_parties'])
-
-        print("-> Matriz de Confusión cross validation: ")
+    
         print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
         print()
-        print(evaluation['cv_confusion_matrix'])
         print(evaluation['cv_confusion_matrix_parties'])
         print()
 
-        print("-> Métricas cross validation: ")
         print("-> Métricas cross validation con k = {}: ".format(k))
         print()
-        print(evaluation['cv_report'])
         print(evaluation['cv_report_parties'])
         print()
 
