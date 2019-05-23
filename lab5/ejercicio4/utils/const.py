@@ -11,6 +11,11 @@ class MenuOps(Enum):
     TRAIN = 1
     EVALUATE = 2
     PLOT = 3
+    SEARCH = 4
+
+class CandidateDivision(Enum):
+    CANDIDATES = 0
+    PARTIES = 1
 
 class SolverOps(Enum):
     LIBLINEAR = "liblinear"
@@ -20,14 +25,11 @@ class SolverOps(Enum):
     NEWTON_CG = "newton-cg"
 
 class PenaltyOps(Enum):
-    NONE = 'None'
     L1 = 'l1'
     L2 = 'l2'
-    ELASTICNET = 'elasticnet'
 
-class CandidateDivision(Enum):
-    CANDIDATES = 0
-    PARTIES = 1
+MaxIterOps = [100]
+RegulationStrengthOps = [0.1]
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'

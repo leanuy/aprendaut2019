@@ -2,6 +2,7 @@
 ### ------------------
 
 import numpy as np
+import pandas as pd
 
 from utils.const import CandidateDivision
 
@@ -9,51 +10,21 @@ from utils.const import CandidateDivision
 ### -------------------
 
 # Dada una lista de candidatos, devuelve sus respectivos partidos
-# Se retorna una lista de tuplas (id, nombre, candidatos) para los partidos
-# Y una lista de partidos asignados para cada candidato en 'candidates'
 def parseCandidates(candidates, partyJSON):
 
-    parties = np.zeros(len(candidates), dtype = int) 
-
     # Preprocesamiento
-    pairs = []
-
+    parties = []
     for i in range(0, len(partyJSON)):
         partyCandidates = []
         for candidate in partyJSON[i]['candidates']:
             partyCandidates.append(candidate['id'])
+        parties.append((i, partyCandidates))
 
-        pairs.append((i, partyJSON[i]['party'], partyCandidates))
-    
-    # Sustitucion
-    index = 0
-    for candidate in candidates:
-        for party, partyName, partyCandidates in pairs:
-            if candidate in partyCandidates:
-                parties[index] = party
-                index += 1
-                break
+    return candidates.apply(lambda x: getCandidateParty(x, parties))
 
-    return pairs, parties
-
-# El proceso inverso a la función anterior
-def parseCandidatesFromParties(candidatesJSON, candidates):
-    auxDict = {}
-    for i in range(0, len(candidatesJSON)):
-        auxDict[candidatesJSON[i]['id']] = candidatesJSON[i]['name']
-
-    res = []
-    for candidate in candidates:
-        if not candidate in auxDict.keys():
-            res.append((candidate, 'Candidato desconocido'))
-        else:
-            res.append((candidate, auxDict[candidate]))
-
-    return res
-
-# retorna el partido del cantidato pasado por parametro
-def candidates_party(candidate, candidates_parties):
-    try:
-        return candidates_parties[candidate]
-    except:
-        return 0
+# Dado un candidato, devuelve su respectivo partido
+def getCandidateParty(candidate, parties):
+    for party, partyCandidates in parties:
+        if candidate in partyCandidates:
+            return party
+    return 0

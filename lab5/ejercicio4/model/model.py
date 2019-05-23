@@ -46,7 +46,6 @@ class Model():
 
         # Separar 80% dataset y 20% testset
         self.dataset_candidates, self.testset_candidates, self.candidates, self.testset_candidates_results = train_test_split(self.all_dataset, self.all_candidates, test_size=0.2)
-
         self.dataset_parties, self.testset_parties, self.parties, self.testset_parties_results = train_test_split(self.all_dataset, self.all_parties, test_size=0.2)
 
         # Entrenar cada clasificador con 80% dataset
@@ -63,7 +62,6 @@ class Model():
         if k > 0:
             # Evaluar cruzadamente el dataset completo
             results_candidates = cross_val_predict(self.model_candidates, self.all_dataset, self.all_candidates, cv=k)
-
             results_parties = cross_val_predict(self.model_parties, self.all_dataset, self.all_parties, cv=k)
 
             # Evaluar distintas métricas de la clasificación de 'test' segun candidatos
@@ -82,7 +80,6 @@ class Model():
         else:
             # Clasificar el conjunto 'test'
             testset_candidates_res = self.model_candidates.predict(self.testset_candidates)
-
             testset_parties_res = self.model_parties.predict(self.testset_parties)
             
             # Evaluar distintas métricas de la clasificación de 'test'
