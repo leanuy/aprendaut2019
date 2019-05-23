@@ -204,30 +204,58 @@ def printCrossK():
 def printEvaluation(evaluation, k):
     # Imprimir normal
     if k == 0:
+        print("---------- Clasificación según candidatos ----------")
         print("-> Accuracy: ", end="")
-        print(evaluation['accuracy'])
+        print(evaluation['accuracy_candidates'])
     
         print("-> Matriz de Confusión: ")
         print()
-        print(evaluation['confusion_matrix'])
+        print(evaluation['confusion_matrix_candidates'])
         print()
 
         print("-> Métricas: ")
         print()
-        print(evaluation['report'])
+        print(evaluation['report_candidates'])
         print()
-    else:
-        print("-> Accuracy cross validation: ", end="")
-        print(evaluation['cv_accuracy'])
+        print("---------- Clasificación según partidos ----------")
+        print("-> Accuracy: ", end="")
+        print(evaluation['accuracy_parties'])
     
-        print("-> Matriz de Confusión cross validation: ")
+        print("-> Matriz de Confusión: ")
         print()
-        print(evaluation['cv_confusion_matrix'])
+        print(evaluation['confusion_matrix_parties'])
         print()
 
-        print("-> Métricas cross validation: ")
+        print("-> Métricas: ")
         print()
-        print(evaluation['cv_report'])
+        print(evaluation['report_parties'])
+        print()
+    else:
+        print("---------- Clasificación según candidatos ----------")
+        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print(evaluation['cv_accuracy_candidates'])
+    
+        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_confusion_matrix_candidates'])
+        print()
+
+        print("-> Métricas cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_report_candidates'])
+        print()
+        print("---------- Clasificación según partidos ----------")
+        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print(evaluation['cv_accuracy_parties'])
+    
+        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_confusion_matrix_parties'])
+        print()
+
+        print("-> Métricas cross validation con k = {}: ".format(k))
+        print()
+        print(evaluation['cv_report_parties'])
         print()
 
     if evaluation['explained_variance_ratio'] is not None:

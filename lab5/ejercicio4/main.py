@@ -33,7 +33,7 @@ if __name__ == '__main__':
             regulation_strength = gui.printRegulationStrength()
             
             # Leer dataset de respuestas a encuesta
-            dataset, candidates = reader.readDataset(DATA_ENCUESTAS)
+            dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
             options = {
                 'pca_dimension': pca_dimension,                
@@ -43,7 +43,7 @@ if __name__ == '__main__':
                 'regulation_strength': regulation_strength
             }
 
-            m = Model(dataset.values, candidates.values, options)
+            m = Model(dataset.values, candidates.values, parties.values, options)
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                 regulation_strength = gui.printRegulationStrength()
                 
                 # Leer dataset de respuestas a encuesta
-                dataset, candidates = reader.readDataset(DATA_ENCUESTAS)
+                dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
                 options = {
                     'pca_dimension': pca_dimension,                
@@ -107,7 +107,7 @@ if __name__ == '__main__':
                     'regulation_strength': regulation_strength
                 }
 
-                m = Model(dataset.values, candidates.values, options)
+                m = Model(dataset.values, candidates.values, parties.values, options)
 
                 print()
                 print("-> COMIENZO DEL ENTRENAMIENTO")
