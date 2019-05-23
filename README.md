@@ -8,3 +8,5 @@ Laboratorios del curso de Aprendizaje Automático 2019, Facultad de Ingeniería 
 * **Laboratorio 3 - (Aprendizaje Supervisado) Naive Bayes, K-Nearest Neighbors**
 
 * **Laboratorio 4 - (Aprendizaje No Supervisado) K-Means**
+
+* **Laboratorio 5 - (Aprendizaje Supervisado y por Refuerzo) Logistic Regression, Q Learning, Neural Network**
