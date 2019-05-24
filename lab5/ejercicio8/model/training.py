@@ -49,11 +49,8 @@ class Training():
             self.opponentToken = GameTokens.PLAYER1
 
         if self.modelType == ModelTypes.CONCEPT:
-            self.weights = options['weights']
-            self.normalize_weights = options['normalize_weights']
-
             # Crea al jugador a entrenar y su respectivo modelo
-            self.player = Player(self.playerToken, self.playerType, ModelConcept(self.normalize_weights, self.weights))
+            self.player = Player(self.playerToken, self.playerType, ModelConcept(options))
         else:
             self.player = Player(self.playerToken, self.playerType, ModelNeural(options, self.playerToken))
 
@@ -62,7 +59,7 @@ class Training():
             self.opponent = Player(self.opponentToken, PlayerType.RANDOM)
         elif self.playerType == PlayerType.TRAINED_SELF:
             if self.modelType == ModelTypes.CONCEPT:
-                self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(self.normalize_weights, self.weights))
+                self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(options))
             else:
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelNeural(options, self.opponentToken))
 
@@ -85,7 +82,7 @@ class Training():
                     self.learningRate -= 0.1
             
             # Se genera un juego nuevo para cada iteración
-            g = Game(GameMode.TRAINING, (self.player, self.opponent), self.modelType, self.maxRounds)
+            g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)
             res = g.play()
 
             # Obtener tableros del juego
@@ -97,12 +94,11 @@ class Training():
             # Se arma la lista de pares [tablero, evaluación de sucesor]
             trainingExamples = []
             for board, nextBoard in zip(historial, historial[1:]):
-                features = board.getFeatures(self.playerToken)
-                nextFeatures = nextBoard.getFeatures(self.playerToken)
+                features = board.getFeatures(self.playerToken, self.modelType)
+                nextFeatures = nextBoard.getFeatures(self.playerToken, self.modelType)
                 trainingExamples.append([features, model.evaluate(nextFeatures)])
 
             # Se checkea el resultado del juego para setear la evaluación del último tablero
-            # TODO: Bonificar según cantidad de turnos?
             if res == GameResults.WIN:
                 lastEvaluation = 1
                 results[0] = results[0] + 1
@@ -123,7 +119,7 @@ class Training():
             results_y_axis.append(lastEvaluation)
             
             lastBoard = historial[-1]
-            trainingExamples.append([lastBoard.getFeatures(self.playerToken), lastEvaluation])
+            trainingExamples.append([lastBoard.getFeatures(self.playerToken, self.modelType), lastEvaluation])
 
             # Se realiza una copia del modelo actual para que el oponente use
             # en la próxima iteración (a menos que sea oponente random)

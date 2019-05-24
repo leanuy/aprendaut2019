@@ -50,6 +50,9 @@ class Player():
 
     def getPlayerType(self):
         return self.playerType
+    
+    def setPlayerNumber(self, n):
+        self.playerNumber = n
 
     ### METODOS PRINCIPALES
     ### -------------------
@@ -131,7 +134,7 @@ class Player():
                     continue
 
                 board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
-                features = board.getFeatures(self.playerNumber)
+                features = board.getFeatures(self.playerNumber, self.model.options['modelType'])
                 evaluation = self.model.evaluate(features)
 
                 # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida
@@ -156,4 +159,3 @@ class Player():
             self.historialFrom.append((fromX,fromY))
             self.historialTo.append((toX, toY))
             return move
-        

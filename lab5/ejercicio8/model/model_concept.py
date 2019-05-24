@@ -12,9 +12,10 @@ class ModelConcept():
     ### CONSTRUCTOR
     ### -------------------
 
-    def __init__(self, normalize_weights, initialWeights = [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]):
-        self.weights = initialWeights
-        self.normalize_weights = normalize_weights
+    def __init__(self, options):
+        self.options = options
+        self.weights = options['weights'] if options['weights'] else [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
+        self.normalize_weights = options['normalize_weights']
 
     ### GETTERS y SETTERS
     ### -------------------

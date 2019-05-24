@@ -31,7 +31,10 @@ def printMenu(players):
     print ("")
     printPlayers(players)
     print ("1. Entrenar")
-    print ("2. Jugar")
+    print ("2. Jugar vs. IA")
+    print ("3. Espectar IA vs. IA")
+    print ("4. Cargar IA")
+    print ("5. Guardar IA")
     print ("0. Salir")
 
 # Lee la opcion a elegir del menu principal
@@ -40,13 +43,19 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 2:
+    if op < 1 or op > 5:
         sys.exit()
     else:
         if op == 1:
             op = MenuOps.TRAIN
         elif op == 2:
-            op = MenuOps.PLAY
+            op = MenuOps.PLAY_VS_IA
+        elif op == 3:
+            op = MenuOps.WATCH_IA_VS_IA
+        elif op == 4:
+            op = MenuOps.LOAD
+        elif op == 5:
+            op = MenuOps.SAVE
 
     return op
 
@@ -56,7 +65,7 @@ def printModelOptions():
     print ("-> Decida el tipo de modelo: ")
     print ("1. Aprendizaje conceptual (lab1)")
     print ("2. Q-Training profundo: Board")
-    print ("3. Q-Training profundo: Metricas")
+    print ("3. Q-Training profundo: Métricas")
     model = int( input() )
 
     if model < 1 or model > 3:
@@ -69,6 +78,16 @@ def printModelOptions():
         elif model == 3:
             model = ModelTypes.NEURAL_METRICS
     return model
+
+def printSavePlayer():
+    print("")
+    print("Ingrese la ruta o nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
+    return input()
+
+def printLoadPlayer():
+    print("")
+    print("Ingrese la ruta del archivo que contiene al jugador")
+    return input()
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):
@@ -107,25 +126,44 @@ def printPlayerType():
     print ("-> DEFAULT: 2")
     print ("1. VS Random")
     print ("2. VS Si Mismo")
+    print ("3. VS otra IA (Training con retroalimentación mutua)")
 
     try:
         playerType = int( input() )
 
-        if playerType < 1 or playerType > 2:
+        if playerType < 1 or playerType > 3:
             return (PlayerType.TRAINED_SELF, "Si Mismo")
-        else:
-            if playerType == 1:
-                playerType = PlayerType.TRAINED_RANDOM
-                playerName = "Random"
-            elif playerType == 2:
-                playerType = PlayerType.TRAINED_SELF
-                playerName = "Si Mismo"
-
+        elif playerType == 1:
+            playerType = PlayerType.TRAINED_RANDOM
+            playerName = "Random"
+        elif playerType == 2:
+            playerType = PlayerType.TRAINED_SELF
+            playerName = "Si Mismo"
+        elif playerType == 3:
+            playerType = PlayerType.TRAINED_SHOWDOWN
+            playerName = ""
+            
         return (playerType, playerName)
 
     except:
         return (PlayerType.TRAINED_SELF, "Si Mismo")
-    
+
+def pickPlayer(players, message = "-> Elija un jugador por el índice: "):
+    printClear()
+    printPlayers(players)
+
+    try:
+        player = int(input(message))
+        if player >= 0 and player < len(players) + 1:
+            print("")
+            return player
+        else:
+            # El índice ingresado no corresponde a ningún jugador!
+            return pickPlayer(players, message)
+    except:
+        # El índice ingresado no corresponde a ningún jugador!
+        return pickPlayer(players, message)
+
 # Imprime las opciones de cantidad de iteraciones y lee la opcion elegida
 def printTrainingIterations():
     print ("")
@@ -198,6 +236,17 @@ def printSkipOnDraw():
     print ("-> DEFAULT: n")
     notDraw = input()
     if notDraw == 'y':
+        return True
+    else:
+        return False
+
+# Pregunta al usuario si desea espectar un duelo
+def printSpectateOptions():
+    print ("")
+    print ("-> Desea espectar las partidas? (y/n) ")
+    print ("-> DEFAULT: n")
+    spectate = input()
+    if spectate == 'y':
         return True
     else:
         return False

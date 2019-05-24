@@ -21,7 +21,7 @@ class ModelNeural():
 
     def __init__(self, options, playerToken):
         self.options = options
-        self.model = MLPRegressor(hidden_layer_sizes=(10,10,10), max_iter=1000)
+        self.model = MLPRegressor(hidden_layer_sizes=(30,30,30), max_iter=1000)
         
         # Setteo de los estados básicos del board
         if options['modelType'] == ModelTypes.NEURAL_BOARD:
@@ -55,5 +55,4 @@ class ModelNeural():
             features = [-1 if x==2 else x for x in features]
         self.model.fit(np.array([features]), np.array([learningRate * (trainingEvaluation - currentEvaluation)]).ravel())
         return trainingEvaluation - currentEvaluation
-    
         

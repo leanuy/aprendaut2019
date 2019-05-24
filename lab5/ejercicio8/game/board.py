@@ -55,7 +55,7 @@ class Board():
     ### CONSTRUCTOR
     ### -------------------
 
-    def __init__(self, model):
+    def __init__(self):
         
         # Radio del hexagono
         self.radius = 4
@@ -68,8 +68,6 @@ class Board():
         
         # Lista con todas las posibles coordenadas virtuales (para comprobar validez)
         self.slots = []
-
-        self.model = model
 
         # Rellenado del tablero
         for y in range(0, self.length):
@@ -183,8 +181,8 @@ class Board():
         return True
 
     
-    def getFeatures(self, player):
-        if self.model == ModelTypes.NEURAL_BOARD:
+    def getFeatures(self, player, model = ModelTypes.CONCEPT):
+        if model == ModelTypes.NEURAL_BOARD:
             # Devuelve el tablero como array
             return self.getBoard()
         else:
