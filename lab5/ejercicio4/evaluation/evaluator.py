@@ -40,7 +40,8 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                         printClassifierTraining(len(classifiers_candidates) + 1, options)
 
                         m = Model(dataset.values, candidates.values, parties.values, options)
-                        m.train()
+                        if k == 0:
+                            m.train()
                         evaluation = m.evaluate(k) 
 
                         printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
@@ -50,26 +51,27 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
 
     else:
 
-          for i in range(1, 26):
+        for i in range(1, 26):
 
-              options = {
-                  'pca_dimension': i,                
-                  'solver': SolverOps.LIBLINEAR,
-                  'penalty': PenaltyOps.L2,
-                  'max_iter': 100,
-                  'regulation_strength': 0.1
-              }
+            options = {
+                'pca_dimension': i,                
+                'solver': SolverOps.LIBLINEAR,
+                'penalty': PenaltyOps.L2,
+                'max_iter': 100,
+                'regulation_strength': 0.1
+            }
 
-              printClassifierTraining(len(classifiers_candidates) + 1, options)
+            printClassifierTraining(len(classifiers_candidates) + 1, options)
 
-              m = Model(dataset.values, candidates.values, parties.values, options)
-              m.train()
-              evaluation = m.evaluate(k)
+            m = Model(dataset.values, candidates.values, parties.values, options)
+            if k == 0:
+                m.train()
+            evaluation = m.evaluate(k)
 
-              printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
+            printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
 
-              classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
-              classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
+            classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
+            classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
 
     classifiers_candidates.sort(key=operator.itemgetter(0), reverse=True)
     classifiers_parties.sort(key=operator.itemgetter(0), reverse=True)

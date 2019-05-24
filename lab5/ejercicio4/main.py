@@ -77,7 +77,8 @@ if __name__ == '__main__':
                     k = gui.printCrossK()
 
                     evaluation = m.evaluate(k)
-                    m.train()
+                    if k == 0:
+                        m.train()
                     gui.printEvaluation(evaluation, k)
 
                     trainNew = False
