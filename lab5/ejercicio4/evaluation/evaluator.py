@@ -40,6 +40,7 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                         printClassifierTraining(len(classifiers_candidates) + 1, options)
 
                         m = Model(dataset.values, candidates.values, parties.values, options)
+                        m.train()
                         evaluation = m.evaluate(k) 
 
                         printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
@@ -62,6 +63,7 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
               printClassifierTraining(len(classifiers_candidates) + 1, options)
 
               m = Model(dataset.values, candidates.values, parties.values, options)
+              m.train()
               evaluation = m.evaluate(k)
 
               printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
