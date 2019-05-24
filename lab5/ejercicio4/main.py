@@ -77,6 +77,8 @@ if __name__ == '__main__':
                     k = gui.printCrossK()
 
                     evaluation = m.evaluate(k)
+                    if k == 0:
+                        m.train()
                     gui.printEvaluation(evaluation, k)
 
                     trainNew = False
@@ -104,6 +106,15 @@ if __name__ == '__main__':
                 }
 
                 m = Model(dataset.values, candidates.values, parties.values, options)
+                
+                print()
+                print("-> COMIENZO DEL ENTRENAMIENTO")
+
+                m.train()
+
+                print("-> FIN DEL ENTRENAMIENTO")
+                print()
+                
                 classifiers.append(m)
 
                 print("-> Parte 2 - Evaluación")
