@@ -166,6 +166,8 @@ class Game():
     def playTraining(self, spectate = False):
 
         (player1, player2) = self.players
+        player1.setPlayerNumber(GameTokens.PLAYER1)
+        player2.setPlayerNumber(GameTokens.PLAYER2)
         b = Board()
         finished = False
         res = False

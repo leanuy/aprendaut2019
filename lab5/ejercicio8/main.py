@@ -5,6 +5,7 @@ import sys
 import os
 import time
 import pickle
+import copy
 
 from model.training import Training
 from model.training_duel import TrainingDuel
@@ -40,11 +41,11 @@ if __name__ == '__main__':
                 player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
                 player2Index = gui.pickPlayer(players, "-> Elija al jugador 2 por su índice: ")
                 
-                player1 = players[player1Index-1]['player']
-                player1.playerNumber = GameTokens.PLAYER1
+                player = players[player1Index-1]['player']
+                player1 = Player(GameTokens.PLAYER1, player.playerType, copy.deepcopy(player.model))
 
-                player2 = players[player2Index-1]['player']
-                player1.playerNumber = GameTokens.PLAYER2
+                player = players[player2Index-1]['player']
+                player2 = Player(GameTokens.PLAYER2, player.playerType, copy.deepcopy(player.model))
 
                 spectate = gui.printSpectateOptions()
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
                 players[player1Index-1]['player'] = player1
 
                 # HACK: Guardamos a player1 como un player1 para que no se rompa play vs AI.
-                player2.playerNumber = GameTokens.PLAYER1
+                player2.setPlayerNumber(GameTokens.PLAYER1)
                 players[player2Index-1]['player'] = player2
 
                 plotter.printResultsPlot(resultsPlot, options['iters'])
@@ -153,7 +154,7 @@ if __name__ == '__main__':
         elif op == MenuOps.WATCH_IA_VS_IA:
             player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
             player2Index = gui.pickPlayer(players, "-> Elija al jugador 2 por su índice: ")
-
+            
             # Representa la partida
             g = None
 
@@ -161,14 +162,14 @@ if __name__ == '__main__':
             if player1Index == 0:
                 player1 = Player(GameTokens.PLAYER1, PlayerType.RANDOM)
             else:
-                player1 = players[player1Index-1]['player']
-                player1.playerNumber = GameTokens.PLAYER1
+                player = players[player1Index-1]['player']
+                player1 = Player(GameTokens.PLAYER1, player.playerType, copy.deepcopy(player.model))
             
             if player2Index == 0:
                 player2 = Player(GameTokens.PLAYER2, PlayerType.RANDOM)
             else:
-                player2 = players[player2Index-1]['player']
-                player2.playerNumber = GameTokens.PLAYER2
+                player = players[player2Index-1]['player']
+                player2 = Player(GameTokens.PLAYER2, player.playerType, copy.deepcopy(player.model))
 
             g = Game(GameMode.SPECTATING, (player1, player2))
 
