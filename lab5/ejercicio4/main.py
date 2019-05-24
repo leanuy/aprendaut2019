@@ -31,7 +31,7 @@ if __name__ == '__main__':
             penalty_election = gui.printPenaltyOptions(solver_election)            
             max_iter = gui.printIterations()
             regulation_strength = gui.printRegulationStrength()
-            
+
             # Leer dataset de respuestas a encuesta
             dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
             
@@ -93,7 +93,7 @@ if __name__ == '__main__':
                 penalty_election = gui.printPenaltyOptions(solver_election)            
                 max_iter = gui.printIterations()
                 regulation_strength = gui.printRegulationStrength()
-                
+
                 # Leer dataset de respuestas a encuesta
                 dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
