@@ -19,13 +19,13 @@ def readDataset(filename, more_than_1000=True):
     if more_than_1000:
         answers['candidateID'] = candidates.copy()
         filtered = answers[answers.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
-        answers_toreturn = filtered.iloc[:, :26]
+        answers = filtered.iloc[:, :26]
         candidates = filtered.iloc[:, 26]
 
     general_parties = readParties()
     parties = parseCandidates(candidates, general_parties)
     
-    return answers_toreturn.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
+    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
     
 # Lee partidos de DATA_CANDIDATOS y lo devuelve como archivo JSON
 def readParties(options = {'from_notebook': False}):
