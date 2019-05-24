@@ -28,9 +28,10 @@ def printMenu(classifiers):
     print ("##########################################################")
     print ("")
     printClassifiers(classifiers)
-    print ("1. Entrenar")
-    print ("2. Evaluar")
-    print ("3. Graficar")
+    print ("1. Entrenar clasificador")
+    print ("2. Evaluar clasificador")
+    print ("3. Graficar datos de clasificador")
+    print ("4. Buscar mejor clasificador")
     print ("0. Salir")
 
 # Lee la opción a elegir del menu principal
@@ -39,7 +40,7 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 3:
+    if op < 1 or op > 4:
         sys.exit()
     else:
         if op == 1:
@@ -48,6 +49,8 @@ def printMenuOption():
             op = MenuOps.EVALUATE
         elif op == 3:
             op = MenuOps.PLOT
+        elif op == 4:
+            op = MenuOps.SEARCH
 
     return op
 
@@ -135,37 +138,22 @@ def printPenaltyOptions(solver_election):
     if solver_election == SolverOps.LBFGS or solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
         print ("1. L2 (Regresión Ridge). Única opción para solver {}".format(solver_election))        
 
-
-    elif solver_election == SolverOps.SAGA:
-        print ("1. L2 (Regresión Ridge)")
-        print ("2. L1 (Regresión Lasso)")
-        print ("0. Ninguna")
-
-    elif solver_election == SolverOps.LIBLINEAR:
+    elif solver_election == SolverOps.LIBLINEAR or solver_election == SolverOps.SAGA:
         print ("1. L2 (Regresión Ridge)")
         print ("2. L1 (Regresión Lasso)")
 
     try:
         op = int( input() )
-        if op < 0 or op > 2:
-            if solver_election == SolverOps.LIBLINEAR:
-                op = PenaltyOps.L2
-            else:
-                op = PenaltyOps.NONE
+        if op < 1 or op > 2:
+            op = PenaltyOps.L2
         else:
-            if op == 0:
-                op = PenaltyOps.NONE
-            elif op == 1:
+            if op == 1:
                 op = PenaltyOps.L2
             elif op == 2:
                 op = PenaltyOps.L1
         return op
     except:
-        if solver_election == SolverOps.LIBLINEAR or solver_election == SolverOps.LBFGS or \
-                solver_election == SolverOps.SAG or solver_election == SolverOps.NEWTON_CG:
-            return PenaltyOps.L2
-        else:
-            return PenaltyOps.NONE
+        return PenaltyOps.L2
 
 # Lee el máximo de iteraciones a hacer en caso de no converger
 def printIterations():
@@ -202,9 +190,16 @@ def printCrossK():
 
 # Imprime los datos de la evaluación 'evaluation'
 def printEvaluation(evaluation, k):
+
+    print()
+
     # Imprimir normal
     if k == 0:
+        
+        print("-> EVALUACIÓN NORMAL")
+        print()  
         print("---------- Clasificación según candidatos ----------")
+        print()
         print("-> Accuracy: ", end="")
         print(evaluation['accuracy_candidates'])
     
@@ -218,6 +213,7 @@ def printEvaluation(evaluation, k):
         print(evaluation['report_candidates'])
         print()
         print("---------- Clasificación según partidos ----------")
+        print()
         print("-> Accuracy: ", end="")
         print(evaluation['accuracy_parties'])
     
@@ -231,29 +227,33 @@ def printEvaluation(evaluation, k):
         print(evaluation['report_parties'])
         print()
     else:
+        print(f"-> EVALUACIÓN CRUZADA (k = {k})")
+        print() 
         print("---------- Clasificación según candidatos ----------")
-        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print()
+        print("-> Accuracy: ", end="")
         print(evaluation['cv_accuracy_candidates'])
     
-        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print("-> Matriz de Confusión: ")
         print()
         print(evaluation['cv_confusion_matrix_candidates'])
         print()
 
-        print("-> Métricas cross validation con k = {}: ".format(k))
+        print("-> Métricas: ")
         print()
         print(evaluation['cv_report_candidates'])
         print()
         print("---------- Clasificación según partidos ----------")
-        print("-> Accuracy cross validation con k = {}: ".format(k), end="")
+        print()
+        print("-> Accuracy: ", end="")
         print(evaluation['cv_accuracy_parties'])
     
-        print("-> Matriz de Confusión cross validation con k = {}: ".format(k))
+        print("-> Matriz de Confusión: ")
         print()
         print(evaluation['cv_confusion_matrix_parties'])
         print()
 
-        print("-> Métricas cross validation con k = {}: ".format(k))
+        print("-> Métricas: ")
         print()
         print(evaluation['cv_report_parties'])
         print()
@@ -263,3 +263,69 @@ def printEvaluation(evaluation, k):
         print()
         print(evaluation['explained_variance_ratio'])
         print()
+
+# Lee la cantidad de particiones para la validación cruzada
+def printCheckPCA():
+    print ("")
+    print ("-> Desea buscar mejor dimensión de PCA? (y/n): ")
+    print ("-> DEFAULT: n")
+    try:
+        pca = input()
+        return pca == 'y'
+    except:
+        return False
+        
+def printClassifierTraining(index, options):
+
+        print("")
+        print("Iniciando entrenamiento")
+        
+        print("-> ", end="")
+        print(str(index), end="")
+        print(" - ", end="")
+
+        print("Clasificadores por Regresión Logística (candidato/partido)")
+        print("   Algoritmo: ", end="")
+        print(options['solver'])
+        print("   Penalización: ", end="")
+        print(options['penalty'])
+        print("   Iteraciones: ", end="")
+        print(options['max_iter'])
+        print("   Regularización: ", end="")
+        print(options['regulation_strength'])
+
+        if options['pca_dimension'] != 0:
+            print("   Dimensionalidad: ", end="")
+            print(options['pca_dimension'])
+
+def printClassifierEvaluation(accuracy_candidates, accuracy_parties):
+    print(f'-> Accuracy (Candidatos): {accuracy_candidates}')
+    print(f'-> Accuracy (Partidos): {accuracy_parties}')
+
+def printBestClassifiers(candidate_classificators, party_classificators):
+
+    accuracy_candidates, model_candidates = candidate_classificators[0]
+    accuracy_parties, model_parties = party_classificators[0]
+
+    print()
+    printClassifierData(model_candidates.options, 'candidato')
+    print(f'-> Accuracy: {accuracy_candidates}')
+    print()
+    printClassifierData(model_parties.options, 'partido')
+    print(f'-> Accuracy: {accuracy_parties}')
+    print()
+
+def printClassifierData(options, title):
+        print(f"-> Clasificador por {title} (Regresión Logística)")
+        print("   Algoritmo: ", end="")
+        print(options['solver'])
+        print("   Penalización: ", end="")
+        print(options['penalty'])
+        print("   Iteraciones: ", end="")
+        print(options['max_iter'])
+        print("   Regularización: ", end="")
+        print(options['regulation_strength'])
+
+        if options['pca_dimension'] != 0:
+            print("   Dimensionalidad: ", end="")
+            print(options['pca_dimension'])

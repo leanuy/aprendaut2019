@@ -7,9 +7,9 @@ import time
 
 from model.model import Model
 import processing.reader as reader
+import evaluation.evaluator as evaluator
 import utils.gui as gui
 from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
-
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     op = MenuOps.TRAIN
     classifiers = []
 
-    while op == MenuOps.TRAIN or op == MenuOps.EVALUATE or op == MenuOps.PLOT:
+    while op == MenuOps.TRAIN or op == MenuOps.EVALUATE or op == MenuOps.PLOT or op == MenuOps.SEARCH:
 
         gui.printMenu(classifiers)
         op = gui.printMenuOption()
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
             # Leer dataset de respuestas a encuesta
             dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
-
+            
             options = {
                 'pca_dimension': pca_dimension,                
                 'solver': solver_election,
@@ -76,11 +76,9 @@ if __name__ == '__main__':
 
                     k = gui.printCrossK()
 
-                    print()
-                    print("-> Evaluación del modelo " + str(c+1))
-                    print()
-
                     evaluation = m.evaluate(k)
+                    if k == 0:
+                        m.train()
                     gui.printEvaluation(evaluation, k)
 
                     trainNew = False
@@ -108,23 +106,36 @@ if __name__ == '__main__':
                 }
 
                 m = Model(dataset.values, candidates.values, parties.values, options)
-
+                
                 print()
                 print("-> COMIENZO DEL ENTRENAMIENTO")
+
                 m.train()
+
                 print("-> FIN DEL ENTRENAMIENTO")
                 print()
-
+                
                 classifiers.append(m)
 
                 print("-> Parte 2 - Evaluación")
 
                 k = gui.printCrossK()
-
-                print("-> Evaluación del modelo")
-                print()
                 
                 evaluation = m.evaluate(k)
                 gui.printEvaluation(evaluation, k)
+
+        elif op == MenuOps.SEARCH:
+
+            check_pca = gui.printCheckPCA()
+            k = gui.printCrossK()
+
+            # Leer dataset de respuestas a encuesta
+            dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
+
+            # 
+            candidate_classificators, party_classificators = evaluator.getBestModel(dataset, candidates, parties, k, check_pca)
+
+            #
+            gui.printBestClassifiers(candidate_classificators, party_classificators)
 
         input("-> Oprima enter para volver al menú")
