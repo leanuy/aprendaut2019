@@ -19,9 +19,6 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
 
         for solver in SolverOps:
 
-            if solver != SolverOps.LIBLINEAR:
-                continue
-
             PenaltyOptions = []
             if solver == SolverOps.LBFGS or solver == SolverOps.SAG or solver == SolverOps.NEWTON_CG:
                 PenaltyOptions = [PenaltyOps.L2]     
@@ -60,7 +57,7 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                 'pca_dimension': i,                
                 'solver': SolverOps.LIBLINEAR,
                 'penalty': PenaltyOps.L2,
-                'max_iter': 100,
+                'max_iter': 10000,
                 'regulation_strength': 0.1
             }
 
@@ -75,9 +72,6 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
 
             classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
             classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
-
-    classifiers_candidates.sort(key=operator.itemgetter(0), reverse=True)
-    classifiers_parties.sort(key=operator.itemgetter(0), reverse=True)
 
     return (classifiers_candidates, classifiers_parties)
     

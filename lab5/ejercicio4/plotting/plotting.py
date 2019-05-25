@@ -114,7 +114,7 @@ def plotSubBars(dataset_full, meta_full, precise=False):
     dataset, datasetC = dataset_full
     meta, metaC = meta_full
 
-    plt.figure(figsize=(12,8)) 
+    plt.figure(figsize=(20,8)) 
   
     plt.subplot(2, 1, 1)
     y_pos = np.arange(len(meta['xlabels']))

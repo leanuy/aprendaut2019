@@ -3,6 +3,7 @@
 
 import os
 import sys
+import operator
 
 from .const import MenuOps, PlotOps, SolverOps, PenaltyOps, CandidateDivision
 
@@ -342,6 +343,9 @@ def printClassifierEvaluation(accuracy_candidates, accuracy_parties):
 
 # Imprime los datos del mejor clasificador y su accuracy
 def printBestClassifiers(candidate_classificators, party_classificators):
+
+    candidate_classificators = sorted(candidate_classificators, key=operator.itemgetter(0), reverse=True)
+    party_classificators = sorted(party_classificators, key=operator.itemgetter(0), reverse=True)
 
     accuracy_candidates, model_candidates = candidate_classificators[0]
     accuracy_parties, model_parties = party_classificators[0]
