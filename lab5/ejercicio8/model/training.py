@@ -78,15 +78,8 @@ class Training():
         i = 0
         while i < self.iters:
             if variable:
-                if self.iters <= 100:
-                    if count != 100 and count % 10 == 0:
-                        self.learningRate -= 0.1
-                elif self.iters == 500:
-                    if count != self.iters and count % 50 == 0:
-                        self.learningRate -= 0.1
-                elif self.iters == 1000:
-                    if count != self.iters and count % 100 == 0:
-                        self.learningRate -= 0.1
+                if count != 100 and count % 10 == 0:
+                    self.learningRate -= 0.1
             
             # Se genera un juego nuevo para cada iteración
             g = Game(GameMode.TRAINING, (self.player, self.opponent), self.maxRounds)

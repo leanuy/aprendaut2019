@@ -21,7 +21,7 @@ class ModelNeural():
 
     def __init__(self, options, playerToken):
         self.options = options
-        self.model = MLPRegressor(hidden_layer_sizes=(10), max_iter=1000)
+        self.model = MLPRegressor(hidden_layer_sizes=(50,50,50), max_iter=1000)
         
         # Setteo de los estados básicos del board
         if options['modelType'] == ModelTypes.NEURAL_BOARD:
