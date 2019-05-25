@@ -8,7 +8,7 @@ import utils.gui as gui
 from utils.const import GameTokens, GameTokenMoves, PlayerType
 from game.board import Board
 from game.player import Player
-from model.model import Model
+from model.model_concept import ModelConcept
 
 # Dependencias de IPython
 from IPython.display import display, clear_output
@@ -17,7 +17,7 @@ from ipywidgets import Text, Label, Button, ToggleButtons, Box, Layout, HBox, VB
 game_ended = False
 weights = [0.1018578962865496, -0.2205057028234067, 1.2570161981484373, -0.1948378955807097, 0.0740196083685163, 0.0703268169683735, 0.04238701171762847, 0.5794942971765905, 0.1389258682002259]
 b = Board()
-player = Player(GameTokens.PLAYER1, PlayerType.TRAINED_SELF, Model(False, weights))
+player = Player(GameTokens.PLAYER1, PlayerType.TRAINED_SELF, ModelConcept(False, weights))
 opts = ['Hexagonal', 'Coordenadas', 'Matriz']
 
 # Linea 1

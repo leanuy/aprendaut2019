@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -31,7 +31,10 @@ def printMenu(players):
     print ("")
     printPlayers(players)
     print ("1. Entrenar")
-    print ("2. Jugar")
+    print ("2. Jugar vs. IA")
+    print ("3. Espectar IA vs. IA")
+    print ("4. Cargar IA")
+    print ("5. Guardar IA")
     print ("0. Salir")
 
 # Lee la opcion a elegir del menu principal
@@ -40,15 +43,51 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 2:
+    if op < 1 or op > 5:
         sys.exit()
     else:
         if op == 1:
             op = MenuOps.TRAIN
         elif op == 2:
-            op = MenuOps.PLAY
+            op = MenuOps.PLAY_VS_IA
+        elif op == 3:
+            op = MenuOps.WATCH_IA_VS_IA
+        elif op == 4:
+            op = MenuOps.LOAD
+        elif op == 5:
+            op = MenuOps.SAVE
 
     return op
+
+# Lee la opcion a elegir del menu principal
+def printModelOptions():
+    print ("")   
+    print ("-> Decida el tipo de modelo: ")
+    print ("1. Aprendizaje conceptual (lab1)")
+    print ("2. Q-Training profundo: Board")
+    print ("3. Q-Training profundo: Métricas")
+    model = int( input() )
+
+    if model < 1 or model > 3:
+        sys.exit()
+    else:
+        if model == 1:
+            model = ModelTypes.CONCEPT
+        elif model == 2:
+            model = ModelTypes.NEURAL_BOARD
+        elif model == 3:
+            model = ModelTypes.NEURAL_METRICS
+    return model
+
+def printSavePlayer():
+    print("")
+    print("Ingrese la ruta o nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
+    return input()
+
+def printLoadPlayer():
+    print("")
+    print("Ingrese la ruta del archivo que contiene al jugador")
+    return input()
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):
@@ -87,25 +126,44 @@ def printPlayerType():
     print ("-> DEFAULT: 2")
     print ("1. VS Random")
     print ("2. VS Si Mismo")
+    print ("3. VS otra IA (Training con retroalimentación mutua)")
 
     try:
         playerType = int( input() )
 
-        if playerType < 1 or playerType > 2:
+        if playerType < 1 or playerType > 3:
             return (PlayerType.TRAINED_SELF, "Si Mismo")
-        else:
-            if playerType == 1:
-                playerType = PlayerType.TRAINED_RANDOM
-                playerName = "Random"
-            elif playerType == 2:
-                playerType = PlayerType.TRAINED_SELF
-                playerName = "Si Mismo"
-
+        elif playerType == 1:
+            playerType = PlayerType.TRAINED_RANDOM
+            playerName = "Random"
+        elif playerType == 2:
+            playerType = PlayerType.TRAINED_SELF
+            playerName = "Si Mismo"
+        elif playerType == 3:
+            playerType = PlayerType.TRAINED_SHOWDOWN
+            playerName = ""
+            
         return (playerType, playerName)
 
     except:
         return (PlayerType.TRAINED_SELF, "Si Mismo")
-    
+
+def pickPlayer(players, message = "-> Elija un jugador por el índice: "):
+    printClear()
+    printPlayers(players)
+
+    try:
+        player = int(input(message))
+        if player >= 0 and player < len(players) + 1:
+            print("")
+            return player
+        else:
+            # El índice ingresado no corresponde a ningún jugador!
+            return pickPlayer(players, message)
+    except:
+        # El índice ingresado no corresponde a ningún jugador!
+        return pickPlayer(players, message)
+
 # Imprime las opciones de cantidad de iteraciones y lee la opcion elegida
 def printTrainingIterations():
     print ("")
@@ -148,15 +206,17 @@ def printLearningRate():
 # Imprime las opciones de pesos iniciales y lee la opcion elegida
 def printInitialWeights():
     print ("")
-    print ("-> Ingrese la lista de pesos iniciales: [w0, wA, wB, wC, wD]")
-    print ("-> DEFAULT: [0.9, 0.9, 0.9, 0.9, 0.9]")
+    print ("-> Ingrese la lista de pesos iniciales: [w0, wA1, wA2, wB1, wB2, wC1, wC2, wD1, wD2]")
+    print ("-> DEFAULT: [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]")
     try:
         weights = input()
         weights = weights.split(',')
         weights = [float(w) for w in weights]
+        if len(weights != 9):
+            return [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
         return weights
     except:
-        return [0.9, 0.9, 0.9, 0.9, 0.9]
+        return [0.1, -0.9, 0.9, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1]
 
 # Pregunta al usuario si desea normalizar el modelo
 def printNormalizeWeights():
@@ -180,6 +240,17 @@ def printSkipOnDraw():
     else:
         return False
 
+# Pregunta al usuario si desea espectar un duelo
+def printSpectateOptions():
+    print ("")
+    print ("-> Desea espectar las partidas? (y/n) ")
+    print ("-> DEFAULT: n")
+    spectate = input()
+    if spectate == 'y':
+        return True
+    else:
+        return False
+
 # Imprime los datos de entrenamiento de un jugador
 def printTrainedPlayer(player):
 
@@ -199,11 +270,12 @@ def printTrainedPlayer(player):
     print("--> Ratio de aprendizaje: ", end="")
     print(player['learningRate'])
 
-    print("--> Pesos iniciales: ", end="")
-    print(player['initialWeights'])
+    if 'initialWeights' in player:
+        print("--> Pesos iniciales: ", end="")
+        print(player['initialWeights'])
 
-    print("--> Pesos finales: ", end="")
-    print(player['finalWeights'])
+        print("--> Pesos finales: ", end="")
+        print(player['finalWeights'])
 
     print("--> Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
     print(player['results'])
@@ -215,10 +287,10 @@ def printTrainedPlayer(player):
 
 # Imprime los features ingresados
 def printFeatures(features):
-    print("Suma cuadrada de distancia al extremo: " + str(features[0]))
-    print("Suma cuadrada de distancia al centro: " + str(features[1]))
-    print("Suma de maxima cantidad de saltos: " + str(features[2]))
-    print("Suma cuadrada de distancia al hex del goal vacio mas cercano: " + str(features[3]))
+    print("Suma cuadrada de distancia al extremo: " + str(features[1])) + ', ' + str(features[2])
+    print("Suma cuadrada de distancia al centro: " + str(features[3])) + ', ' + str(features[4])
+    print("Suma de maxima cantidad de saltos: " + str(features[5])) + ', ' + str(features[6])
+    print("Suma cuadrada de distancia al hex del goal vacio mas cercano: " + str(features[7])) + ', ' + str(features[8])
     print()
 
 ### METODOS AUXILIARES - TABLERO
@@ -240,7 +312,7 @@ def printToken(slot):
 def printSlot(slot):
     (x,y) = slot.getVPos()
     token = slot.getToken()
-    print("(", end="")         
+    print("(", end="")
     if x > 0:
         cprint("+", 'red', end="")
         cprint(x, 'red', end=' ')

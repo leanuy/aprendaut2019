@@ -5,9 +5,10 @@ import sys
 import os
 import re
 import copy
+import time
 
 import utils.gui as gui 
-from utils.const import GameMode, GameTokens, GameTokenMoves, GameResults
+from utils.const import GameMode, GameTokens, GameTokenMoves, GameResults, ModelTypes
 
 from .board import Board
 from .player import Player
@@ -20,14 +21,15 @@ class Game():
     ### METODOS PRINCIPALES
     ### -------------------
 
-    def __init__(self, mode, players, maxRounds = 100):
+    def __init__(self, mode, players, maxRounds = 300):
         
         # Modo de juego
         # 1. Entrenamiento
         # 2. Juego
+        # 3. Espectar
         self.mode = mode
 
-        # Si modo es 1, representa al par de jugadores
+        # Si modo es 1 o 3, representa al par de jugadores
         # Si modo es 2, representa al jugador oponente al humano
         self.players = players
 
@@ -50,19 +52,16 @@ class Game():
         return self.boards
 
     # Simulación de un juego
-    def play(self):
-
+    def play(self, spectate = False):
         if self.mode == GameMode.PLAYING:
             res = self.playUI()
-
-        elif self.mode == GameMode.TRAINING:
-            res = self.playTraining()
+        else:
+            res = self.playTraining(spectate)
 
         return res
 
 
     def playUI(self):
-
         b = Board()
         player = self.players
         keyboard = ''
@@ -164,30 +163,36 @@ class Game():
                     input()
                 
 
-    def playTraining(self):
+    def playTraining(self, spectate = False):
 
         (player1, player2) = self.players
+        player1.setPlayerNumber(GameTokens.PLAYER1)
+        player2.setPlayerNumber(GameTokens.PLAYER2)
         b = Board()
         finished = False
         res = False
 
         while not finished:
-            # gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
-            # El jugador a entrenar elige su movimiento y juega
-            ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
-            b.moveToken(GameTokens.PLAYER1, fromX2, fromY2, toX2, toY2)
+            if spectate:
+                gui.printClear()
+                gui.printBoardHex(b.getMatrix(), False, b.fromVirtual)
 
-            # Se checkea si el jugador a entrenar gana
-            if b.checkWin(GameTokens.PLAYER1):
+            # Jugador 1 elige su movimiento y juega
+            ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
+            b.moveToken(player1.playerNumber, fromX2, fromY2, toX2, toY2)
+
+            # Se checkea si el jugador 1 ganó
+            if b.checkWin(player1.playerNumber):
                 finished = True
                 res = GameResults.WIN
-
-            # Si el jugador a entrenar no ganó, el oponente elige su movimiento y juega
+            
+            # Si el jugador 1 no ganó, el jugador 2 elige su movimiento y juega
             if not finished:
+                # time.sleep(0.5)
                 ((fromX2, fromY2), (toX2, toY2)) = player2.chooseMove(b)
-                b.moveToken(GameTokens.PLAYER2, fromX2, fromY2, toX2, toY2)
+                b.moveToken(player2.playerNumber, fromX2, fromY2, toX2, toY2)
 
-                if b.checkWin(GameTokens.PLAYER2):
+                if b.checkWin(player2.playerNumber):
                     finished = True
                     res = GameResults.LOSE
 
@@ -197,7 +202,7 @@ class Game():
             if len(self.boards) >= self.maxRounds:
                 finished = True
                 res = GameResults.DRAW
-            # input()
+            # time.sleep(0.5)
+
         print("Partida finalizada con resultado " + str(res))
         return res
-                
