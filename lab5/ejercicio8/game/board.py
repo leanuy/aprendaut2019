@@ -180,7 +180,6 @@ class Board():
 
         return True
 
-    
     def getFeatures(self, player, model = ModelTypes.CONCEPT):
         if model == ModelTypes.NEURAL_BOARD:
             # Devuelve el tablero como array
@@ -348,7 +347,6 @@ class Board():
 
         return moves
 
-
     ### METODOS AUXILIARES
     ### FEATURES
     ### -------------------
@@ -430,7 +428,6 @@ class Board():
             if self.hexDistance(from_hex, slot) < closest_distance:
                 closest_distance = self.hexDistance(from_hex, slot)
         return closest_distance
-
 
     # Mueve una celda en una dirección "east", "northwest", etc
     def hexNeighbor(self, hex, direction):
