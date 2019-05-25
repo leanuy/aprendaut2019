@@ -25,7 +25,7 @@ def printMenu(players):
     printClear()
     print ("#####################################################")
     print ("#                                                   #")
-    print ("#        MENÚ - Laboratorio 1 (Damas Chinas)        #")
+    print ("#        MENÚ - Laboratorio 5 (Damas Chinas)        #")
     print ("#                                                   #")
     print ("#####################################################")
     print ("")
@@ -77,28 +77,37 @@ def printModelOptions():
             model = ModelTypes.NEURAL_BOARD
         elif model == 3:
             model = ModelTypes.NEURAL_METRICS
-    return model
+    return (model, getModelName(model))
+
+def getModelName(modelType):
+    if modelType == ModelTypes.CONCEPT:
+        return "Aprendizaje Conceptual"
+    elif modelType == ModelTypes.NEURAL_BOARD:
+        return "Red Neuronal: Tablero"
+    elif modelType == ModelTypes.NEURAL_METRICS:
+        return "Red Neuronal: Métricas"
+    return ""
 
 def printSavePlayer():
     print("")
-    print("Ingrese la ruta o nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
+    print("Ingrese el nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
     return input()
 
 def printLoadPlayer():
     print("")
-    print("Ingrese la ruta del archivo que contiene al jugador")
+    print("Ingrese el nombre del archivo que contiene al jugador")
     return input()
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):
     print ("Jugadores actuales:")
-    print("-> 0 - Jugador random sin entrenar")
+    print("-> 0 - Jugador: Random sin entrenar")
     index = 1
     for p in players:
         print("-> ", end="")
         print(str(index), end="")
         print(" - ", end="")
-        print("Jugador ", end="")
+        print("Jugador: ", end="")
         print(p['name'])
         index = index + 1
     print ("")
@@ -132,18 +141,15 @@ def printPlayerType():
         playerType = int( input() )
 
         if playerType < 1 or playerType > 3:
-            return (PlayerType.TRAINED_SELF, "Si Mismo")
+            return (PlayerType.TRAINED_SELF)
         elif playerType == 1:
             playerType = PlayerType.TRAINED_RANDOM
-            playerName = "Random"
         elif playerType == 2:
             playerType = PlayerType.TRAINED_SELF
-            playerName = "Si Mismo"
         elif playerType == 3:
             playerType = PlayerType.TRAINED_SHOWDOWN
-            playerName = ""
             
-        return (playerType, playerName)
+        return playerType
 
     except:
         return (PlayerType.TRAINED_SELF, "Si Mismo")

@@ -35,7 +35,7 @@ if __name__ == '__main__':
         op = gui.printMenuOption()
 
         if op == MenuOps.TRAIN:
-            (playerType, playerName) = gui.printPlayerType()
+            playerType = gui.printPlayerType()
 
             if playerType == PlayerType.TRAINED_SHOWDOWN:
                 player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
@@ -73,7 +73,14 @@ if __name__ == '__main__':
                 
             # Normal training
             else:
-                modelType = gui.printModelOptions()
+                (modelType, modelName) = gui.printModelOptions()
+
+                index = 0
+                for player in players:
+                    if player['modelType'] is not None and player['modelType'] == modelType:
+                        index += 1
+                playerName = f'{modelName} - {index}'
+
                 options = {
                     'modelType': modelType,
                     'playerType': playerType,
@@ -122,6 +129,8 @@ if __name__ == '__main__':
 
                 filename = gui.printSavePlayer()
                 if filename.strip():
+                    root = 'players/'
+                    filename = root + filename
                     pickle_out = open(filename,"wb")
                     pickle.dump(playerData, pickle_out)
                     pickle_out.close()
@@ -186,18 +195,33 @@ if __name__ == '__main__':
         elif op == MenuOps.LOAD:
             filename = gui.printLoadPlayer()
             if filename.strip():
+                root = 'players/'
+                filename = root + filename
                 try:
                     pickle_in = open(filename,"rb")
-                    player = pickle.load(pickle_in)
-                    players.append(player)
+                    loaded_player = pickle.load(pickle_in)
+
+                    # Ajuste del nombre
+                    modelName = gui.getModelName(loaded_player['modelType'])
+                    index = 0
+                    for player in players:
+                        if (player['modelType'] is not None) and (player['modelType'] == loaded_player['modelType']):
+                            index += 1
+                    playerName = f'{modelName} - {index}'
+                    loaded_player['name'] = playerName
+
+                    players.append(loaded_player)
                 except:
                     print("Error! Archivo erroneo, por favor intente nuevamente.")
+                    input()
 
         elif op == MenuOps.SAVE:
             playerIndex = gui.pickPlayer(players)
             player = players[playerIndex-1]
             filename = gui.printSavePlayer()
             if filename.strip():
+                root = 'players/'
+                filename = root + filename
                 pickle_out = open(filename,"wb")
                 pickle.dump(player, pickle_out)
                 pickle_out.close()
