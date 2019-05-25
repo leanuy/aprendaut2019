@@ -4,6 +4,7 @@
 import sys
 import os
 import time
+import operator
 
 from model.model import Model
 import processing.reader as reader
@@ -21,6 +22,7 @@ if __name__ == '__main__':
 
     op = MenuOps.TRAIN
     classifiers = []
+    checked_pca = False
 
     while op == MenuOps.TRAIN or op == MenuOps.EVALUATE or op == MenuOps.PLOT or op == MenuOps.SEARCH:
 
@@ -181,13 +183,35 @@ if __name__ == '__main__':
                     print('-> No hay modelos para evaluar')
                     print()
 
-            # elif plot_op == PlotOps.ALL:
+            elif plot_op == PlotOps.ALL:
+            
+                if len(classifiers) > 0:
+
+                    if checked_pca:
+                        candidates = [(c.options['pca_dimension'], c.evaluation['cv_accuracy_candidates']) for c in classifiers]
+                        parties = [(c.options['pca_dimension'], c.evaluation['cv_accuracy_parties']) for c in classifiers]
+
+                        candidates.sort(key=operator.itemgetter(0))
+                        parties.sort(key=operator.itemgetter(0))
+
+                        candidates = [a for d,a in candidates]
+                        parties = [a for d,a in parties]
+
+                    else:
+                        candidates = [c.evaluation['cv_accuracy_candidates'] for c in classifiers]
+                        parties = [c.evaluation['cv_accuracy_parties'] for c in classifiers]
+
+                    evalPlotting.plotAllEvaluations(candidates, parties, checked_pca)
+                
+                else:
+                    print('-> No hay modelos para evaluar')
+                    print()
 
         elif op == MenuOps.SEARCH:
 
             check_pca = gui.printCheckPCA()
             k = gui.printCrossK()
-
+            
             # Leer dataset de respuestas a encuesta
             dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
@@ -198,7 +222,8 @@ if __name__ == '__main__':
             gui.printBestClassifiers(candidate_classifiers, party_classifiers)
 
             # Guardar todos los clasificadores localmente
-            _, all_classifiers = candidate_classifiers
-            classifiers = all_classifiers
+            classifiers = [m for a,m in candidate_classifiers]
 
+            checked_pca = check_pca
+            
         input("-> Oprima enter para volver al menú")

@@ -33,8 +33,8 @@ class PenaltyOps(Enum):
     L1 = 'l1'
     L2 = 'l2'
 
-MaxIterOps = [100, 1000, 10000]
-RegulationStrengthOps = [0.1, 1.0, 10.0, 100.0]
+MaxIterOps = [100]
+RegulationStrengthOps = [0.1, 1.0]
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'

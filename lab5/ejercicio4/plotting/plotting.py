@@ -109,7 +109,7 @@ def plotStackedBars(dataset, meta):
     plt.title(meta['title'])
     plt.show()
 
-def plotSubBars(dataset_full, meta_full):
+def plotSubBars(dataset_full, meta_full, precise=False):
 
     dataset, datasetC = dataset_full
     meta, metaC = meta_full
@@ -121,12 +121,16 @@ def plotSubBars(dataset_full, meta_full):
     plt.bar(y_pos, dataset, align='center', alpha=0.8, color=meta['colors'][0])
     plt.xticks(y_pos, meta['xlabels'])
     plt.title(meta['title'])
+    if precise:
+        plt.ylim([min(dataset) - 0.00001, max(dataset) + 0.00001])
 
     plt.subplot(2, 1, 2)
     y_pos = np.arange(len(metaC['xlabels']))      
     plt.bar(y_pos, datasetC, align='center', alpha=0.8, color=metaC['colors'][0])
     plt.xticks(y_pos, metaC['xlabels'])      
     plt.title(metaC['title'])
+    if precise:
+        plt.ylim([min(datasetC) - 0.00001, max(datasetC) + 0.00001])
 
     plt.show()
 

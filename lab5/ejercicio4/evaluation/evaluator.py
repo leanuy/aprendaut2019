@@ -19,6 +19,9 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
 
         for solver in SolverOps:
 
+            if solver != SolverOps.LIBLINEAR:
+                continue
+
             PenaltyOptions = []
             if solver == SolverOps.LBFGS or solver == SolverOps.SAG or solver == SolverOps.NEWTON_CG:
                 PenaltyOptions = [PenaltyOps.L2]     
@@ -30,7 +33,7 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                     for regulation_strength in RegulationStrengthOps:
                         
                         options = {
-                            'pca_dimension': 0,                
+                            'pca_dimension': 1,                
                             'solver': solver,
                             'penalty': penalty,
                             'max_iter': max_iter,

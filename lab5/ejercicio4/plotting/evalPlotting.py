@@ -1,7 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
-from .plotting import plotHeatmap, plotGroupBars
+from .plotting import plotHeatmap, plotGroupBars, plotSubBars
 from utils.const import CandidateDivision
 
 ### CONSTANTES
@@ -35,6 +35,30 @@ def plotSingleEvaluation(evaluation, k):
     plotMetrics(accuracy_candidates, accuracy_parties, metrics_candidates, metrics_parties)
     plotConfusionMatrix(confusion_matrix_candidates, CandidateDivision.CANDIDATES)
     plotConfusionMatrix(confusion_matrix_parties, CandidateDivision.PARTIES)
+
+def plotAllEvaluations(candidates, parties, is_pca=False):
+
+    if not is_pca:
+        title_candidates = 'Accuracy - Clasificadores por candidato según configuración paramétrica'
+        title_parties = 'Accuracy - Clasificadores por partido según configuración paramétrica'
+    
+    else:
+        title_candidates = 'Accuracy - Clasificadores por candidato según dimensionalidad'
+        title_parties = 'Accuracy - Clasificadores por partido según dimensionalidad'
+
+    meta = {
+      'title': title_candidates,
+      'xlabels': [str(i+1) for i in range(0, len(candidates))],
+      'colors': [COLORS[1]]
+    }
+
+    metaC = {
+      'title': title_parties,
+      'xlabels': [str(i+1) for i in range(0, len(parties))],      
+      'colors': [COLORS[7]]
+    }
+
+    plotSubBars((candidates, parties), (meta, metaC), True)
 
 ### METODOS AUXILIARES
 ### ------------------
