@@ -20,11 +20,12 @@ def parseCandidates(candidates, partyJSON):
             partyCandidates.append(candidate['id'])
         parties.append((i, partyCandidates))
 
-    return candidates.apply(lambda x: getCandidateParty(x, parties))
+    res = candidates.apply(lambda x: getCandidateParty(x, parties))
+    return res[res != -1]
 
 # Dado un candidato, devuelve su respectivo partido
 def getCandidateParty(candidate, parties):
     for party, partyCandidates in parties:
         if candidate in partyCandidates:
             return party
-    return 0
+    return -1
