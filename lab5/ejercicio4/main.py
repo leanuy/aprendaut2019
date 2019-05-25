@@ -8,8 +8,11 @@ import time
 from model.model import Model
 import processing.reader as reader
 import evaluation.evaluator as evaluator
+import plotting.corpusPlotting as corpusPlotting
+import plotting.pcaPlotting as pcaPlotting
+import plotting.evalPlotting as evalPlotting
 import utils.gui as gui
-from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps
+from utils.const import DATA_ENCUESTAS, DATA_CANDIDATOS, MenuOps, PlotOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -74,6 +77,8 @@ if __name__ == '__main__':
 
                 if c >= 0 and c < len(classifiers):
 
+                    m = classifiers[c]
+
                     k = gui.printCrossK()
 
                     evaluation = m.evaluate(k)
@@ -113,6 +118,60 @@ if __name__ == '__main__':
                 evaluation = m.evaluate(k)
                 gui.printEvaluation(evaluation, k)
 
+        elif op == MenuOps.PLOT:
+
+            plot_op = gui.printPlotOption()
+
+            if plot_op == PlotOps.CORPUS:
+
+                # Leer dataset de respuestas a encuesta separando entre candidatos con más y menos de 1000 votos
+                dataset = reader.readDataset(DATA_ENCUESTAS)
+                datasetC = reader.readDatasetC(DATA_ENCUESTAS)
+
+                candidatesJSON = reader.readCandidates()
+                partiesJSON = reader.readParties()
+
+                # Graficar distribución de votantes según candidato y partido
+                corpusPlotting.plotCorpus(dataset, datasetC, candidatesJSON, partiesJSON)
+
+                # Graficar ratio de varianza para cada dimensión
+                pcaPlotting.plotPCA(dataset)
+
+            elif plot_op == PlotOps.SINGLE:
+
+                if len(classifiers) > 0:
+                    gui.printClear()
+                    gui.printClassifiers(classifiers)
+
+                    print("-> Elija un modelo por el índice: ")
+
+                    try:
+                        c = int( input() )
+                    except:
+                        c = 1
+                    c -= 1
+
+                    if c >= 0 and c < len(classifiers):
+
+                        m = classifiers[c]
+
+                        evaluation = m.evaluation
+                        if evaluation == None:
+                            k = gui.printCrossK()
+                            evaluation = m.evaluate(k)
+                            
+                        gui.printEvaluation(evaluation, evaluation['k'])
+                        evalPlotting.plotSingleEvaluation(evaluation, k)
+
+                    else:
+                        print('-> El número ingresado no corresponde a ningún modelo')
+                        print()
+                else:
+                    print('-> No hay modelos para evaluar')
+                    print()
+
+            # elif plot_op == PlotOps.ALL:
+
         elif op == MenuOps.SEARCH:
 
             check_pca = gui.printCheckPCA()
@@ -121,10 +180,14 @@ if __name__ == '__main__':
             # Leer dataset de respuestas a encuesta
             dataset, candidates, parties = reader.readDataset(DATA_ENCUESTAS)
 
-            # 
-            candidate_classificators, party_classificators = evaluator.getBestModel(dataset, candidates, parties, k, check_pca)
+            # Evaluar todas las configuraciones paramétricas posibles y ordenarlas según accuracy
+            candidate_classifiers, party_classifiers = evaluator.getBestModel(dataset, candidates, parties, k, check_pca)
 
-            #
-            gui.printBestClassifiers(candidate_classificators, party_classificators)
+            # Mostrar el mejor clasificador según candidatos y según partidos
+            gui.printBestClassifiers(candidate_classifiers, party_classifiers)
+
+            # Guardar todos los clasificadores localmente
+            _, all_classifiers = candidate_classifiers
+            classifiers = all_classifiers
 
         input("-> Oprima enter para volver al menú")

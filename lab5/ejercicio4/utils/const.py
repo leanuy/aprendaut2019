@@ -13,6 +13,11 @@ class MenuOps(Enum):
     PLOT = 3
     SEARCH = 4
 
+class PlotOps(Enum):
+    CORPUS = 1
+    SINGLE = 2
+    ALL = 3
+
 class CandidateDivision(Enum):
     CANDIDATES = 0
     PARTIES = 1
@@ -28,8 +33,8 @@ class PenaltyOps(Enum):
     L1 = 'l1'
     L2 = 'l2'
 
-MaxIterOps = [100]
-RegulationStrengthOps = [0.1]
+MaxIterOps = [100, 1000, 10000]
+RegulationStrengthOps = [0.1, 1.0, 10.0, 100.0]
 
 # Datasets y sus ubicaciones
 DATA_ENCUESTAS = 'data/data.csv'

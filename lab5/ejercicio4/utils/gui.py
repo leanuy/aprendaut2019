@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .const import MenuOps, SolverOps, PenaltyOps, CandidateDivision
+from .const import MenuOps, PlotOps, SolverOps, PenaltyOps, CandidateDivision
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -86,6 +86,9 @@ def printClassifiers(classifiers):
         index = index + 1
         
     print ("")
+
+### METODOS AUXILIARES - TRAIN
+### ----------------------------
 
 # Lee la cantidad de dimensiones a reducir con PCA (0 si no se quiere aplicar PCA)
 def printPCADimension():
@@ -176,6 +179,9 @@ def printRegulationStrength():
         return C
     except:
         return 1.0
+
+### METODOS AUXILIARES - EVALUATE
+### ----------------------------
 
 # Lee la cantidad de particiones para la validación cruzada
 def printCrossK():
@@ -274,7 +280,38 @@ def printCheckPCA():
         return pca == 'y'
     except:
         return False
-        
+
+### METODOS AUXILIARES - PLOT
+### ----------------------------
+
+# Lee la opción a elegir del menu de graficas
+def printPlotOption():
+    print ("")   
+    print ("-> Elija una opción para graficar: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Graficar datos del corpus")
+    print ("2. Graficar datos de evaluación de un modelo")
+    print ("3. Graficar datos de comparación de todos los modelos")
+    
+    try:
+        op = int( input() )
+        if op < 1 or op > 3:
+            return PlotOps.CORPUS
+        else:
+            if op == 1:
+                op = PlotOps.CORPUS
+            elif op == 2:
+                op = PlotOps.SINGLE
+            elif op == 3:
+                op = PlotOps.ALL
+            return op
+    except:
+        return PlotOps.CORPUS
+
+### METODOS AUXILIARES - SEARCH
+### ----------------------------
+
+# Imprime los datos de entrenamiento de un clasificador durante la busqueda
 def printClassifierTraining(index, options):
 
         print("")
@@ -298,10 +335,12 @@ def printClassifierTraining(index, options):
             print("   Dimensionalidad: ", end="")
             print(options['pca_dimension'])
 
+# Imprime los datos de la evaluación de un clasificador durante la busqueda
 def printClassifierEvaluation(accuracy_candidates, accuracy_parties):
     print(f'-> Accuracy (Candidatos): {accuracy_candidates}')
     print(f'-> Accuracy (Partidos): {accuracy_parties}')
 
+# Imprime los datos del mejor clasificador y su accuracy
 def printBestClassifiers(candidate_classificators, party_classificators):
 
     accuracy_candidates, model_candidates = candidate_classificators[0]
@@ -315,6 +354,7 @@ def printBestClassifiers(candidate_classificators, party_classificators):
     print(f'-> Accuracy: {accuracy_parties}')
     print()
 
+# Imprime los datos de un clasificador
 def printClassifierData(options, title):
         print(f"-> Clasificador por {title} (Regresión Logística)")
         print("   Algoritmo: ", end="")
