@@ -108,3 +108,53 @@ def plotStackedBars(dataset, meta):
     plt.legend(list(legend), list(labels), loc='center left', bbox_to_anchor=(1, 0.5))
     plt.title(meta['title'])
     plt.show()
+
+def plotSubBars(dataset_full, meta_full, precise=False):
+
+    dataset, datasetC = dataset_full
+    meta, metaC = meta_full
+
+    plt.figure(figsize=(20,8)) 
+  
+    plt.subplot(2, 1, 1)
+    y_pos = np.arange(len(meta['xlabels']))
+    plt.bar(y_pos, dataset, align='center', alpha=0.8, color=meta['colors'][0])
+    plt.xticks(y_pos, meta['xlabels'])
+    plt.title(meta['title'])
+    if precise:
+        plt.ylim([min(dataset) - 0.00001, max(dataset) + 0.00001])
+
+    plt.subplot(2, 1, 2)
+    y_pos = np.arange(len(metaC['xlabels']))      
+    plt.bar(y_pos, datasetC, align='center', alpha=0.8, color=metaC['colors'][0])
+    plt.xticks(y_pos, metaC['xlabels'])      
+    plt.title(metaC['title'])
+    if precise:
+        plt.ylim([min(datasetC) - 0.00001, max(datasetC) + 0.00001])
+
+    plt.show()
+
+def plotGroupBars(dataset, labels, meta):
+
+    pos = [0, len(dataset)]
+    width = 0.8
+      
+    # Plotting the bars
+    fig, ax = plt.subplots(figsize=(12,6))
+
+    for i in range(0, len(dataset)):
+
+        plt.bar([p + width*i for p in pos], 
+                dataset[i], 
+                width,
+                alpha=0.8,
+                color=meta['colors'][i],
+                label=labels[i]) 
+
+    ax.set_xticks([p + (len(dataset)/2) * width for p in pos])
+    ax.set_xticklabels(meta['xlabels'])
+
+    plt.ylim([0, 1])
+    ax.set_title(meta['title'])
+    plt.legend(labels, loc='upper left')
+    plt.show()
