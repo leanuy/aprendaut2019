@@ -31,6 +31,9 @@ class Model():
         self.all_candidates = candidates
         self.all_parties = parties
         self.options = options
+
+        self.transformed = False
+        self.evaluation = None
         self.explained_variance_ratio = None
 
     ### METODOS PRINCIPALES
@@ -58,6 +61,9 @@ class Model():
 
     # Evaluar el modelo entrenado
     def evaluate(self, k = 0):
+    
+        if not self.transformed:
+            self.transform()
 
         if k > 0:
             # Evaluar cruzadamente el dataset completo
@@ -65,15 +71,17 @@ class Model():
             results_parties = cross_val_predict(self.model_parties, self.all_dataset, self.all_parties, cv=k)
 
             # Evaluar distintas métricas de la clasificación de 'test' segun candidatos
-            self.evaluation = {}
+            self.evaluation = {'k': k}
             self.evaluation['cv_accuracy_candidates'] = accuracy_score(self.all_candidates, results_candidates)
             self.evaluation['cv_confusion_matrix_candidates'] = confusion_matrix(self.all_candidates, results_candidates)
             self.evaluation['cv_report_candidates'] = classification_report(self.all_candidates, results_candidates)
+            self.evaluation['cv_report_candidates_dict'] = classification_report(self.all_candidates, results_candidates, output_dict=True)
 
             # Evaluar distintas métricas de la clasificación de 'test' segun partidos
             self.evaluation['cv_accuracy_parties'] = accuracy_score(self.all_parties, results_parties)
             self.evaluation['cv_confusion_matrix_parties'] = confusion_matrix(self.all_parties, results_parties)
             self.evaluation['cv_report_parties'] = classification_report(self.all_parties, results_parties)
+            self.evaluation['cv_report_parties_dict'] = classification_report(self.all_parties, results_parties, output_dict=True)
             
             self.evaluation['explained_variance_ratio'] = self.explained_variance_ratio
 
@@ -83,14 +91,16 @@ class Model():
             testset_parties_res = self.model_parties.predict(self.testset_parties)
             
             # Evaluar distintas métricas de la clasificación de 'test'
-            self.evaluation = {}
+            self.evaluation = {'k': k}
             self.evaluation['accuracy_candidates'] = accuracy_score(self.testset_candidates_results, testset_candidates_res)
             self.evaluation['confusion_matrix_candidates'] = confusion_matrix(self.testset_candidates_results, testset_candidates_res)
             self.evaluation['report_candidates'] = classification_report(self.testset_candidates_results, testset_candidates_res)
+            self.evaluation['report_candidates_dict'] = classification_report(self.testset_candidates_results, testset_candidates_res, output_dict=True)
 
             self.evaluation['accuracy_parties'] = accuracy_score(self.testset_parties_results, testset_parties_res)
             self.evaluation['confusion_matrix_parties'] = confusion_matrix(self.testset_parties_results, testset_parties_res)
             self.evaluation['report_parties'] = classification_report(self.testset_parties_results, testset_parties_res)
+            self.evaluation['report_parties_dict'] = classification_report(self.testset_parties_results, testset_parties_res, output_dict=True)
             
             self.evaluation['explained_variance_ratio'] = self.explained_variance_ratio
 
@@ -105,4 +115,5 @@ class Model():
             pca = PCA(n_components=self.options['pca_dimension'])
             self.all_dataset = pca.fit_transform(self.all_dataset)
             self.explained_variance_ratio = pca.explained_variance_ratio_
+        self.transformed = True
 

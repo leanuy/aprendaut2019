@@ -44,7 +44,6 @@ class Player():
 
     def getModel(self):
         return self.model
-
     def setModel(self, m):
         self.model = m
 
