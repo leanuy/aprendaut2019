@@ -87,11 +87,12 @@ if __name__ == '__main__':
                     'iters': gui.printTrainingIterations(),
                     'maxRounds': gui.printMaxRounds(),
                     'notDraw': gui.printSkipOnDraw(),
-                    'learningRate': gui.printLearningRate()
+                    'learningRate': 1
                 }
                 if modelType == ModelTypes.CONCEPT:
                     options['weights'] = gui.printInitialWeights()
                     options['normalize_weights'] = gui.printNormalizeWeights()
+                    options['learningRate'] = gui.printLearningRate()
                 
                 t = Training(GameTokens.PLAYER1, options)
 
@@ -125,7 +126,8 @@ if __name__ == '__main__':
 
                 gui.printTrainedPlayer(playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'])
-                plotter.printErrorPlot(errorsPlot, options['iters'])
+                if len(errorsPlot) != 0:
+                    plotter.printErrorPlot(errorsPlot, options['iters'])
 
                 filename = gui.printSavePlayer()
                 if filename.strip():
