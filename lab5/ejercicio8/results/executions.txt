@@ -1,0 +1,26 @@
+100 iters
+300 max jugadas
+variable
+contando empates
+
+50x50x50:
+BOARD vs self		[45, 42, 13]
+BOARD vs Random		[27, 68, 5]
+METRICS vs self		[18, 13, 69]
+METRICS vs Random	[31, 43, 26]
+
+100:
+BOARD vs Self		[42, 43, 15]
+BOARD vs Random		[15, 81, 4]
+
+10:
+METRICS vs Self		[24, 20, 56]
+METRICS vs Rand		[40, 24, 36]
+
+500 iters:
+
+50x50x50:
+green: BOARD vs self	[260, 221, 19]
+
+10:
+cyan: METRICS vs Rand	[212, 117, 171]

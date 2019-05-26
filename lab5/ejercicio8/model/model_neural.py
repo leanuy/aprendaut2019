@@ -21,18 +21,10 @@ class ModelNeural():
 
     def __init__(self, options, playerToken):
         self.options = options
-        self.model = MLPRegressor(hidden_layer_sizes=(30,30,30), max_iter=1000)
+        self.model = MLPRegressor(hidden_layer_sizes=(50,50,50), max_iter=1000, solver='sgd', warm_start=True)
         
-        # Setteo de los estados básicos del board
-        if options['modelType'] == ModelTypes.NEURAL_BOARD:
-            (qValues, features) = reader.readDatasetBoard(DATA_BOARDS)
-        elif options['modelType'] == ModelTypes.NEURAL_METRICS:
-            (qValues, features) = reader.readDatasetMetrics(DATA_METRICS)
-
-        # TODO: Investigar por qué player 2 anda bien solo con los Q-Values de player 1...
-        #if playerToken == GameTokens.PLAYER2:
-        #    qValues = (-1)*qValues
-        
+        # Setteo el estado inicial del board
+        (qValues, features) = self.getBeginningState(options['modelType'])
         self.model.fit(features, qValues.ravel())
 
     ### GETTERS y SETTERS
@@ -49,10 +41,29 @@ class ModelNeural():
         return self.model.predict(np.array([features]))
 
     # Actualiza los pesos del modelo siguiendo LMS
-    def update(self, features, trainingEvaluation, learningRate):
-        currentEvaluation = self.evaluate(features)
+    def update(self, examplesFeatures, examplesEvaluations):
         if self.options['modelType'] == ModelTypes.NEURAL_BOARD:
-            features = [-1 if x==2 else x for x in features]
-        self.model.fit(np.array([features]), np.array([learningRate * (trainingEvaluation - currentEvaluation)]).ravel())
-        return trainingEvaluation - currentEvaluation
-        
+            for features in examplesFeatures:
+                features[features == 2] = -1
+        self.model.fit(list(examplesFeatures), examplesEvaluations.ravel())
+    
+    def getBeginningState(self, modelType):
+        qValue = [0]
+        if modelType == ModelTypes.NEURAL_BOARD:
+            features = [[
+                0,0,0,0,0,1,1,1,1,
+                0,0,0,0,0,0,1,1,1,
+                0,0,0,0,0,0,0,1,1,
+                0,0,0,0,0,0,0,0,1,
+                0,0,0,0,0,0,0,0,0,
+                -1,0,0,0,0,0,0,0,0,
+                -1,-1,0,0,0,0,0,0,0,
+                -1,-1,-1,0,0,0,0,0,0,
+                -1,-1,-1,-1,0,0,0,0,0
+            ]]
+        elif modelType == ModelTypes.NEURAL_METRICS:
+            features = [[
+                0.00026068291113050653,0.49998982354831156,0.49998982354831156,0.0007820487333915196,
+                0.0007820487333915196,0.0041709265780881044,0.004692292400349117,0.49998982354831156,0.49998982354831156
+            ]]
+        return (np.array(qValue), np.array(features))
