@@ -16,7 +16,7 @@ class MenuOps(Enum):
 
 # Tipos de modelos
 class ModelTypes(Enum):
-    CONCEPT = 1
+    LINEAR = 1
     NEURAL_BOARD = 2
     NEURAL_METRICS = 3
 

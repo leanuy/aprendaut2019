@@ -124,7 +124,7 @@ class TrainingDuel():
     def getTrainingExamples(self, player, historial, lastEvaluation):
         # Se arma la lista de pares [tablero, evaluación de sucesor]
         trainingExamples = []
-        if player.model.options['modelType'] == ModelTypes.CONCEPT:
+        if player.model.options['modelType'] == ModelTypes.LINEAR:
             for board, nextBoard in zip(historial, historial[1:]):
                 features = board.getFeatures(player.playerNumber, player.model.options['modelType'])
                 nextFeatures = nextBoard.getFeatures(player.playerNumber, player.model.options['modelType'])
@@ -139,7 +139,7 @@ class TrainingDuel():
         return trainingExamples
     
     def updatePlayer(self, player, trainingExamples):
-        if player.model.options['modelType'] == ModelTypes.CONCEPT:
+        if player.model.options['modelType'] == ModelTypes.LINEAR:
             index = 0
             for t in trainingExamples:
                 player.model.update(t[0], t[1], self.learningRate)

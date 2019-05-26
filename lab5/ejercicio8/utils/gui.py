@@ -63,7 +63,7 @@ def printMenuOption():
 def printModelOptions():
     print ("")   
     print ("-> Decida el tipo de modelo: ")
-    print ("1. Aprendizaje conceptual (lab1)")
+    print ("1. Función lineal (lab1)")
     print ("2. Q-Training profundo: Board")
     print ("3. Q-Training profundo: Métricas")
     model = int( input() )
@@ -72,7 +72,7 @@ def printModelOptions():
         sys.exit()
     else:
         if model == 1:
-            model = ModelTypes.CONCEPT
+            model = ModelTypes.LINEAR
         elif model == 2:
             model = ModelTypes.NEURAL_BOARD
         elif model == 3:
@@ -80,8 +80,8 @@ def printModelOptions():
     return (model, getModelName(model))
 
 def getModelName(modelType):
-    if modelType == ModelTypes.CONCEPT:
-        return "Aprendizaje Conceptual"
+    if modelType == ModelTypes.LINEAR:
+        return "Función Lineal"
     elif modelType == ModelTypes.NEURAL_BOARD:
         return "Red Neuronal: Tablero"
     elif modelType == ModelTypes.NEURAL_METRICS:

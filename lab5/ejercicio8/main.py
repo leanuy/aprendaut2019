@@ -89,7 +89,7 @@ if __name__ == '__main__':
                     'notDraw': gui.printSkipOnDraw(),
                     'learningRate': 1
                 }
-                if modelType == ModelTypes.CONCEPT:
+                if modelType == ModelTypes.LINEAR:
                     options['weights'] = gui.printInitialWeights()
                     options['normalize_weights'] = gui.printNormalizeWeights()
                     options['learningRate'] = gui.printLearningRate()
@@ -117,7 +117,7 @@ if __name__ == '__main__':
                     'results': results,
                     'learningRate': options['learningRate']
                 }
-                if modelType == ModelTypes.CONCEPT:
+                if modelType == ModelTypes.LINEAR:
                     historial_weigths.append(player.getModel().getWeights())
                     playerData['initialWeights'] = options['weights']
                     playerData['finalWeights'] = player.getModel().getWeights()
