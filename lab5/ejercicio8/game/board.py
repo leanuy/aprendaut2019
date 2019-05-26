@@ -180,7 +180,7 @@ class Board():
 
         return True
 
-    def getFeatures(self, player, model = ModelTypes.CONCEPT):
+    def getFeatures(self, player, model = ModelTypes.LINEAR):
         if model == ModelTypes.NEURAL_BOARD:
             # Devuelve el tablero como array
             return self.getBoard()

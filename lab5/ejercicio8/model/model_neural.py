@@ -46,7 +46,7 @@ class ModelNeural():
             for features in examplesFeatures:
                 features[features == 2] = -1
         self.model.fit(list(examplesFeatures), examplesEvaluations.ravel())
-    
+
     def getBeginningState(self, modelType):
         qValue = [0]
         if modelType == ModelTypes.NEURAL_BOARD:

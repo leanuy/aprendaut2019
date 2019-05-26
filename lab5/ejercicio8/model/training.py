@@ -48,7 +48,7 @@ class Training():
         else:
             self.opponentToken = GameTokens.PLAYER1
 
-        if self.modelType == ModelTypes.CONCEPT:
+        if self.modelType == ModelTypes.LINEAR:
             # Crea al jugador a entrenar y su respectivo modelo
             self.player = Player(self.playerToken, self.playerType, ModelConcept(options))
         else:
@@ -58,7 +58,7 @@ class Training():
         if self.playerType == PlayerType.TRAINED_RANDOM:
             self.opponent = Player(self.opponentToken, PlayerType.RANDOM)
         elif self.playerType == PlayerType.TRAINED_SELF:
-            if self.modelType == ModelTypes.CONCEPT:
+            if self.modelType == ModelTypes.LINEAR:
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(options))
             else:
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelNeural(options, self.opponentToken))
@@ -115,7 +115,7 @@ class Training():
 
             # Se arma la lista de pares [tablero, evaluación de sucesor]
             trainingExamples = []
-            if self.modelType == ModelTypes.CONCEPT:
+            if self.modelType == ModelTypes.LINEAR:
                 for board, nextBoard in zip(historial, historial[1:]):
                     features = board.getFeatures(self.playerToken, self.modelType)
                     nextFeatures = nextBoard.getFeatures(self.playerToken, self.modelType)
@@ -136,7 +136,7 @@ class Training():
             (error_x_axis, error_y_axis) = errors[-1]
 
             # Se actualizan los pesos del modelo utilizando los datos de la última partida
-            if self.modelType == ModelTypes.CONCEPT:
+            if self.modelType == ModelTypes.LINEAR:
                 index = 0
                 for t in trainingExamples:
                     new_model.update(t[0], t[1], self.learningRate)
