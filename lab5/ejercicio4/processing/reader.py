@@ -28,8 +28,8 @@ def readDatasetCandidatosMasMil(filename, options = {'from_notebook': False}):
 
 def readDatasetCandidatosMenosMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
-    candidates = dataset.iloc[1:, 1]
-    answers = dataset.iloc[1:, 2:28]
+    candidates = dataset.iloc[:, 1]
+    answers = dataset.iloc[:, 2:28]
 
     answers['candidateID'] = candidates
     filtered = answers[answers.candidateID.isin(candidates.value_counts()[candidates.value_counts() < 1000].index.values)]
@@ -43,8 +43,8 @@ def readDatasetCandidatosMenosMil(filename, options = {'from_notebook': False}):
     
 def readDatasetPartiesMasMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
-    candidates = dataset.iloc[1:, 1]
-    answers = dataset.iloc[1:, 2:28]
+    candidates = dataset.iloc[:, 1]
+    answers = dataset.iloc[:, 2:28]
 
     general_parties = readParties(options)
     parties = parseCandidates(candidates, general_parties)
@@ -60,8 +60,8 @@ def readDatasetPartiesMasMil(filename, options = {'from_notebook': False}):
 
 def readDatasetPartiesMenosMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
-    candidates = dataset.iloc[1:, 1]
-    answers = dataset.iloc[1:, 2:28]
+    candidates = dataset.iloc[:, 1]
+    answers = dataset.iloc[:, 2:28]
 
     general_parties = readParties(options)
     parties = parseCandidates(candidates, general_parties)
