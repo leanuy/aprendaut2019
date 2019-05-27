@@ -338,8 +338,9 @@ def printClassifierTraining(index, options):
 
 # Imprime los datos de la evaluación de un clasificador durante la busqueda
 def printClassifierEvaluation(accuracy_candidates, accuracy_parties):
-    print(f'-> Accuracy (Candidatos): {accuracy_candidates}')
-    print(f'-> Accuracy (Partidos): {accuracy_parties}')
+    print("-----------------------------------------------------------------------------------")
+    print(f'-> Accuracy (Candidatos): {accuracy_candidates}', end="")
+    print(f' | Accuracy (Partidos): {accuracy_parties}')
 
 # Imprime los datos del mejor clasificador y su accuracy
 def printBestClassifiers(candidate_classificators, party_classificators):
@@ -357,6 +358,8 @@ def printBestClassifiers(candidate_classificators, party_classificators):
     printClassifierData(model_parties.options, 'partido')
     print(f'-> Accuracy: {accuracy_parties}')
     print()
+
+    return model_candidates, model_parties
 
 # Imprime los datos de un clasificador
 def printClassifierData(options, title):

@@ -10,7 +10,7 @@ from utils.gui import printClassifierTraining, printClassifierEvaluation
 ### METODOS PRINCIPALES
 ### -------------------
 
-def getBestModel(dataset, candidates, parties, k, check_pca = False):
+def getBestModel(datasetC, candidatesC, partiesC, datasetP, candidatesP, partiesP, k, check_pca = False):
 
     classifiers_candidates = []
     classifiers_parties = []
@@ -37,9 +37,9 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                             'regulation_strength': regulation_strength
                         }
 
-                        printClassifierTraining(len(classifiers_candidates) + 1, options)
+                        # printClassifierTraining(len(classifiers_candidates) + 1, options)
 
-                        m = Model(dataset.values, candidates.values, parties.values, options)
+                        m = Model(datasetC.values, candidatesC.values, partiesC.values, datasetP.values, candidatesP.values, partiesP.values, options)
                         if k == 0:
                             m.train()
                         evaluation = m.evaluate(k) 
@@ -67,7 +67,7 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
 
             printClassifierTraining(len(classifiers_candidates) + 1, options)
 
-            m = Model(dataset.values, candidates.values, parties.values, options)
+            m = Model(datasetC.values, candidatesC.values, partiesC.values, datasetP.values, candidatesP.values, partiesP.values, options)
             if k == 0:
                 m.train()
             evaluation = m.evaluate(k)

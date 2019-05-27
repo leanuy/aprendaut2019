@@ -11,10 +11,13 @@ COLORS = ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#00
 ### METODO PRINCIPAL
 ### ----------------
 
-def plotCorpus(dataset_full, datasetC_full, candidatesJSON, partiesJSON):
+def plotCorpus(dataset_full, datasetC_full, datasetPartiesMasMil, datasetPartiesMenosMil, candidatesJSON, partiesJSON):
 
     dataset, candidates, parties = dataset_full
     datasetC, candidatesC, partiesC = datasetC_full
+
+    datasetPMasMil, candidatesPMasMil, partiesPMasMil = datasetPartiesMasMil
+    datasetPMenosMil, candidatesPMenosMil, partiesPMenosMil = datasetPartiesMenosMil
 
     # Unir los candidatos a sus respectivos votantes
     dataset['candidateID'] = candidates
@@ -26,14 +29,15 @@ def plotCorpus(dataset_full, datasetC_full, candidatesJSON, partiesJSON):
 
     plotCandidates(dataset, datasetC, candidates_set, candidatesC_set, candidatesJSON)
 
-    dataset['partyID'] = parties
-    datasetC['partyID'] = partiesC
+    # Unir los partidos con sus votantes.
+    datasetPMasMil['partyID'] = partiesPMasMil
+    datasetPMenosMil['partyID'] = partiesPMenosMil
 
-    parties_set = sorted(parties.unique())
-    partiesC_set = sorted(partiesC.unique())
+    parties_set = sorted(partiesPMasMil.unique())
+    partiesC_set = sorted(partiesPMenosMil.unique())
     partiesC_set = [x for x in partiesC_set if x not in parties_set]
 
-    plotParties(dataset, datasetC, parties_set, partiesC_set, partiesJSON)
+    plotParties(datasetPMasMil, datasetPMenosMil, parties_set, partiesC_set, partiesJSON)
 
 ### METODOS AUXILIARES
 ### ------------------
