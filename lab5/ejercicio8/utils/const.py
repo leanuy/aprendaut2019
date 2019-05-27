@@ -39,7 +39,7 @@ class InputLayerTypes(Enum):
 class ActivationFunctions(Enum):
     RELU = 'relu'
     SIGMOID = 'logistic'
-    #TANH = 'tanh'
+    TANH = 'tanh'
 
 HiddenLayersOps = [(10), (100), (10, 10), (100, 100), (10, 10, 10), (100, 100, 100)]
 LearningRateOps = [('constant', 0.001), ('invscaling', 0.1)]

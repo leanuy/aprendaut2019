@@ -26,12 +26,19 @@ def getAllNeuralNetworks(playerType, savePlayer):
             for activFunction in ActivationFunctions:
                 for learningRate in LearningRateOps:
 
+                    if type(hiddenLayer) == int:
+                        hiddenLayerLength = 1
+                        hiddenLayerNeurons = hiddenLayer
+                    else:
+                        hiddenLayerLength = len(hiddenLayer)
+                        hiddenLayerNeurons = hiddenLayer[0]
+
                     options = {
                         'playerType': playerType,
                         'modelType': ModelTypes.NEURAL,
                         'inputLayer': inputLayer,
-                        'hiddenLayer': len(hiddenLayer),
-                        'hiddenNeuron': hiddenLayer[0],
+                        'hiddenLayer': hiddenLayerLength,
+                        'hiddenNeuron': hiddenLayerNeurons,
                         'hiddenLayerSizes': hiddenLayer,
                         'activationFunction': activFunction,
                         'learningRate': learningRate,
