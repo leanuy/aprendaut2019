@@ -83,12 +83,51 @@ def printPlayers(players):
     print ("Jugadores actuales:")
     print("-> 0 - Jugador: Random sin entrenar")
     index = 1
-    for p in players:
+    for player in players:
+        print()
         print("-> ", end="")
         print(str(index), end="")
         print(" - ", end="")
-        print("Jugador: ", end="")
-        print(p['name'])
+        print("Modelo: ", end="")
+        print(player['name'])
+
+        print("--> Metadatos:")
+        print("    Entrenado VS: ", end="")
+        print(player['type'])
+        print("    Tiempo de entrenamiento: ", end="")
+        print(player['time'], end=" ")
+        print("segundos")
+        print("    Cantidad de iteraciones: ", end="")
+        print(player['iterations'])
+        print("    Cantidad máxima de turnos por juego: ", end="")
+        print(player['maxRounds'])
+
+        print("--> Parámetros:")
+
+        if player['modelType'] == ModelTypes.NEURAL:
+            print("    Representación del tablero: ", end="")
+            print(player['inputLayer'])
+            print("    Cantidad de capas ocultas: ", end="")
+            print(player['hiddenLayer'])
+            print("    Cantidad de neuronas por capa oculta: ", end="")
+            print(player['hiddenNeuron'])
+            print("    Función de activación: ", end="")
+            print(player['activationFunction'])
+        else:
+            print("    Pesos iniciales: ", end="")
+            print(player['initialWeights'])
+            print("    Pesos finales: ", end="")
+            print(player['finalWeights'])
+        
+        print("    Ratio de aprendizaje: ", end="")
+        print(player['learningRate'])
+
+        print("--> Resultados:")
+        print("    Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
+        print(player['results'])
+        print("    Porcentaje de partidas ganadas: ", end="")
+        print(player['results'][0] / player['iterations'])
+        
         index = index + 1
     print ("")
 
@@ -113,13 +152,14 @@ def pickPlayer(players, message = "-> Elija un jugador por el índice: "):
 ### -------------------------
 
 # Imprime las opciones de tipo de jugador y lee la opcion elegida
-def printPlayerType():
+def printPlayerType(showdown = True):
     print ("")
     print ("-> Elija un tipo de jugador para entrenar: ")
     print ("-> DEFAULT: 2")
     print ("1. VS Random")
     print ("2. VS Si Mismo")
-    print ("3. VS otra IA (Training con retroalimentación mutua)")
+    if showdown:
+        print ("3. VS otra IA (Training con retroalimentación mutua)")
 
     try:
         playerType = int( input() )
@@ -136,7 +176,7 @@ def printPlayerType():
         return playerType
 
     except:
-        return (PlayerType.TRAINED_SELF, "Si Mismo")
+        return PlayerType.TRAINED_SELF
 
 # Lee el tipo de modelo a usar
 def printModelOptions():
@@ -329,35 +369,50 @@ def printSpectateOptions():
         return False
 
 # Imprime los datos de entrenamiento de un jugador
-def printTrainedPlayer(player):
+def printTrainedPlayer(player, index = 0):
 
-    print("-> Jugador Entrenado VS ", end="")
+    print("-> ", end="")
+    if index != 0:
+        print(str(index), end="")
+        print(" - ", end="")
+    print("Modelo: ", end="")
     print(player['name'])
 
-    print("--> Tiempo de entrenamiento: ", end="")
+    print("--> Metadatos:")
+    print("    Entrenado VS: ", end="")
+    print(player['type'])
+    print("    Tiempo de entrenamiento: ", end="")
     print(player['time'], end=" ")
     print("segundos")
-
-    print("--> Cantidad de iteraciones: ", end="")
+    print("    Cantidad de iteraciones: ", end="")
     print(player['iterations'])
-
-    print("--> Cantidad máxima de turnos por juego: ", end="")
+    print("    Cantidad máxima de turnos por juego: ", end="")
     print(player['maxRounds'])
 
-    print("--> Ratio de aprendizaje: ", end="")
+    print("--> Parámetros:")
+
+    if player['modelType'] == ModelTypes.NEURAL:
+        print("    Representación del tablero: ", end="")
+        print(player['inputLayer'])
+        print("    Cantidad de capas ocultas: ", end="")
+        print(player['hiddenLayer'])
+        print("    Cantidad de neuronas por capa oculta: ", end="")
+        print(player['hiddenNeuron'])
+        print("    Función de activación: ", end="")
+        print(player['activationFunction'])
+    else:
+        print("    Pesos iniciales: ", end="")
+        print(player['initialWeights'])
+        print("    Pesos finales: ", end="")
+        print(player['finalWeights'])
+    
+    print("    Ratio de aprendizaje: ", end="")
     print(player['learningRate'])
 
-    if 'initialWeights' in player:
-        print("--> Pesos iniciales: ", end="")
-        print(player['initialWeights'])
-
-        print("--> Pesos finales: ", end="")
-        print(player['finalWeights'])
-
-    print("--> Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
+    print("--> Resultados:")
+    print("    Cantidad de partidas ganadas, perdidas, empatadas: ", end="")
     print(player['results'])
-
-    print("--> Porcentaje de partidas ganadas: ", end="")
+    print("    Porcentaje de partidas ganadas: ", end="")
     print(player['results'][0] / player['iterations'])
 
     print()

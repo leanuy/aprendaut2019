@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 
-def printResultsPlot(axis, iterations):
+def printResultsPlot(axis, iterations, filename = None):
     (x_axis, y_axis) = axis
     plt.plot(x_axis, y_axis, 'ro')
     plt.axis([0, iterations - 1, -2, 2])
-    plt.show()
+    if filename == None:
+        plt.show()
+    else:
+        plt.savefig('results/' + filename + '.png')
 
 def generateErrorSublist(iterations):
     if iterations <= 10:

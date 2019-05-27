@@ -10,20 +10,18 @@ import copy
 from model.training import Training
 from model.training_duel import TrainingDuel
 from model.model_concept import ModelConcept
-
 from game.game import Game
 from game.player import Player
-
-import utils.gui as gui
+import evaluation.evaluator as evaluator
 import processing.plotter as plotter
+import utils.gui as gui
 from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType
 
 
 ### MÉTOTODOS AUXILIARES
 ### --------------------
 
-def savePlayer(player):
-    filename = gui.printSavePlayer()
+def savePlayer(filename, player):
     if filename.strip():
         root = 'players/'
         filename = root + filename
@@ -31,8 +29,7 @@ def savePlayer(player):
         pickle.dump(player, pickle_out)
         pickle_out.close()
 
-def loadPlayer():
-    filename = gui.printLoadPlayer()
+def loadPlayer(filename):
     if filename.strip():
         root = 'players/'
         filename = root + filename
@@ -43,7 +40,6 @@ def loadPlayer():
         except:
             print("Error! Archivo erroneo, por favor intente nuevamente.")
             input()
-
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -63,7 +59,7 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
-            playerType, _ = gui.printPlayerType()
+            playerType = gui.printPlayerType()
 
             if playerType == PlayerType.TRAINED_SHOWDOWN:
                 player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
@@ -181,21 +177,37 @@ if __name__ == '__main__':
                 players.append(playerData)
                 gui.printTrainedPlayer(playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'])
+                
                 if modelType == ModelTypes.LINEAR:
                     plotter.printErrorPlot(errorsPlot, options['iters'])
 
-                savePlayer(playerData)
+                filename = gui.printSavePlayer()
+                savePlayer(filename, playerData)
 
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.LOAD:
-            loadPlayer()
+            filename = gui.printLoadPlayer()
+            loadPlayer(filename)
 
         elif op == MenuOps.SAVE:
             playerIndex = gui.pickPlayer(players)
             player = players[playerIndex-1]
-            savePlayer(player)
+            filename = gui.printSavePlayer()
+            savePlayer(filename, player)
             
+        elif op == MenuOps.COMPARE:
+
+            playerType = gui.printPlayerType(False)
+
+            players = evaluator.getAllNeuralNetworks(playerType, savePlayer)
+            sortedPlayers = evaluator.getBestNeuralNetworks(players)
+
+            print('El mejor modelo es: ')
+            gui.printTrainedPlayer(sortedPlayers[0], players.index(sortedPlayers[0]) + 1)
+
+            input("-> Oprima enter para volver al menú")
+
         elif op == MenuOps.PLAY_VS_IA:
 
             player = gui.pickPlayer(players)

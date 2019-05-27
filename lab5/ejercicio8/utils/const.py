@@ -3,8 +3,8 @@
 
 from enum import Enum
 
-### CONSTANTES
-### ------------------
+### CONSTANTES - Opciones
+### ---------------------
 
 # Opciones del menú principal
 class MenuOps(Enum):
@@ -16,29 +16,35 @@ class MenuOps(Enum):
     PLAY_VS_IA = 6
     WATCH_IA_VS_IA = 7
     TOURNEY = 8
-    
+
+# Tipos de jugadores para la opción JUGAR
+class PlayerType(Enum):
+    RANDOM = 0
+    TRAINED_RANDOM = 'random'
+    TRAINED_SELF = 'self'
+    TRAINED_SHOWDOWN = 3
+
 # Tipos de modelos
 class ModelTypes(Enum):
     LINEAR = 1
     NEURAL = 2
 
-# Tipos de jugadores para la opción JUGAR
-class PlayerType(Enum):
-    RANDOM = 0
-    TRAINED_RANDOM = 1
-    TRAINED_SELF = 2
-    TRAINED_SHOWDOWN = 3
-
 # Features de la capa de entrada en una red
 class InputLayerTypes(Enum):
-    METRICS = 1
-    BOARD = 2
+    METRICS = 'metrics'
+    BOARD = 'board'
 
 # Tipos de funciones de activacion
 class ActivationFunctions(Enum):
     RELU = 'relu'
     SIGMOID = 'logistic'
-    TANH = 'tanh'
+    #TANH = 'tanh'
+
+HiddenLayersOps = [(10, 10)] #, (100), (10, 10), (100, 100), (10, 10, 10), (100, 100, 100)]
+LearningRateOps = [('constant', 0.001)] #, ('invscaling', 0.1)]
+
+### CONSTANTES - Juego
+### ---------------------
 
 # Tipos de juego para la clase Game
 class GameMode(Enum):

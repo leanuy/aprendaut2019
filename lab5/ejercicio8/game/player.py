@@ -105,7 +105,7 @@ class Player():
                     continue
 
                 board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
-                if self.model == ModelTypes.NEURAL:
+                if self.model.options['modelType'] == ModelTypes.NEURAL:
                     features = board.getFeatures(self.playerNumber, self.model.options['inputLayer'])
                 else:
                     features = board.getFeatures(self.playerNumber)
