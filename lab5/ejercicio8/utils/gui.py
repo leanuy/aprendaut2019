@@ -185,12 +185,12 @@ def printTrainingIterations():
 def printMaxRounds():
     print ("")
     print ("-> Ingrese la cantidad de turnos antes de declarar empate: ")
-    print ("-> DEFAULT: 100")
+    print ("-> DEFAULT: 300")
     try:
         rounds = int( input() )
         return rounds
     except:
-        return 100
+        return 300
 
 # Imprime las opciones de ratio de aprendizaje y lee la opcion elegida
 def printLearningRate():

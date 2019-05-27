@@ -21,7 +21,7 @@ class ModelNeural():
 
     def __init__(self, options, playerToken):
         self.options = options
-        self.model = MLPRegressor(hidden_layer_sizes=(50,50,50), max_iter=1000, solver='sgd', warm_start=True)
+        self.model = MLPRegressor(hidden_layer_sizes=(100), max_iter=1000, solver='sgd', warm_start=True)
         
         # Setteo el estado inicial del board
         (qValues, features) = self.getBeginningState(options['modelType'])

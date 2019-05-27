@@ -18,6 +18,43 @@ import utils.gui as gui
 import processing.plotter as plotter
 from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType
 
+
+### MÉTOTODOS AUXILIARES
+### --------------------
+
+def savePlayer(player):
+    filename = gui.printSavePlayer()
+    if filename.strip():
+        root = 'players/'
+        filename = root + filename
+        pickle_out = open(filename,"wb")
+        pickle.dump(player, pickle_out)
+        pickle_out.close()
+
+def loadPlayer():
+    filename = gui.printLoadPlayer()
+    if filename.strip():
+        root = 'players/'
+        filename = root + filename
+        try:
+            pickle_in = open(filename,"rb")
+            loaded_player = pickle.load(pickle_in)
+
+            # Ajuste del nombre
+            modelName = gui.getModelName(loaded_player['modelType'])
+            index = 0
+            for player in players:
+                if (player['modelType'] is not None) and (player['modelType'] == loaded_player['modelType']):
+                    index += 1
+            playerName = f'{modelName} - {index}'
+            loaded_player['name'] = playerName
+
+            players.append(loaded_player)
+        except:
+            print("Error! Archivo erroneo, por favor intente nuevamente.")
+            input()
+
+
 ### METODO PRINCIPAL
 ### ----------------
 
@@ -126,16 +163,10 @@ if __name__ == '__main__':
 
                 gui.printTrainedPlayer(playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'])
-                if len(errorsPlot) != 0:
+                if modelType == ModelTypes.LINEAR:
                     plotter.printErrorPlot(errorsPlot, options['iters'])
 
-                filename = gui.printSavePlayer()
-                if filename.strip():
-                    root = 'players/'
-                    filename = root + filename
-                    pickle_out = open(filename,"wb")
-                    pickle.dump(playerData, pickle_out)
-                    pickle_out.close()
+                savePlayer(playerData)
 
             input("-> Oprima enter para volver al menú")
 
@@ -195,35 +226,10 @@ if __name__ == '__main__':
             input()
 
         elif op == MenuOps.LOAD:
-            filename = gui.printLoadPlayer()
-            if filename.strip():
-                root = 'players/'
-                filename = root + filename
-                try:
-                    pickle_in = open(filename,"rb")
-                    loaded_player = pickle.load(pickle_in)
-
-                    # Ajuste del nombre
-                    modelName = gui.getModelName(loaded_player['modelType'])
-                    index = 0
-                    for player in players:
-                        if (player['modelType'] is not None) and (player['modelType'] == loaded_player['modelType']):
-                            index += 1
-                    playerName = f'{modelName} - {index}'
-                    loaded_player['name'] = playerName
-
-                    players.append(loaded_player)
-                except:
-                    print("Error! Archivo erroneo, por favor intente nuevamente.")
-                    input()
+            loadPlayer()
 
         elif op == MenuOps.SAVE:
             playerIndex = gui.pickPlayer(players)
             player = players[playerIndex-1]
-            filename = gui.printSavePlayer()
-            if filename.strip():
-                root = 'players/'
-                filename = root + filename
-                pickle_out = open(filename,"wb")
-                pickle.dump(player, pickle_out)
-                pickle_out.close()
+            savePlayer(player)
+            
