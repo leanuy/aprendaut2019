@@ -35,8 +35,8 @@ def getAllNeuralNetworks(playerType, savePlayer):
                         'hiddenLayerSizes': hiddenLayer,
                         'activationFunction': activFunction,
                         'learningRate': learningRate,
-                        'iters': 2,
-                        'maxRounds': 50,
+                        'iters': 100,
+                        'maxRounds': 300,
                         'notDraw': True,
                     }
 
