@@ -12,10 +12,11 @@ class MenuOps(Enum):
     LOAD = 2
     SAVE = 3
     EVALUATE = 4
-    COMPARE = 5
-    PLAY_VS_IA = 6
-    WATCH_IA_VS_IA = 7
-    TOURNEY = 8
+    SEARCH = 5
+    COMPARE = 6
+    PLAY_VS_IA = 7
+    WATCH_IA_VS_IA = 8
+    TOURNEY = 9
 
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):

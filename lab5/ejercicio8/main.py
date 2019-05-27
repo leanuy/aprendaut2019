@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # NOTA: variable global con historial de models. Ver si rinde
     historial_weigths = []
 
-    while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
+    while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.SEARCH or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
 
         gui.printMenu(players)
         op = gui.printMenuOption()
@@ -196,7 +196,7 @@ if __name__ == '__main__':
             filename = gui.printSavePlayer()
             savePlayer(filename, player)
             
-        elif op == MenuOps.COMPARE:
+        elif op == MenuOps.SEARCH:
 
             playerType = gui.printPlayerType(False)
 

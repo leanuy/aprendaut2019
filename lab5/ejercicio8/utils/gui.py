@@ -39,13 +39,14 @@ def printMenu(players):
 
     print ("Evaluación:")
     print ("4. Evaluar modelo")
-    print ("5. Comparar modelos")
+    print ("5. Buscar mejor modelo")
+    print ("6. Comparar modelos")
     print ()
 
     print ("Simulación:")
-    print ("6. Simular partida contra modelo")
-    print ("7. Simular partida entre modelos")
-    print ("8. Simular torneo")
+    print ("7. Simular partida contra modelo")
+    print ("8. Simular partida entre modelos")
+    print ("9. Simular torneo")
     print ()
 
     print ("0. Salir")
@@ -56,7 +57,7 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 8:
+    if op < 1 or op > 9:
         sys.exit()
     else:
         if op == 1:
@@ -68,12 +69,14 @@ def printMenuOption():
         elif op == 4:
             op = MenuOps.EVALUATE
         elif op == 5:
-            op = MenuOps.COMPARE
+            op = MenuOps.SEARCH
         elif op == 6:
-            op = MenuOps.PLAY_VS_IA
+            op = MenuOps.COMPARE
         elif op == 7:
-            op = MenuOps.WATCH_IA_VS_IA
+            op = MenuOps.PLAY_VS_IA
         elif op == 8:
+            op = MenuOps.WATCH_IA_VS_IA
+        elif op == 9:
             op = MenuOps.TOURNEY
 
     return op
@@ -127,7 +130,7 @@ def printPlayers(players):
         print(player['results'])
         print("    Porcentaje de partidas ganadas: ", end="")
         print(player['results'][0] / player['iterations'])
-        
+
         index = index + 1
     print ("")
 
