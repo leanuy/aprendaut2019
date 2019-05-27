@@ -6,7 +6,7 @@ import random
 from model.model_concept import ModelConcept
 from random import randint
 
-from utils.const import PlayerType
+from utils.const import PlayerType, ModelTypes
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -105,7 +105,10 @@ class Player():
                     continue
 
                 board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
-                features = board.getFeatures(self.playerNumber, self.model.options['modelType'])
+                if self.model == ModelTypes.NEURAL:
+                    features = board.getFeatures(self.playerNumber, self.model.options['inputLayer'])
+                else:
+                    features = board.getFeatures(self.playerNumber)
                 evaluation = self.model.evaluate(features)
 
                 # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida

@@ -9,16 +9,18 @@ from enum import Enum
 # Opciones del menú principal
 class MenuOps(Enum):
     TRAIN = 1
-    PLAY_VS_IA = 2
-    WATCH_IA_VS_IA = 3
-    LOAD = 4
-    SAVE = 5
-
+    LOAD = 2
+    SAVE = 3
+    EVALUATE = 4
+    COMPARE = 5
+    PLAY_VS_IA = 6
+    WATCH_IA_VS_IA = 7
+    TOURNEY = 8
+    
 # Tipos de modelos
 class ModelTypes(Enum):
     LINEAR = 1
-    NEURAL_BOARD = 2
-    NEURAL_METRICS = 3
+    NEURAL = 2
 
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
@@ -26,6 +28,17 @@ class PlayerType(Enum):
     TRAINED_RANDOM = 1
     TRAINED_SELF = 2
     TRAINED_SHOWDOWN = 3
+
+# Features de la capa de entrada en una red
+class InputLayerTypes(Enum):
+    METRICS = 1
+    BOARD = 2
+
+# Tipos de funciones de activacion
+class ActivationFunctions(Enum):
+    RELU = 'relu'
+    SIGMOID = 'logistic'
+    TANH = 'tanh'
 
 # Tipos de juego para la clase Game
 class GameMode(Enum):

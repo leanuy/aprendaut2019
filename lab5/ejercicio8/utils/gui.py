@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -30,11 +30,24 @@ def printMenu(players):
     print ("#####################################################")
     print ("")
     printPlayers(players)
-    print ("1. Entrenar")
-    print ("2. Jugar vs. IA")
-    print ("3. Espectar IA vs. IA")
-    print ("4. Cargar IA")
-    print ("5. Guardar IA")
+    
+    print ("General:")
+    print ("1. Entrenar modelo")
+    print ("2. Cargar modelo")
+    print ("3. Guardar modelo")
+    print ()
+
+    print ("Evaluación:")
+    print ("4. Evaluar modelo")
+    print ("5. Comparar modelos")
+    print ()
+
+    print ("Simulación:")
+    print ("6. Simular partida contra modelo")
+    print ("7. Simular partida entre modelos")
+    print ("8. Simular torneo")
+    print ()
+
     print ("0. Salir")
 
 # Lee la opcion a elegir del menu principal
@@ -43,60 +56,27 @@ def printMenuOption():
     print ("-> Elija una opción: ")
     op = int( input() )
 
-    if op < 1 or op > 5:
+    if op < 1 or op > 8:
         sys.exit()
     else:
         if op == 1:
             op = MenuOps.TRAIN
         elif op == 2:
-            op = MenuOps.PLAY_VS_IA
-        elif op == 3:
-            op = MenuOps.WATCH_IA_VS_IA
-        elif op == 4:
             op = MenuOps.LOAD
-        elif op == 5:
+        elif op == 3:
             op = MenuOps.SAVE
+        elif op == 4:
+            op = MenuOps.EVALUATE
+        elif op == 5:
+            op = MenuOps.COMPARE
+        elif op == 6:
+            op = MenuOps.PLAY_VS_IA
+        elif op == 7:
+            op = MenuOps.WATCH_IA_VS_IA
+        elif op == 8:
+            op = MenuOps.TOURNEY
 
     return op
-
-# Lee la opcion a elegir del menu principal
-def printModelOptions():
-    print ("")   
-    print ("-> Decida el tipo de modelo: ")
-    print ("1. Función lineal (lab1)")
-    print ("2. Q-Training profundo: Board")
-    print ("3. Q-Training profundo: Métricas")
-    model = int( input() )
-
-    if model < 1 or model > 3:
-        sys.exit()
-    else:
-        if model == 1:
-            model = ModelTypes.LINEAR
-        elif model == 2:
-            model = ModelTypes.NEURAL_BOARD
-        elif model == 3:
-            model = ModelTypes.NEURAL_METRICS
-    return (model, getModelName(model))
-
-def getModelName(modelType):
-    if modelType == ModelTypes.LINEAR:
-        return "Función Lineal"
-    elif modelType == ModelTypes.NEURAL_BOARD:
-        return "Red Neuronal: Tablero"
-    elif modelType == ModelTypes.NEURAL_METRICS:
-        return "Red Neuronal: Métricas"
-    return ""
-
-def printSavePlayer():
-    print("")
-    print("Ingrese el nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
-    return input()
-
-def printLoadPlayer():
-    print("")
-    print("Ingrese el nombre del archivo que contiene al jugador")
-    return input()
 
 # Imprime la lista de jugadores entrenados
 def printPlayers(players):
@@ -112,21 +92,25 @@ def printPlayers(players):
         index = index + 1
     print ("")
 
-# Lee la opcion a elegir del menu del juego
-def printGameMenuOption():
-    print("-> Ingrese su jugada o el numero de la opción deseada: ")
-    print("---> Para mover la ficha (x,y) a la posicion (w,z) ingrese x,y w,z")
-    print("---> Para ver las features de la ficha (x,y) ingrese x,y")
-    print("---> Para pasar el turno ingrese PASS")
-    print("---> 1 - Ver tablero normal")
-    print("---> 2 - Ver tablero grilla")
-    print("---> 3 - Ver tablero matriz")
-    print("---> 4 - Ver tablero y features")
-    print("---> 5 - Ver tablero y mis features")
-    print("---> 0 - Abandonar")
-    keyboard = input()
-    keyboardToken = re.search(r"^[-+]?\d+,[-+]?\d+$", keyboard)
-    return (keyboard, keyboardToken)
+# Elegir un jugador de la lista de jugadores
+def pickPlayer(players, message = "-> Elija un jugador por el índice: "):
+    printClear()
+    printPlayers(players)
+
+    try:
+        player = int(input(message))
+        if player >= 0 and player < len(players) + 1:
+            print("")
+            return player
+        else:
+            # El índice ingresado no corresponde a ningún jugador!
+            return pickPlayer(players, message)
+    except:
+        # El índice ingresado no corresponde a ningún jugador!
+        return pickPlayer(players, message)
+    
+### METODOS AUXILIARES - ENTRENAMIENTO
+### -------------------------
 
 # Imprime las opciones de tipo de jugador y lee la opcion elegida
 def printPlayerType():
@@ -154,21 +138,108 @@ def printPlayerType():
     except:
         return (PlayerType.TRAINED_SELF, "Si Mismo")
 
-def pickPlayer(players, message = "-> Elija un jugador por el índice: "):
-    printClear()
-    printPlayers(players)
+# Lee el tipo de modelo a usar
+def printModelOptions():
+    print ("")   
+    print ("-> Decida el tipo de modelo: ")
+    print ("-> DEFAULT: 2")
+    print ("1. Función lineal (lab 1)")
+    print ("2. Red neuronal (lab 5)")
 
     try:
-        player = int(input(message))
-        if player >= 0 and player < len(players) + 1:
-            print("")
-            return player
+        model = int( input() )
+        if model < 1 or model > 2:
+            return (ModelTypes.NEURAL, getModelName(ModelTypes.NEURAL))
         else:
-            # El índice ingresado no corresponde a ningún jugador!
-            return pickPlayer(players, message)
+            if model == 1:
+                model = ModelTypes.LINEAR
+            elif model == 2:
+                model = ModelTypes.NEURAL
+            return (model, getModelName(model))
     except:
-        # El índice ingresado no corresponde a ningún jugador!
-        return pickPlayer(players, message)
+        return (ModelTypes.NEURAL, getModelName(ModelTypes.NEURAL))
+
+# Lee la representación del tablero a usar para la red neuronal
+def printInputLayer():
+    print ("")   
+    print ("-> Decida cantidad de neuronas en capa de entrada (representación del tablero): ")
+    print ("-> DEFAULT: 1")
+    print ("1. Métricas (8)")
+    print ("2. Celdas (81)")
+
+    try:
+        rep = int( input() )
+        if rep < 1 or rep > 2:
+            return InputLayerTypes.METRICS
+        else:
+            if rep == 1:
+                rep = InputLayerTypes.METRICS
+            elif rep == 2:
+                rep = InputLayerTypes.BOARD
+            return rep
+    except:
+        return InputLayerTypes.METRICS
+
+#  Lee la cantidad de capas ocultas para la red neuronal
+def printHiddenLayers():
+    print ("")
+    print ("-> Decida cantidad de capas ocultas: ")
+    print ("-> DEFAULT: 1")
+    try:
+        layers = int( input() )
+        return layers
+    except:
+        return 1
+
+#  Lee la cantidad de neuronas en cada capa oculta para la red neuronal
+def printHiddenNeurons():
+    print ("")
+    print ("-> Decida cantidad de neuronas por capa oculta: ")
+    print ("-> DEFAULT: 10")
+    try:
+        neurons = int( input() )
+        return neurons
+    except:
+        return 10
+
+# Lee que tipo de función de activación utilizar
+def printActivationFunction():
+    print ("")   
+    print ("-> Decida el tipo de función de activación a utilizar: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Rectificador (ReLU)")
+    print ("2. Logística (Sigmoide)")
+    print ("3. Tangente hiperbólica (Tanh)")
+
+    try:
+        func = int( input() )
+        if func < 1 or func > 3:
+            return ActivationFunctions.RELU
+        else:
+            if func == 1:
+                func = ActivationFunctions.RELU
+            elif func == 2:
+                func = ActivationFunctions.SIGMOID
+            elif func == 3:
+                func = ActivationFunctions.TANH
+            return func
+    except:
+        return ActivationFunctions.RELU
+
+# Imprime las opciones de ratio de aprendizaje y lee la opcion elegida
+def printLearningRateNeural():
+    print ("")
+    print ("-> Ingrese el tipo de ratio de aprendizaje y su valor inicial: ")
+    print ("-> Posibles tipos: 'constant' o 'invscaling'")
+    print ("-> Posibles valores: [0..1]")
+    print ("-> DEFAULT: 'constant', 0.001")
+
+    try:
+        learningRate = input()
+        learningRateType, learningRateValue = learningRate.split(',')
+        return (learningRateType, float(learningRateValue))
+    except:
+        return ('constant', 0.001)
 
 # Imprime las opciones de cantidad de iteraciones y lee la opcion elegida
 def printTrainingIterations():
@@ -290,6 +361,45 @@ def printTrainedPlayer(player):
     print(player['results'][0] / player['iterations'])
 
     print()
+
+def getModelName(modelType):
+    if modelType == ModelTypes.LINEAR:
+        return "Función Lineal"
+    elif modelType == ModelTypes.NEURAL:
+        return "Red Neuronal"
+    return ""
+
+### METODOS AUXILIARES - MANEJO
+### ---------------------------
+
+def printSavePlayer():
+    print("")
+    print("-> Ingrese el nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
+    return input()
+
+def printLoadPlayer():
+    print("")
+    print("-> Ingrese el nombre del archivo que contiene al jugador")
+    return input()
+
+### METODOS AUXILIARES - PARTIDA
+### ---------------------------
+
+# Lee la opcion a elegir del menu del juego
+def printGameMenuOption():
+    print("-> Ingrese su jugada o el numero de la opción deseada: ")
+    print("---> Para mover la ficha (x,y) a la posicion (w,z) ingrese x,y w,z")
+    print("---> Para ver las features de la ficha (x,y) ingrese x,y")
+    print("---> Para pasar el turno ingrese PASS")
+    print("---> 1 - Ver tablero normal")
+    print("---> 2 - Ver tablero grilla")
+    print("---> 3 - Ver tablero matriz")
+    print("---> 4 - Ver tablero y features")
+    print("---> 5 - Ver tablero y mis features")
+    print("---> 0 - Abandonar")
+    keyboard = input()
+    keyboardToken = re.search(r"^[-+]?\d+,[-+]?\d+$", keyboard)
+    return (keyboard, keyboardToken)
 
 # Imprime los features ingresados
 def printFeatures(features):

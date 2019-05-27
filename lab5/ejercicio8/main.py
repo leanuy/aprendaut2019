@@ -39,16 +39,6 @@ def loadPlayer():
         try:
             pickle_in = open(filename,"rb")
             loaded_player = pickle.load(pickle_in)
-
-            # Ajuste del nombre
-            modelName = gui.getModelName(loaded_player['modelType'])
-            index = 0
-            for player in players:
-                if (player['modelType'] is not None) and (player['modelType'] == loaded_player['modelType']):
-                    index += 1
-            playerName = f'{modelName} - {index}'
-            loaded_player['name'] = playerName
-
             players.append(loaded_player)
         except:
             print("Error! Archivo erroneo, por favor intente nuevamente.")
@@ -66,13 +56,14 @@ if __name__ == '__main__':
     # NOTA: variable global con historial de models. Ver si rinde
     historial_weigths = []
 
-    while op == MenuOps.TRAIN or op == MenuOps.PLAY_VS_IA or op == MenuOps.LOAD or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.SAVE:
+    while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
 
         gui.printMenu(players)
         op = gui.printMenuOption()
 
         if op == MenuOps.TRAIN:
-            playerType = gui.printPlayerType()
+
+            playerType, _ = gui.printPlayerType()
 
             if playerType == PlayerType.TRAINED_SHOWDOWN:
                 player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
@@ -112,24 +103,32 @@ if __name__ == '__main__':
             else:
                 (modelType, modelName) = gui.printModelOptions()
 
-                index = 0
-                for player in players:
-                    if player['modelType'] is not None and player['modelType'] == modelType:
-                        index += 1
-                playerName = f'{modelName} - {index}'
+                if modelType == ModelTypes.NEURAL:
+                    options = {
+                        'playerType': playerType,
+                        'modelType': modelType,
+                        'inputLayer': gui.printInputLayer(),
+                        'hiddenLayer': gui.printHiddenLayers(),
+                        'hiddenNeuron': gui.printHiddenNeurons(),
+                        'activationFunction': gui.printActivationFunction(),
+                        'learningRate': gui.printLearningRateNeural(),
+                        'iters': gui.printTrainingIterations(),
+                        'maxRounds': gui.printMaxRounds(),
+                        'notDraw': gui.printSkipOnDraw(),
+                    }
+                    options['hiddenLayerSizes'] = tuple([options['hiddenNeuron'] for i in range(options['hiddenLayer'])])
 
-                options = {
-                    'modelType': modelType,
-                    'playerType': playerType,
-                    'iters': gui.printTrainingIterations(),
-                    'maxRounds': gui.printMaxRounds(),
-                    'notDraw': gui.printSkipOnDraw(),
-                    'learningRate': 1
-                }
-                if modelType == ModelTypes.LINEAR:
-                    options['weights'] = gui.printInitialWeights()
-                    options['normalize_weights'] = gui.printNormalizeWeights()
-                    options['learningRate'] = gui.printLearningRate()
+                else:
+                    options = {
+                        'playerType': playerType,
+                        'modelType': modelType,
+                        'weights': gui.printInitialWeights(),
+                        'normalize_weights': gui.printNormalizeWeights(),
+                        'learningRate': gui.printLearningRate(),
+                        'iters': gui.printTrainingIterations(),
+                        'maxRounds': gui.printMaxRounds(),
+                        'notDraw': gui.printSkipOnDraw(),
+                    }
                 
                 t = Training(GameTokens.PLAYER1, options)
 
@@ -143,24 +142,43 @@ if __name__ == '__main__':
                 print("-> FIN DEL ENTRENAMIENTO")
                 print()
 
-                playerData = {
-                    'player': player,
-                    'type': playerType,
-                    'modelType': modelType,
-                    'name': playerName,
-                    'time': toc-tic,
-                    'iterations': options['iters'],
-                    'maxRounds': options['maxRounds'],
-                    'results': results,
-                    'learningRate': options['learningRate']
-                }
-                if modelType == ModelTypes.LINEAR:
+                if modelType == ModelTypes.NEURAL:
+                    playerData = {
+                        'player': player,
+                        'type': playerType,
+                        'name': modelName,
+                        'modelType': modelType,
+                        'time': toc-tic,
+                        'inputLayer': options['inputLayer'],
+                        'hiddenLayer': options['hiddenLayer'],
+                        'hiddenNeuron': options['hiddenNeuron'],
+                        'activationFunction': options['activationFunction'],
+                        'learningRate': options['learningRate'],
+                        'iterations': options['iters'],
+                        'maxRounds': options['maxRounds'],
+                        'notDraw': options['notDraw'],
+                        'results': results
+                    }
+
+                else:
+                    playerData = {
+                        'player': player,
+                        'type': playerType,
+                        'name': modelName,
+                        'modelType': modelType,
+                        'time': toc-tic,
+                        'initialWeights': options['weights'],
+                        'finalWeights': player.getModel().getWeights(),
+                        'normalize_weights': options['normalize_weights'],
+                        'learningRate': options['learningRate'],
+                        'iterations': options['iters'],
+                        'maxRounds': options['maxRounds'],
+                        'notDraw': options['notDraw'],
+                        'results': results
+                    }
                     historial_weigths.append(player.getModel().getWeights())
-                    playerData['initialWeights'] = options['weights']
-                    playerData['finalWeights'] = player.getModel().getWeights()
 
                 players.append(playerData)
-
                 gui.printTrainedPlayer(playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'])
                 if modelType == ModelTypes.LINEAR:
@@ -170,6 +188,14 @@ if __name__ == '__main__':
 
             input("-> Oprima enter para volver al menú")
 
+        elif op == MenuOps.LOAD:
+            loadPlayer()
+
+        elif op == MenuOps.SAVE:
+            playerIndex = gui.pickPlayer(players)
+            player = players[playerIndex-1]
+            savePlayer(player)
+            
         elif op == MenuOps.PLAY_VS_IA:
 
             player = gui.pickPlayer(players)
@@ -224,12 +250,3 @@ if __name__ == '__main__':
             else:
                 print("-> Ha habido un empate! Oprime enter para volver al menú")
             input()
-
-        elif op == MenuOps.LOAD:
-            loadPlayer()
-
-        elif op == MenuOps.SAVE:
-            playerIndex = gui.pickPlayer(players)
-            player = players[playerIndex-1]
-            savePlayer(player)
-            
