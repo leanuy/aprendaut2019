@@ -89,13 +89,15 @@ def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
       'title': 'Ratio de partidas ganadas - Capas Ocultas',
       'xlabel': 'Número de capas ocultas',
       'ylabel': 'Ratio de partidas ganadas',
+      'xticks': ('1', '2', '3'),
       'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
     }
 
     meta_neurons = {
       'title': 'Ratio de partidas ganadas - Neuronas Ocultas',
       'xlabel': 'Número de neuronas por capa oculta',
-      'ylabel': 'Ratio de partidas ganadas',   
+      'ylabel': 'Ratio de partidas ganadas',
+      'xticks': ('1', '100'),      
       'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
     }
 
@@ -156,6 +158,7 @@ def plotSubCurves(dataset_full, labels_full, meta_full):
     for d in dataset:
         plt.plot(d, alpha=0.8, color=meta['colors'][index], label=labels[index])
         index += 1
+    plt.xticks(np.arange(len(meta['xticks'])), meta['xticks'])
     plt.xlabel(meta['xlabel'])
     plt.ylabel(meta['ylabel'])   
     plt.title(meta['title'])
@@ -167,6 +170,7 @@ def plotSubCurves(dataset_full, labels_full, meta_full):
     for d in datasetC:
         plt.plot(d, alpha=0.8, color=metaC['colors'][index], label=labelsC[index])
         index += 1
+    plt.xticks(np.arange(len(metaC['xticks'])), metaC['xticks'])
     plt.xlabel(metaC['xlabel'])
     plt.ylabel(metaC['ylabel'])    
     plt.title(metaC['title'])

@@ -240,19 +240,21 @@ if __name__ == '__main__':
 
                 players_random_metrics = archiver.loadMassive(f'random_metrics')
                 players_random_board = archiver.loadMassive(f'random_board')
-                #players_self_metrics = archiver.loadMassive(f'self_metrics')
+                players_self_metrics = archiver.loadMassive(f'self_metrics')
                 players_self_board = archiver.loadMassive(f'self_board')
 
+                gui.printPlayers(players_self_metrics)
+                
                 hiddenLayersData = []
                 hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_metrics))
                 hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_board))
-                #hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_metrics))
+                hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_metrics))
                 hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_board))
 
                 hiddenNeuronsData = []
                 hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_metrics))
                 hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_board))
-                #hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_metrics))
+                hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_metrics))
                 hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_board))
 
                 plotter.plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData)
