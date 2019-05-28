@@ -30,9 +30,8 @@ class CompareOps(Enum):
     WIN_RATE = 1
     VICTORY_RATE = 2
     HIDDEN_LAYERS = 3
-    HIDDEN_NEURONS = 4
-    ACTIVATION = 5
-    LEARNING_RATE = 6
+    ACTIVATION = 4
+    LEARNING_RATE = 5
 
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
@@ -57,6 +56,8 @@ class ActivationFunctions(Enum):
     SIGMOID = 'logistic'
     TANH = 'tanh'
 
+HiddenLayersCount = [1, 2, 3]
+HiddenNeuronsCount = [10, 100]
 HiddenLayersOps = [(10), (100), (10, 10), (100, 100), (10, 10, 10), (100, 100, 100)]
 LearningRateOps = [('constant', 0.001), ('invscaling', 0.1)]
 

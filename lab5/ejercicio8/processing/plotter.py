@@ -79,6 +79,28 @@ def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 
     plotSubBars((winRateMetrics, winRateBoard), (meta_metrics, meta_board))
 
+#
+def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
+
+    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Celdas']
+    labelsC = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Celdas']
+
+    meta_layers = {
+      'title': 'Ratio de partidas ganadas - Capas Ocultas',
+      'xlabel': 'Número de capas ocultas',
+      'ylabel': 'Ratio de partidas ganadas',
+      'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
+    }
+
+    meta_neurons = {
+      'title': 'Ratio de partidas ganadas - Neuronas Ocultas',
+      'xlabel': 'Número de neuronas por capa oculta',
+      'ylabel': 'Ratio de partidas ganadas',   
+      'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
+    }
+
+    plotSubCurves((hiddenLayersData, hiddenNeuronsData), (labels, labelsC), (meta_layers, meta_neurons))
+
 ### METODOS AUXILIARES - GRAFICAS
 ### -----------------------------
 
@@ -118,6 +140,38 @@ def plotSubBars(dataset_full, meta_full):
     plt.xticks(y_pos, metaC['xlabels'])      
     plt.title(metaC['title'])
     plt.ylim([0, 1])
+
+    plt.show()
+
+def plotSubCurves(dataset_full, labels_full, meta_full):
+
+    dataset, datasetC = dataset_full
+    labels, labelsC = labels_full    
+    meta, metaC = meta_full
+
+    plt.figure(figsize=(16,12)) 
+  
+    plt.subplot(2, 1, 1)
+    index = 0
+    for d in dataset:
+        plt.plot(d, alpha=0.8, color=meta['colors'][index], label=labels[index])
+        index += 1
+    plt.xlabel(meta['xlabel'])
+    plt.ylabel(meta['ylabel'])   
+    plt.title(meta['title'])
+    plt.legend(labels, loc='upper left')
+    plt.grid()
+
+    plt.subplot(2, 1, 2)
+    index = 0
+    for d in datasetC:
+        plt.plot(d, alpha=0.8, color=metaC['colors'][index], label=labelsC[index])
+        index += 1
+    plt.xlabel(metaC['xlabel'])
+    plt.ylabel(metaC['ylabel'])    
+    plt.title(metaC['title'])
+    plt.legend(labelsC, loc='upper left')
+    plt.grid()
 
     plt.show()
 
