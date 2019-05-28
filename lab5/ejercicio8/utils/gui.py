@@ -82,14 +82,18 @@ def printMenuOption():
     return op
 
 # Imprime la lista de jugadores entrenados
-def printPlayers(players):
+def printPlayers(players, useIndexID = False):
     print ("Jugadores actuales:")
-    print("-> 0 - Jugador: Random sin entrenar")
+    if not useIndexID:
+        print("-> 0 - Jugador: Random sin entrenar")
     index = 1
     for player in players:
         print()
         print("-> ", end="")
-        print(str(index), end="")
+        if not useIndexID:
+            print(str(index), end="")
+        else:
+            print(str(player['playerID']), end="")
         print(" - ", end="")
         print("Modelo: ", end="")
         print(player['name'])
@@ -520,6 +524,41 @@ def printCompareOption():
             return op
     except:
         return CompareOps.WIN_RATE
+
+### METODOS AUXILIARES - TORNEO
+### ---------------------------
+
+def printTourneyPlayers():
+    print ("")   
+    print ("-> Elija 8 jugadores para el torneo según su índice (en formato: 1,2,3,4,5,6,7,8): ")
+    print ("-> DEFAULT: Los 8 mejores según ratio de partidas ganadas")
+      
+    try:
+        op = input()
+        players = op.split(',')
+        players = [int(p) - 1 for p in players]
+        return players
+    except:
+        return None
+
+def printTourneyResults(table, players):
+    print ("-> RESULTADOS DEL TORNEO:")
+    print ()
+
+    print ("--> JUGADORES:")
+    print ()
+    printPlayers(players, True)
+
+    print ("--> TABLA:")
+    print ()
+    index = 1
+    for player in table:
+        playerID, (score, results) = player
+        if playerID < 10:
+            playerID = f'0{playerID}'
+        print(f'- Jugador {playerID} - Puesto N°{index}: {score} puntos - Partidos: {results}')
+        index += 1
+    print()
 
 ### METODOS AUXILIARES - PARTIDA
 ### ---------------------------

@@ -69,6 +69,7 @@ class GameMode(Enum):
     TRAINING = 1
     PLAYING = 2
     SPECTATING = 3
+    TOURNEY = 4
 
 # Tipos de pieza para la clase Game y Board
 class GameTokens(Enum):

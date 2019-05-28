@@ -55,6 +55,7 @@ def getAllNeuralNetworks(playerType, inputLayer):
                 toc = time.time()
 
                 playerData = {
+                    'playerID': len(players) + 1,
                     'player': player,
                     'type': playerType,
                     'name': 'Red Neuronal',
