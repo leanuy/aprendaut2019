@@ -55,7 +55,8 @@ if __name__ == '__main__':
                     'maxRounds': gui.printMaxRounds(),
                     'notDraw': gui.printSkipOnDraw(),
                     'learningRate': gui.printLearningRate(),
-                    'spectate': spectate
+                    'spectate': spectate,
+                    'trainModels': gui.printTrainOptions()
                 }
 
                 t = TrainingDuel(player1, player2, options)
