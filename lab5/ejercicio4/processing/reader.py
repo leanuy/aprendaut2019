@@ -21,10 +21,7 @@ def readDatasetCandidatosMasMil(filename, options = {'from_notebook': False}):
     answers = filtered.iloc[:, :26]
     candidates = filtered.iloc[:, 26]
 
-    general_parties = readParties(options)
-    parties = parseCandidates(candidates, general_parties)
-    
-    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
+    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned')
 
 def readDatasetCandidatosMenosMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
@@ -35,11 +32,8 @@ def readDatasetCandidatosMenosMil(filename, options = {'from_notebook': False}):
     filtered = answers[answers.candidateID.isin(candidates.value_counts()[candidates.value_counts() < 1000].index.values)]
     answers = filtered.iloc[:, :26]
     candidates = filtered.iloc[:, 26]
-
-    general_parties = readParties(options)
-    parties = parseCandidates(candidates, general_parties)
         
-    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
+    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned')
     
 def readDatasetPartiesMasMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
@@ -50,13 +44,11 @@ def readDatasetPartiesMasMil(filename, options = {'from_notebook': False}):
     parties = parseCandidates(candidates, general_parties)
 
     answers['parties'] = parties
-    answers['candidateID'] = candidates
     filtered = answers[answers.parties.isin(parties.value_counts()[parties.value_counts() > 1000].index.values)]
     answers = filtered.iloc[:, :26]
     parties = filtered.iloc[:, 26]
-    candidates = filtered.iloc[:, 27]
 
-    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
+    return answers.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
 
 def readDatasetPartiesMenosMil(filename, options = {'from_notebook': False}):
     dataset = pd.read_csv(filename)
@@ -67,14 +59,11 @@ def readDatasetPartiesMenosMil(filename, options = {'from_notebook': False}):
     parties = parseCandidates(candidates, general_parties)
 
     answers['parties'] = parties
-    answers['candidateID'] = candidates
     filtered = answers[answers.parties.isin(parties.value_counts()[parties.value_counts() < 1000].index.values)]
     answers = filtered.iloc[:, :26]
     parties = filtered.iloc[:, 26]
-    candidates = filtered.iloc[:, 27]
 
-    return answers.apply(pd.to_numeric, downcast='unsigned'), candidates.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
-
+    return answers.apply(pd.to_numeric, downcast='unsigned'), parties.apply(pd.to_numeric, downcast='unsigned')
 
 # Lee partidos de DATA_CANDIDATOS y lo devuelve como archivo JSON
 def readParties(options = {'from_notebook': False}):

@@ -265,12 +265,6 @@ def printEvaluation(evaluation, k):
         print(evaluation['cv_report_parties'])
         print()
 
-    if evaluation['explained_variance_ratio'] is not None:
-        print("-> Proporción de varianza explicada: ")
-        print()
-        print(evaluation['explained_variance_ratio'])
-        print()
-
 # Lee la cantidad de particiones para la validación cruzada
 def printCheckPCA():
     print ("")

@@ -38,8 +38,8 @@ if __name__ == '__main__':
             regulation_strength = gui.printRegulationStrength()
 
             # Leer dataset de respuestas a encuesta
-            dataset, candidates, parties = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
-            datasetP, candidatesP, partiesP = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
+            datasetC, candidates = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
+            datasetP, parties = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
             options = {
                 'pca_dimension': pca_dimension,                
                 'solver': solver_election,
@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 'regulation_strength': regulation_strength
             }
 
-            m = Model(dataset.values, candidates.values, parties.values, datasetP.values, candidatesP.values, partiesP.values, options)
+            m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)
 
             print()
             print("-> COMIENZO DEL ENTRENAMIENTO")
@@ -102,8 +102,8 @@ if __name__ == '__main__':
                 regulation_strength = gui.printRegulationStrength()
 
                 # Leer dataset de respuestas a encuesta
-                dataset, candidates, parties = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
-                datasetP, candidatesP, partiesP = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
+                datasetC, candidates = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
+                datasetP, parties = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
                 options = {
                     'pca_dimension': pca_dimension,                
                     'solver': solver_election,
@@ -112,7 +112,7 @@ if __name__ == '__main__':
                     'regulation_strength': regulation_strength
                 }
 
-                m = Model(dataset.values, candidates.values, parties.values, datasetP.values, candidatesP.values, partiesP.values, options)
+                m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)
                 
                 print()
                 print("-> COMIENZO DEL ENTRENAMIENTO")
@@ -138,20 +138,21 @@ if __name__ == '__main__':
             if plot_op == PlotOps.CORPUS:
 
                 # Leer dataset de respuestas a encuesta separando entre candidatos con más y menos de 1000 votos
-                dataset = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
-                datasetC = reader.readDatasetCandidatosMenosMil(DATA_ENCUESTAS)
+                datasetC = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
+                datasetNC = reader.readDatasetCandidatosMenosMil(DATA_ENCUESTAS)
+
+                datasetP = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
+                datasetNP = reader.readDatasetPartiesMenosMil(DATA_ENCUESTAS)
 
                 candidatesJSON = reader.readCandidates()
                 partiesJSON = reader.readParties()
 
-                datasetPartiesMasMil = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
-                datasetPartiesMenosMil = reader.readDatasetPartiesMenosMil(DATA_ENCUESTAS)
-
                 # Graficar distribución de votantes según candidato y partido
-                corpusPlotting.plotCorpus(dataset, datasetC, datasetPartiesMasMil, datasetPartiesMenosMil, candidatesJSON, partiesJSON)
+                corpusPlotting.plotCorpus(datasetC, datasetNC, datasetP, datasetNP, candidatesJSON, partiesJSON)
 
                 # Graficar ratio de varianza para cada dimensión
-                pcaPlotting.plotPCA(dataset)
+                pcaPlotting.plotPCA(datasetC)
+                pcaPlotting.plotPCA(datasetP)
 
             elif plot_op == PlotOps.SINGLE:
 
@@ -216,10 +217,11 @@ if __name__ == '__main__':
             k = gui.printCrossK()
             
             # Leer dataset de respuestas a encuesta
-            dataset, candidates, parties = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
+            datasetC, candidates = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
+            datasetP, parties = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
 
             # Evaluar todas las configuraciones paramétricas posibles y ordenarlas según accuracy
-            candidate_classifiers, party_classifiers = evaluator.getBestModel(dataset, candidates, parties, k, check_pca)
+            candidate_classifiers, party_classifiers = evaluator.getBestModel(datasetC, datasetP, candidates, parties, k, check_pca)
 
             # Mostrar el mejor clasificador según candidatos y según partidos
             gui.printBestClassifiers(candidate_classifiers, party_classifiers)
