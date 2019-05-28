@@ -15,7 +15,7 @@ import evaluation.evaluator as evaluator
 import processing.plotter as plotter
 import processing.archiver as archiver
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType, ArchiveOps
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType, ArchiveOps, CompareOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -205,6 +205,24 @@ if __name__ == '__main__':
 
             print('El mejor modelo es: ')
             gui.printTrainedPlayer(sortedPlayers[0], players.index(sortedPlayers[0]) + 1)
+
+            input("-> Oprima enter para volver al menú")
+        
+        elif op == MenuOps.COMPARE:
+
+            compare_op = gui.printCompareOption()
+
+            if compare_op == CompareOps.WIN_RATE or compare_op == CompareOps.VICTORY_RATE:
+
+                playerType = gui.printPlayerType(False)
+
+                players_random_metrics = archiver.loadMassive(f'{playerType.value}_metrics')
+                players_random_board = archiver.loadMassive(f'{playerType.value}_board')
+
+                players_random_metrics = evaluator.getRateFromPlayers(players_random_metrics, compare_op)
+                players_random_board = evaluator.getRateFromPlayers(players_random_board, compare_op)
+
+                plotter.plotWinRate(compare_op, playerType, players_random_metrics, players_random_board)
 
             input("-> Oprima enter para volver al menú")
 

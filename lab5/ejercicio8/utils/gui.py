@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions, ArchiveOps
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions, ArchiveOps, CompareOps
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -488,6 +488,41 @@ def printLoadMassive():
     print ("--> Ingrese restricciones en base a los nombres de archivo (self o random, board o metrics, constant o invscaling, etc.)")
     print ("--> Ingrese múltiples restricciones en el orden correspondiente (oponente_representacion_capasocultas_neuronasocultas_activacion_ratio) ")
     return input()
+
+### METODOS AUXILIARES - COMPARACIÓN
+### ---------------------------
+
+def printCompareOption():
+    print ("")   
+    print ("-> Elija una opción para comparar: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Comparar ratio de partidas ganadas")
+    print ("2. Comparar ratio de victorias")
+    print ("3. Comparar ratio de partidas ganadas en función de capas ocultas")
+    print ("4. Comparar ratio de partidas ganadas en función de neuronas ocultas")
+    print ("5. Comparar ratio de partidas ganadas en función de activación")
+    print ("6. Comparar ratio de partidas ganadas en función de ratio de aprendizaje")    
+    
+    try:
+        op = int( input() )
+        if op < 1 or op > 6:
+            return CompareOps.WIN_RATE
+        else:
+            if op == 1:
+                op = CompareOps.WIN_RATE
+            elif op == 2:
+                op = CompareOps.VICTORY_RATE
+            elif op == 3:
+                op = CompareOps.HIDDEN_LAYERS
+            elif op == 4:
+                op = CompareOps.HIDDEN_NEURONS
+            elif op == 5:
+                op = CompareOps.ACTIVATION
+            elif op == 6:
+                op = CompareOps.LEARNING_RATE
+            return op
+    except:
+        return CompareOps.WIN_RATE
 
 ### METODOS AUXILIARES - PARTIDA
 ### ---------------------------
