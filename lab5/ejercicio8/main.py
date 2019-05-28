@@ -88,10 +88,22 @@ if __name__ == '__main__':
 
                 # Updateamos los modelos
                 players[player1Index-1]['player'] = player1
+                players[player1Index-1]['results'][0] += results[0]
+                players[player1Index-1]['results'][1] += results[1]
+                players[player1Index-1]['results'][2] += results[2]
+                players[player1Index-1]['iterations'] += options['iters']
+                if player1.getModel().options['modelType'] == ModelTypes.LINEAR:
+                    players[player1Index-1]['finalWeights'] = player1.getModel().getWeights()
 
                 # HACK: Guardamos a player1 como un player1 para que no se rompa play vs AI.
                 player2.setPlayerNumber(GameTokens.PLAYER1)
                 players[player2Index-1]['player'] = player2
+                players[player2Index-1]['results'][0] += results[1]
+                players[player2Index-1]['results'][1] += results[0]
+                players[player2Index-1]['results'][2] += results[2]
+                players[player2Index-1]['iterations'] += options['iters']
+                if player2.getModel().options['modelType'] == ModelTypes.LINEAR:
+                    players[player2Index-1]['finalWeights'] = player2.getModel().getWeights()
 
                 plotter.printResultsPlot(resultsPlot, options['iters'])
                 
