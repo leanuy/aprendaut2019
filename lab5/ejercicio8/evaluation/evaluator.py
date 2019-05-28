@@ -7,7 +7,7 @@ import operator
 from model.training import Training
 import processing.plotter as plotter
 import processing.archiver as archiver
-from utils.const import ModelTypes, InputLayerTypes, HiddenLayersOps, ActivationFunctions, LearningRateOps, GameTokens, CompareOps
+from utils.const import ModelTypes, InputLayerTypes, HiddenLayersOps, ActivationFunctions, LearningRateOps, GameTokens, CompareOps, HiddenLayersCount, HiddenNeuronsCount
 from utils.gui import printTrainedPlayer
 
 ### METODOS PRINCIPALES
@@ -115,6 +115,61 @@ def getRateFromPlayers(players, rateType):
             rate = getVictoryRate(player['results'])
         aux.append(rate)
     return aux
+
+def getHiddenLayersRateFromPlayers(players):
+    aux = []
+    for h in HiddenLayersCount:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['hiddenLayer'] == h:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
+def getHiddenNeuronsRateFromPlayers(players):
+    aux = []
+    for h in HiddenNeuronsCount:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['hiddenNeuron'] == h:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
+def getActivationRateFromPlayers(players):
+    aux = []
+    for a in ActivationFunctions:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['activationFunction'] == a:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
+def getLearningRatesRateFromPlayers(players):
+    aux = []
+    for lr in LearningRateOps:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['learningRate'] == lr:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
+### METODOS INTERNOS
+### -------------------
 
 def getWinRate(results):
     return results[0] / sum(results)

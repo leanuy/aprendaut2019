@@ -499,13 +499,12 @@ def printCompareOption():
     print ("1. Comparar ratio de partidas ganadas")
     print ("2. Comparar ratio de victorias")
     print ("3. Comparar ratio de partidas ganadas en función de capas ocultas")
-    print ("4. Comparar ratio de partidas ganadas en función de neuronas ocultas")
-    print ("5. Comparar ratio de partidas ganadas en función de activación")
-    print ("6. Comparar ratio de partidas ganadas en función de ratio de aprendizaje")    
+    print ("4. Comparar ratio de partidas ganadas en función de activación")
+    print ("5. Comparar ratio de partidas ganadas en función de ratio de aprendizaje")    
     
     try:
         op = int( input() )
-        if op < 1 or op > 6:
+        if op < 1 or op > 5:
             return CompareOps.WIN_RATE
         else:
             if op == 1:
@@ -515,10 +514,8 @@ def printCompareOption():
             elif op == 3:
                 op = CompareOps.HIDDEN_LAYERS
             elif op == 4:
-                op = CompareOps.HIDDEN_NEURONS
-            elif op == 5:
                 op = CompareOps.ACTIVATION
-            elif op == 6:
+            elif op == 5:
                 op = CompareOps.LEARNING_RATE
             return op
     except:
