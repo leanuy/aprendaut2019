@@ -12,6 +12,7 @@ from model.model_concept import ModelConcept
 from game.game import Game
 from game.player import Player
 import evaluation.evaluator as evaluator
+import evaluation.tourney as tourney
 import processing.plotter as plotter
 import processing.archiver as archiver
 import utils.gui as gui
@@ -27,6 +28,8 @@ if __name__ == '__main__':
 
     # NOTA: variable global con historial de models. Ver si rinde
     historial_weigths = []
+
+    players = archiver.loadMassive('self_metrics_2')
 
     while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.SEARCH or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
 
@@ -128,6 +131,7 @@ if __name__ == '__main__':
 
                 if modelType == ModelTypes.NEURAL:
                     playerData = {
+                        'playerID': len(players) + 1,
                         'player': player,
                         'type': playerType,
                         'name': modelName,
@@ -146,6 +150,7 @@ if __name__ == '__main__':
 
                 else:
                     playerData = {
+                        'playerID': len(players) + 1,
                         'player': player,
                         'type': playerType,
                         'name': modelName,
@@ -335,3 +340,26 @@ if __name__ == '__main__':
             else:
                 print("-> Ha habido un empate! Oprime enter para volver al menú")
             input()
+
+        elif op == MenuOps.TOURNEY:
+
+            tourneyPlayers = []
+            indexes = gui.printTourneyPlayers()
+
+            if indexes == None:
+                tourneyPlayers = evaluator.getBestNeuralNetworks(players)
+                tourneyPlayers = tourneyPlayers[:8]
+                indexes = []
+                for player in tourneyPlayers:
+                    indexes.append(players.index(player))
+            else:
+                for index in indexes:
+                    tourneyPlayers.append(players[index])
+
+            for p, index in zip(tourneyPlayers, indexes):
+                p['playerID'] = index + 1
+
+            table = tourney.simulateTourney(tourneyPlayers)
+            gui.printTourneyResults(table, tourneyPlayers)
+
+            input("-> Oprima enter para volver al menú")
