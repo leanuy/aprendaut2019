@@ -4,7 +4,7 @@
 import numpy as np
 import random
 
-from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections, ModelTypes
+from utils.const import GameMode, GameTokens, GameTokenMoves, AxialDirections, InputLayerTypes
 
 ### CLASE AUXILIAR
 ### ------------------
@@ -180,8 +180,8 @@ class Board():
 
         return True
 
-    def getFeatures(self, player, model = ModelTypes.LINEAR):
-        if model == ModelTypes.NEURAL_BOARD:
+    def getFeatures(self, player, rep = InputLayerTypes.METRICS):
+        if rep == InputLayerTypes.BOARD:
             # Devuelve el tablero como array
             return self.getBoard()
         else:

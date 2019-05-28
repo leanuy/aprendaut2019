@@ -25,20 +25,12 @@ class Training():
 
     def __init__(self, playerToken, options):
 
-        self.modelType = options['modelType']
-
-        # Tipo de jugador a entrenar (basado en su oponente)
+        # Parametros iniciales
         self.playerType = options['playerType']
-
-        # Cantidad de iteraciones en el entrenamiento
+        self.modelType = options['modelType']
         self.iters = options['iters']
-
-        # Cantidad de turnos antes de declarar empate
         self.maxRounds = options['maxRounds']
-
         self.notDraw = options['notDraw']
-
-        # Ratio de aprendizaje en el entrenamiento
         self.learningRate = options['learningRate']
 
         # Guarda el numero de ficha del jugador y de su oponente
@@ -48,11 +40,12 @@ class Training():
         else:
             self.opponentToken = GameTokens.PLAYER1
 
+        # Crea al jugador a entrenar y su respectivo modelo
         if self.modelType == ModelTypes.LINEAR:
-            # Crea al jugador a entrenar y su respectivo modelo
             self.player = Player(self.playerToken, self.playerType, ModelConcept(options))
         else:
             self.player = Player(self.playerToken, self.playerType, ModelNeural(options, self.playerToken))
+            self.board_representation = options['inputLayer']
 
         # Crea al oponente y su respectivo modelo en base al playerType, (al tipo de jugador que se quiere entrenar)
         if self.playerType == PlayerType.TRAINED_RANDOM:
@@ -62,6 +55,9 @@ class Training():
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelConcept(options))
             else:
                 self.opponent = Player(self.opponentToken, PlayerType.TRAINED_SELF, ModelNeural(options, self.opponentToken))
+
+    ### METODOS PRINCIPALES
+    ### -------------------
 
     # Entrenamiento del modelo
     def training(self):
@@ -117,15 +113,15 @@ class Training():
             trainingExamples = []
             if self.modelType == ModelTypes.LINEAR:
                 for board, nextBoard in zip(historial, historial[1:]):
-                    features = board.getFeatures(self.playerToken, self.modelType)
-                    nextFeatures = nextBoard.getFeatures(self.playerToken, self.modelType)
+                    features = board.getFeatures(self.playerToken)
+                    nextFeatures = nextBoard.getFeatures(self.playerToken)
                     trainingExamples.append([features, model.evaluate(nextFeatures)])
                 lastBoard = historial[-1]
-                trainingExamples.append([lastBoard.getFeatures(self.playerToken, self.modelType), lastEvaluation])
+                trainingExamples.append([lastBoard.getFeatures(self.playerToken), lastEvaluation])
             else: # Neural
                 boardIndex = 0
                 for board in reversed(historial):
-                    trainingExamples.append([board.getFeatures(self.playerToken, self.modelType), pow(0.9,boardIndex)*lastEvaluation])
+                    trainingExamples.append([board.getFeatures(self.playerToken, self.board_representation), pow(0.9,boardIndex)*lastEvaluation])
                     boardIndex += 1
 
             # Se realiza una copia del modelo actual para que el oponente use
@@ -160,6 +156,9 @@ class Training():
                 count -= 1
 
         return (self.player, results, (results_x_axis, results_y_axis), errors)
+
+    ### METODOS AUXILIARES
+    ### -------------------
 
     def recordBoards(self, trainingExamples, historial):
         with open(r'metrics.csv', 'a', newline='') as csvfile:

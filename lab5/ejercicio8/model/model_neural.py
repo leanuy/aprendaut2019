@@ -9,7 +9,7 @@ import random
 
 import processing.reader as reader
 
-from utils.const import ModelTypes, GameTokens, DATA_BOARDS, DATA_METRICS
+from utils.const import InputLayerTypes, GameTokens, DATA_BOARDS, DATA_METRICS
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -21,14 +21,13 @@ class ModelNeural():
 
     def __init__(self, options, playerToken):
         self.options = options
-        self.model = MLPRegressor(hidden_layer_sizes=(100), max_iter=1000, solver='sgd', warm_start=True)
+        self.model = MLPRegressor(solver='sgd', warm_start=True, max_iter=1000,
+                                  hidden_layer_sizes=(options['hiddenLayerSizes']), activation=options['activationFunction'].value,
+                                  learning_rate=options['learningRate'][0], learning_rate_init=options['learningRate'][1])
         
         # Setteo el estado inicial del board
-        (qValues, features) = self.getBeginningState(options['modelType'])
+        (qValues, features) = self.getBeginningState(options['inputLayer'])
         self.model.fit(features, qValues.ravel())
-
-    ### GETTERS y SETTERS
-    ### -------------------
 
 
     ### METODOS PRINCIPALES
@@ -36,20 +35,23 @@ class ModelNeural():
 
     # Evalua un tablero en forma de features
     def evaluate(self, features):
-        if self.options['modelType'] == ModelTypes.NEURAL_BOARD:
+        if self.options['inputLayer'] == InputLayerTypes.BOARD:
             features = [-1 if x==2 else x for x in features]
         return self.model.predict(np.array([features]))
 
     # Actualiza los pesos del modelo siguiendo LMS
     def update(self, examplesFeatures, examplesEvaluations):
-        if self.options['modelType'] == ModelTypes.NEURAL_BOARD:
+        if self.options['inputLayer'] == InputLayerTypes.BOARD:
             for features in examplesFeatures:
                 features[features == 2] = -1
         self.model.fit(list(examplesFeatures), examplesEvaluations.ravel())
 
+    ### METODOS AUXILIARES
+    ### -------------------
+
     def getBeginningState(self, modelType):
         qValue = [0]
-        if modelType == ModelTypes.NEURAL_BOARD:
+        if modelType == InputLayerTypes.BOARD:
             features = [[
                 0,0,0,0,0,1,1,1,1,
                 0,0,0,0,0,0,1,1,1,
@@ -61,7 +63,7 @@ class ModelNeural():
                 -1,-1,-1,0,0,0,0,0,0,
                 -1,-1,-1,-1,0,0,0,0,0
             ]]
-        elif modelType == ModelTypes.NEURAL_METRICS:
+        elif modelType == InputLayerTypes.METRICS:
             features = [[
                 0.00026068291113050653,0.49998982354831156,0.49998982354831156,0.0007820487333915196,
                 0.0007820487333915196,0.0041709265780881044,0.004692292400349117,0.49998982354831156,0.49998982354831156

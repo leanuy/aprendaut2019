@@ -126,15 +126,15 @@ class TrainingDuel():
         trainingExamples = []
         if player.model.options['modelType'] == ModelTypes.LINEAR:
             for board, nextBoard in zip(historial, historial[1:]):
-                features = board.getFeatures(player.playerNumber, player.model.options['modelType'])
-                nextFeatures = nextBoard.getFeatures(player.playerNumber, player.model.options['modelType'])
+                features = board.getFeatures(player.playerNumber)
+                nextFeatures = nextBoard.getFeatures(player.playerNumber)
                 trainingExamples.append([features, player.model.evaluate(nextFeatures)])
             lastBoard = historial[-1]
-            trainingExamples.append([lastBoard.getFeatures(player.playerNumber, player.model.options['modelType']), lastEvaluation])
+            trainingExamples.append([lastBoard.getFeatures(player.playerNumber), lastEvaluation])
         else: # Neural
             boardIndex = 0
             for board in reversed(historial):
-                trainingExamples.append([board.getFeatures(player.playerNumber, player.model.options['modelType']), pow(0.9,boardIndex)*lastEvaluation])
+                trainingExamples.append([board.getFeatures(player.playerNumber, player.model.options['inputLayer']), pow(0.9,boardIndex)*lastEvaluation])
                 boardIndex += 1
         return trainingExamples
     
