@@ -37,13 +37,13 @@ def getBestModel(datasetC, datasetP, candidates, parties, k, check_pca = False):
                             'regulation_strength': regulation_strength
                         }
 
-                        # printClassifierTraining(len(classifiers_candidates) + 1, options)
+                        printClassifierTraining(len(classifiers_candidates) + 1, options)
 
                         m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)
                         if k == 0:
                             m.train()
                         evaluation = m.evaluate(k)
-                        
+
                         if k != 0:
                             printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
 
@@ -62,8 +62,8 @@ def getBestModel(datasetC, datasetP, candidates, parties, k, check_pca = False):
                 'pca_dimension': i,                
                 'solver': SolverOps.LIBLINEAR,
                 'penalty': PenaltyOps.L2,
-                'max_iter': 10000,
-                'regulation_strength': 0.1
+                'max_iter': 1000,
+                'regulation_strength': 100.0
             }
 
             printClassifierTraining(len(classifiers_candidates) + 1, options)
