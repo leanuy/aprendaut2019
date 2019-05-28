@@ -16,7 +16,7 @@ def readDatasetCandidatosMasMil(filename, options = {'from_notebook': False}):
     answers = dataset.iloc[:, 2:28]
 
     # Solo candidatos con mas de mil votos
-    answers['candidateID'] = candidates.copy()
+    answers['candidateID'] = candidates
     filtered = answers[answers.candidateID.isin(candidates.value_counts()[candidates.value_counts() > 1000].index.values)]
     answers = filtered.iloc[:, :26]
     candidates = filtered.iloc[:, 26]

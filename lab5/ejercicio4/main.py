@@ -151,8 +151,8 @@ if __name__ == '__main__':
                 corpusPlotting.plotCorpus(datasetC, datasetNC, datasetP, datasetNP, candidatesJSON, partiesJSON)
 
                 # Graficar ratio de varianza para cada dimensión
-                pcaPlotting.plotPCA(datasetC)
-                pcaPlotting.plotPCA(datasetP)
+                pcaPlotting.plotPCA(datasetC, 'Candidatos')
+                pcaPlotting.plotPCA(datasetP, 'Partidos')
 
             elif plot_op == PlotOps.SINGLE:
 
