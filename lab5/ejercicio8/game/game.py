@@ -27,9 +27,10 @@ class Game():
         # 1. Entrenamiento
         # 2. Juego
         # 3. Espectar
+        # 4. Jugar en torneo
         self.mode = mode
 
-        # Si modo es 1 o 3, representa al par de jugadores
+        # Si modo es 1, 3 o 4, representa al par de jugadores
         # Si modo es 2, representa al jugador oponente al humano
         self.players = players
 
@@ -51,15 +52,19 @@ class Game():
     def getBoards(self):
         return self.boards
 
+    ### METODOS PRINCIPALES
+    ### -------------------
+
     # Simulación de un juego
     def play(self, spectate = False):
         if self.mode == GameMode.PLAYING:
             res = self.playUI()
+        elif self.mode == GameMode.TOURNEY:
+            res = self.justPlay()
         else:
             res = self.playTraining(spectate)
 
         return res
-
 
     def playUI(self):
         b = Board()
@@ -162,7 +167,6 @@ class Game():
                     print("-> La entrada ingresada no sigue el formato adecuado. Intentelo de nuevo")
                     input()
                 
-
     def playTraining(self, spectate = False):
 
         (player1, player2) = self.players
@@ -205,4 +209,42 @@ class Game():
             # time.sleep(0.5)
 
         print("Partida finalizada con resultado " + str(res))
+        return res
+
+    def justPlay(self):
+
+        (player1, player2) = self.players
+        player1.setPlayerNumber(GameTokens.PLAYER1)
+        player2.setPlayerNumber(GameTokens.PLAYER2)
+        b = Board()
+        finished = False
+        res = False
+
+        while not finished:
+            # Jugador 1 elige su movimiento y juega
+            ((fromX2, fromY2), (toX2, toY2)) = player1.chooseMove(b)
+            b.moveToken(player1.playerNumber, fromX2, fromY2, toX2, toY2)
+
+            # Se checkea si el jugador 1 ganó
+            if b.checkWin(player1.playerNumber):
+                finished = True
+                res = GameResults.WIN
+            
+            # Si el jugador 1 no ganó, el jugador 2 elige su movimiento y juega
+            if not finished:
+                # time.sleep(0.5)
+                ((fromX2, fromY2), (toX2, toY2)) = player2.chooseMove(b)
+                b.moveToken(player2.playerNumber, fromX2, fromY2, toX2, toY2)
+
+                if b.checkWin(player2.playerNumber):
+                    finished = True
+                    res = GameResults.LOSE
+
+            # Agrega el tablero al tablero de turnos
+            self.boards.append(copy.deepcopy(b))
+
+            if len(self.boards) >= self.maxRounds:
+                finished = True
+                res = GameResults.DRAW
+
         return res
