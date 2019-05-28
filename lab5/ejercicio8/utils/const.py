@@ -52,8 +52,8 @@ class InputLayerTypes(Enum):
 
 # Tipos de funciones de activacion
 class ActivationFunctions(Enum):
+    SIGMOID = 'logistic'    
     RELU = 'relu'
-    SIGMOID = 'logistic'
     TANH = 'tanh'
 
 HiddenLayersCount = [1, 2, 3]

@@ -36,7 +36,7 @@ def printErrorPlot(plots, iterations):
 
     plt.show()
 
-#
+# Grafica el ratio de partidas ganadas o victorias para todos los modelos entrenados VS cierto tipo de jugador
 def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 
     if metricType == CompareOps.WIN_RATE:
@@ -79,11 +79,11 @@ def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 
     plotSubBars((winRateMetrics, winRateBoard), (meta_metrics, meta_board))
 
-#
+# Grafica el promedio del ratio de partidas ganadas para todos los modelos según sus capas ocultas
 def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
 
-    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Celdas']
-    labelsC = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Celdas']
+    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+    labelsC = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
 
     meta_layers = {
       'title': 'Ratio de partidas ganadas - Capas Ocultas',
@@ -103,6 +103,36 @@ def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
 
     plotSubCurves((hiddenLayersData, hiddenNeuronsData), (labels, labelsC), (meta_layers, meta_neurons))
 
+# Grafica el promedio del ratio de partidas ganadas para todos los modelos según su función de activación
+def plotActivationWinRate(data):
+
+    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+
+    meta = {
+      'title': 'Ratio de partidas ganadas - Función de activación',
+      'xlabel': 'Tipo de función de activación',
+      'ylabel': 'Ratio de partidas ganadas',
+      'xticks': ('Sigmoide', 'ReLU', 'TanH'),
+      'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
+    }
+
+    plotCurve(data, labels, meta)
+
+# Grafica el promedio del ratio de partidas ganadas para todos los modelos según su ratio de aprendizaje
+def plotLearningRateWinRate(data):
+
+    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+
+    meta = {
+      'title': 'Ratio de partidas ganadas - Ratio de Aprendizaje',
+      'xlabel': 'Tipo de ratio de aprendizaje',
+      'ylabel': 'Ratio de partidas ganadas',
+      'xticks': ('Constante - 0.0001', 'Variable - 0.1'),
+      'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
+    }
+
+    plotCurve(data, labels, meta)
+
 ### METODOS AUXILIARES - GRAFICAS
 ### -----------------------------
 
@@ -114,12 +144,18 @@ def plotBars(dataset, meta):
     plt.title(meta['title'])
     plt.show()
 
-def plotCurve(dataset, meta):
-    plt.figure(figsize=(12,6)) 
-    plt.plot(np.cumsum(dataset), alpha=0.8, color=meta['colors'][0])
+def plotCurve(dataset, labels, meta):
+    plt.figure(figsize=(12 ,6))
+    index = 0
+    for d in dataset:
+        plt.plot(d, alpha=0.8, color=meta['colors'][index], label=labels[index])
+        index += 1
+    plt.xticks(np.arange(len(meta['xticks'])), meta['xticks'])
     plt.xlabel(meta['xlabel'])
-    plt.ylabel(meta['ylabel'])    
+    plt.ylabel(meta['ylabel'])   
     plt.title(meta['title'])
+    plt.legend(labels, loc='upper left')
+    plt.grid()
     plt.show()
 
 def plotSubBars(dataset_full, meta_full):

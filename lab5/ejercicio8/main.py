@@ -236,28 +236,48 @@ if __name__ == '__main__':
 
                 plotter.plotWinRate(compare_op, playerType, player_metrics, players_board)
             
-            elif compare_op == CompareOps.HIDDEN_LAYERS:
-
+            else:
+            
                 players_random_metrics = archiver.loadMassive(f'random_metrics')
                 players_random_board = archiver.loadMassive(f'random_board')
                 players_self_metrics = archiver.loadMassive(f'self_metrics')
                 players_self_board = archiver.loadMassive(f'self_board')
 
-                gui.printPlayers(players_self_metrics)
-                
-                hiddenLayersData = []
-                hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_metrics))
-                hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_board))
-                hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_metrics))
-                hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_board))
+                if compare_op == CompareOps.HIDDEN_LAYERS:
 
-                hiddenNeuronsData = []
-                hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_metrics))
-                hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_board))
-                hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_metrics))
-                hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_board))
+                    hiddenLayersData = []
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_metrics))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_board))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_metrics))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_board))
 
-                plotter.plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData)
+                    hiddenNeuronsData = []
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_metrics))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_board))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_metrics))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_board))
+
+                    plotter.plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData)
+
+                elif compare_op == CompareOps.ACTIVATION:
+
+                    activationData = []
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_random_metrics))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_random_board))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_self_metrics))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_self_board))
+
+                    plotter.plotActivationWinRate(activationData)
+
+                elif compare_op == CompareOps.LEARNING_RATE:
+
+                    learningRateData = []
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_random_metrics))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_random_board))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_self_metrics))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_self_board))
+
+                    plotter.plotLearningRateWinRate(learningRateData)
 
             input("-> Oprima enter para volver al menú")
 

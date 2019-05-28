@@ -142,6 +142,32 @@ def getHiddenNeuronsRateFromPlayers(players):
         aux.append(winRateAvg)
     return aux
 
+def getActivationRateFromPlayers(players):
+    aux = []
+    for a in ActivationFunctions:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['activationFunction'] == a:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
+def getLearningRatesRateFromPlayers(players):
+    aux = []
+    for lr in LearningRateOps:
+        winRateAvg = 0
+        pCount = 0
+        for p in players:
+            if p['learningRate'] == lr:
+                pCount += 1
+                winRateAvg += getWinRate(p['results'])
+        winRateAvg /= pCount
+        aux.append(winRateAvg)
+    return aux
+
 ### METODOS INTERNOS
 ### -------------------
 
