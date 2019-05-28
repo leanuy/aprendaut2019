@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions, ArchiveOps
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -430,6 +430,46 @@ def getModelName(modelType):
 ### METODOS AUXILIARES - MANEJO
 ### ---------------------------
 
+# Lee el tipo de carga/guardado
+def printArchiveOptions(op):
+    print ("")
+    if op == ArchiveOps.LOAD:
+        print ("-> Decida el tipo de carga que desea hacer: ")
+        print ("-> DEFAULT: 1")
+        print ("1. Carga única")
+        print ("2. Carga masiva")
+
+        try:
+            load = int( input() )
+            if load < 1 or load > 2:
+                return ArchiveOps.SINGLE
+            else:
+                if load == 1:
+                    load = ArchiveOps.SINGLE
+                elif load == 2:
+                    load = ArchiveOps.MASSIVE
+                return load
+        except:
+            return ArchiveOps.SINGLE
+    else:
+        print ("-> Decida el tipo de guardado que desea hacer: ")
+        print ("-> DEFAULT: 1")
+        print ("1. Guardado único")
+        print ("2. Guardado masivo")
+
+        try:
+            load = int( input() )
+            if load < 1 or load > 2:
+                return ArchiveOps.SINGLE
+            else:
+                if load == 1:
+                    load = ArchiveOps.SINGLE
+                elif load == 2:
+                    load = ArchiveOps.MASSIVE
+                return load
+        except:
+            return ArchiveOps.SINGLE
+
 def printSavePlayer():
     print("")
     print("-> Ingrese el nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
@@ -438,6 +478,15 @@ def printSavePlayer():
 def printLoadPlayer():
     print("")
     print("-> Ingrese el nombre del archivo que contiene al jugador")
+    return input()
+
+def printLoadMassive():
+    print ("")
+    print ("-> Ingrese el prefijo de jugadores que desea cargar")
+    print ("-> DEFAULT: - (Ingresar nada)")
+    print ("--> No ingrese nada para cargar todos")
+    print ("--> Ingrese restricciones en base a los nombres de archivo (self o random, board o metrics, constant o invscaling, etc.)")
+    print ("--> Ingrese múltiples restricciones en el orden correspondiente (oponente_representacion_capasocultas_neuronasocultas_activacion_ratio) ")
     return input()
 
 ### METODOS AUXILIARES - PARTIDA

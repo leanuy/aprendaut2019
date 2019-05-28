@@ -4,7 +4,6 @@
 import sys
 import os
 import time
-import pickle
 import copy
 
 from model.training import Training
@@ -14,32 +13,9 @@ from game.game import Game
 from game.player import Player
 import evaluation.evaluator as evaluator
 import processing.plotter as plotter
+import processing.archiver as archiver
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType
-
-
-### MÉTOTODOS AUXILIARES
-### --------------------
-
-def savePlayer(filename, player):
-    if filename.strip():
-        root = 'players/'
-        filename = root + filename
-        pickle_out = open(filename,"wb")
-        pickle.dump(player, pickle_out)
-        pickle_out.close()
-
-def loadPlayer(filename):
-    if filename.strip():
-        root = 'players/'
-        filename = root + filename
-        try:
-            pickle_in = open(filename,"rb")
-            loaded_player = pickle.load(pickle_in)
-            players.append(loaded_player)
-        except:
-            print("Error! Archivo erroneo, por favor intente nuevamente.")
-            input()
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType, ArchiveOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -182,26 +158,38 @@ if __name__ == '__main__':
                     plotter.printErrorPlot(errorsPlot, options['iters'])
 
                 filename = gui.printSavePlayer()
-                savePlayer(filename, playerData)
+                archiver.savePlayer(filename, playerData)
 
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.LOAD:
-            filename = gui.printLoadPlayer()
-            loadPlayer(filename)
+            archive_op = gui.printArchiveOptions(ArchiveOps.LOAD)
+            if archive_op == ArchiveOps.SINGLE:
+                filename = gui.printLoadPlayer()
+                p = archiver.loadPlayer(filename)
+                if p != None:
+                    players.append(p)
+            else:
+                fileprefix = gui.printLoadMassive()
+                players = archiver.loadMassive(fileprefix)
+
+            input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.SAVE:
+            archive_op = gui.printArchiveOptions(ArchiveOps.LOAD)
             playerIndex = gui.pickPlayer(players)
             player = players[playerIndex-1]
             filename = gui.printSavePlayer()
-            savePlayer(filename, player)
+            archiver.savePlayer(filename, player)
+
+            input("-> Oprima enter para volver al menú")
             
         elif op == MenuOps.SEARCH:
 
             playerType = gui.printPlayerType(False)
             inputLayer = gui.printInputLayer()
 
-            players = evaluator.getAllNeuralNetworks(playerType, inputLayer, savePlayer)
+            players = evaluator.getAllNeuralNetworks(playerType, inputLayer)
             sortedPlayers = evaluator.getBestNeuralNetworks(players)
 
             print('El mejor modelo es: ')

@@ -18,6 +18,12 @@ class MenuOps(Enum):
     WATCH_IA_VS_IA = 8
     TOURNEY = 9
 
+class ArchiveOps(Enum):
+    LOAD = 1
+    SAVE = 2
+    SINGLE = 3
+    MASSIVE = 4
+
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
     RANDOM = 0

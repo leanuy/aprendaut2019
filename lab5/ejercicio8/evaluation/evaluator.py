@@ -6,13 +6,14 @@ import operator
 
 from model.training import Training
 import processing.plotter as plotter
+import processing.archiver as archiver
 from utils.const import ModelTypes, InputLayerTypes, HiddenLayersOps, ActivationFunctions, LearningRateOps, GameTokens
 from utils.gui import printTrainedPlayer
 
 ### METODOS PRINCIPALES
 ### -------------------
 
-def getAllNeuralNetworks(playerType, inputLayer, savePlayer):
+def getAllNeuralNetworks(playerType, inputLayer):
 
     players = []
     index = 1
@@ -83,7 +84,7 @@ def getAllNeuralNetworks(playerType, inputLayer, savePlayer):
                 activTxt = options['activationFunction'].value
                 learningRateTxt = options['learningRate'][0]
                 filename = f'{playerTypeTxt}_{inputLayerTxt}_{hiddenLayerTxt}_{hiddenNeuronTxt}_{activTxt}_{learningRateTxt}'
-                savePlayer(filename, playerData)
+                archiver.savePlayer(filename, playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'], filename)
 
     print("Finalizando búsqueda...")
