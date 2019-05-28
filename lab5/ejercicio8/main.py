@@ -199,8 +199,9 @@ if __name__ == '__main__':
         elif op == MenuOps.SEARCH:
 
             playerType = gui.printPlayerType(False)
+            inputLayer = gui.printInputLayer()
 
-            players = evaluator.getAllNeuralNetworks(playerType, savePlayer)
+            players = evaluator.getAllNeuralNetworks(playerType, inputLayer, savePlayer)
             sortedPlayers = evaluator.getBestNeuralNetworks(players)
 
             print('El mejor modelo es: ')
