@@ -176,11 +176,22 @@ if __name__ == '__main__':
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.SAVE:
-            archive_op = gui.printArchiveOptions(ArchiveOps.LOAD)
-            playerIndex = gui.pickPlayer(players)
-            player = players[playerIndex-1]
-            filename = gui.printSavePlayer()
-            archiver.savePlayer(filename, player)
+            archive_op = gui.printArchiveOptions(ArchiveOps.SAVE)
+            if archive_op == ArchiveOps.SINGLE:
+                playerIndex = gui.pickPlayer(players)
+                player = players[playerIndex-1]
+                filename = gui.printSavePlayer()
+                archiver.savePlayer(filename, player)
+            else:
+                for p in players:
+                    playerTypeTxt = p['type'].value
+                    inputLayerTxt = p['inputLayer'].value
+                    hiddenLayerTxt = p['hiddenLayer']
+                    hiddenNeuronTxt = p['hiddenNeuron']
+                    activTxt = p['activationFunction'].value
+                    learningRateTxt = p['learningRate'][0]
+                    filename = f'saved_{playerTypeTxt}_{inputLayerTxt}_{hiddenLayerTxt}_{hiddenNeuronTxt}_{activTxt}_{learningRateTxt}'
+                    archiver.savePlayer(filename, p)
 
             input("-> Oprima enter para volver al menú")
             
