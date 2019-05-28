@@ -4,7 +4,6 @@
 import sys
 import os
 import time
-import pickle
 import copy
 
 from model.training import Training
@@ -14,32 +13,9 @@ from game.game import Game
 from game.player import Player
 import evaluation.evaluator as evaluator
 import processing.plotter as plotter
+import processing.archiver as archiver
 import utils.gui as gui
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType
-
-
-### MÉTOTODOS AUXILIARES
-### --------------------
-
-def savePlayer(filename, player):
-    if filename.strip():
-        root = 'players/'
-        filename = root + filename
-        pickle_out = open(filename,"wb")
-        pickle.dump(player, pickle_out)
-        pickle_out.close()
-
-def loadPlayer(filename):
-    if filename.strip():
-        root = 'players/'
-        filename = root + filename
-        try:
-            pickle_in = open(filename,"rb")
-            loaded_player = pickle.load(pickle_in)
-            players.append(loaded_player)
-        except:
-            print("Error! Archivo erroneo, por favor intente nuevamente.")
-            input()
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType, ArchiveOps, CompareOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -194,30 +170,71 @@ if __name__ == '__main__':
                     plotter.printErrorPlot(errorsPlot, options['iters'])
 
                 filename = gui.printSavePlayer()
-                savePlayer(filename, playerData)
+                archiver.savePlayer(filename, playerData)
 
             input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.LOAD:
-            filename = gui.printLoadPlayer()
-            loadPlayer(filename)
+            archive_op = gui.printArchiveOptions(ArchiveOps.LOAD)
+            if archive_op == ArchiveOps.SINGLE:
+                filename = gui.printLoadPlayer()
+                p = archiver.loadPlayer(filename)
+                if p != None:
+                    players.append(p)
+            else:
+                fileprefix = gui.printLoadMassive()
+                players = archiver.loadMassive(fileprefix)
+
+            input("-> Oprima enter para volver al menú")
 
         elif op == MenuOps.SAVE:
-            playerIndex = gui.pickPlayer(players)
-            player = players[playerIndex-1]
-            filename = gui.printSavePlayer()
-            savePlayer(filename, player)
+            archive_op = gui.printArchiveOptions(ArchiveOps.SAVE)
+            if archive_op == ArchiveOps.SINGLE:
+                playerIndex = gui.pickPlayer(players)
+                player = players[playerIndex-1]
+                filename = gui.printSavePlayer()
+                archiver.savePlayer(filename, player)
+            else:
+                for p in players:
+                    playerTypeTxt = p['type'].value
+                    inputLayerTxt = p['inputLayer'].value
+                    hiddenLayerTxt = p['hiddenLayer']
+                    hiddenNeuronTxt = p['hiddenNeuron']
+                    activTxt = p['activationFunction'].value
+                    learningRateTxt = p['learningRate'][0]
+                    filename = f'saved_{playerTypeTxt}_{inputLayerTxt}_{hiddenLayerTxt}_{hiddenNeuronTxt}_{activTxt}_{learningRateTxt}'
+                    archiver.savePlayer(filename, p)
+
+            input("-> Oprima enter para volver al menú")
             
         elif op == MenuOps.SEARCH:
 
             playerType = gui.printPlayerType(False)
             inputLayer = gui.printInputLayer()
 
-            players = evaluator.getAllNeuralNetworks(playerType, inputLayer, savePlayer)
+            players = evaluator.getAllNeuralNetworks(playerType, inputLayer)
             sortedPlayers = evaluator.getBestNeuralNetworks(players)
 
             print('El mejor modelo es: ')
             gui.printTrainedPlayer(sortedPlayers[0], players.index(sortedPlayers[0]) + 1)
+
+            input("-> Oprima enter para volver al menú")
+        
+        elif op == MenuOps.COMPARE:
+
+            compare_op = gui.printCompareOption()
+
+            if compare_op == CompareOps.WIN_RATE or compare_op == CompareOps.VICTORY_RATE:
+
+                playerType = gui.printPlayerType(False)
+
+                players_random_metrics = archiver.loadMassive(f'{playerType.value}_metrics')
+                players_random_board = archiver.loadMassive(f'{playerType.value}_board')
+
+                players_random_metrics = evaluator.getRateFromPlayers(players_random_metrics, compare_op)
+                players_random_board = evaluator.getRateFromPlayers(players_random_board, compare_op)
+
+                plotter.plotWinRate(compare_op, playerType, players_random_metrics, players_random_board)
 
             input("-> Oprima enter para volver al menú")
 

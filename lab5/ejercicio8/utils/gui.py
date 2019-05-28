@@ -6,7 +6,7 @@ import sys
 import re
 from termcolor import colored, cprint
 
-from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions
+from .const import MenuOps, PlayerType, GameMode, GameTokens, ModelTypes, InputLayerTypes, ActivationFunctions, ArchiveOps, CompareOps
 
 ### METODOS AUXILIARES - MENU
 ### -------------------------
@@ -430,6 +430,46 @@ def getModelName(modelType):
 ### METODOS AUXILIARES - MANEJO
 ### ---------------------------
 
+# Lee el tipo de carga/guardado
+def printArchiveOptions(op):
+    print ("")
+    if op == ArchiveOps.LOAD:
+        print ("-> Decida el tipo de carga que desea hacer: ")
+        print ("-> DEFAULT: 1")
+        print ("1. Carga única")
+        print ("2. Carga masiva")
+
+        try:
+            load = int( input() )
+            if load < 1 or load > 2:
+                return ArchiveOps.SINGLE
+            else:
+                if load == 1:
+                    load = ArchiveOps.SINGLE
+                elif load == 2:
+                    load = ArchiveOps.MASSIVE
+                return load
+        except:
+            return ArchiveOps.SINGLE
+    else:
+        print ("-> Decida el tipo de guardado que desea hacer: ")
+        print ("-> DEFAULT: 1")
+        print ("1. Guardado único")
+        print ("2. Guardado masivo")
+
+        try:
+            load = int( input() )
+            if load < 1 or load > 2:
+                return ArchiveOps.SINGLE
+            else:
+                if load == 1:
+                    load = ArchiveOps.SINGLE
+                elif load == 2:
+                    load = ArchiveOps.MASSIVE
+                return load
+        except:
+            return ArchiveOps.SINGLE
+
 def printSavePlayer():
     print("")
     print("-> Ingrese el nombre del archivo en donde guardar al jugador (No ingrese nada para no guardarlo)")
@@ -439,6 +479,50 @@ def printLoadPlayer():
     print("")
     print("-> Ingrese el nombre del archivo que contiene al jugador")
     return input()
+
+def printLoadMassive():
+    print ("")
+    print ("-> Ingrese el prefijo de jugadores que desea cargar")
+    print ("-> DEFAULT: - (Ingresar nada)")
+    print ("--> No ingrese nada para cargar todos")
+    print ("--> Ingrese restricciones en base a los nombres de archivo (self o random, board o metrics, constant o invscaling, etc.)")
+    print ("--> Ingrese múltiples restricciones en el orden correspondiente (oponente_representacion_capasocultas_neuronasocultas_activacion_ratio) ")
+    return input()
+
+### METODOS AUXILIARES - COMPARACIÓN
+### ---------------------------
+
+def printCompareOption():
+    print ("")   
+    print ("-> Elija una opción para comparar: ")
+    print ("-> DEFAULT: 1")
+    print ("1. Comparar ratio de partidas ganadas")
+    print ("2. Comparar ratio de victorias")
+    print ("3. Comparar ratio de partidas ganadas en función de capas ocultas")
+    print ("4. Comparar ratio de partidas ganadas en función de neuronas ocultas")
+    print ("5. Comparar ratio de partidas ganadas en función de activación")
+    print ("6. Comparar ratio de partidas ganadas en función de ratio de aprendizaje")    
+    
+    try:
+        op = int( input() )
+        if op < 1 or op > 6:
+            return CompareOps.WIN_RATE
+        else:
+            if op == 1:
+                op = CompareOps.WIN_RATE
+            elif op == 2:
+                op = CompareOps.VICTORY_RATE
+            elif op == 3:
+                op = CompareOps.HIDDEN_LAYERS
+            elif op == 4:
+                op = CompareOps.HIDDEN_NEURONS
+            elif op == 5:
+                op = CompareOps.ACTIVATION
+            elif op == 6:
+                op = CompareOps.LEARNING_RATE
+            return op
+    except:
+        return CompareOps.WIN_RATE
 
 ### METODOS AUXILIARES - PARTIDA
 ### ---------------------------
