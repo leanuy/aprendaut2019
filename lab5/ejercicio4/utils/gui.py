@@ -181,6 +181,16 @@ def printRegulationStrength():
     except:
         return 1.0
 
+def printCandidateToParty():
+    print ("")
+    print ("-> Desea que el clasificador por candidato clasifique partido? (y/n): ")
+    print ("-> DEFAULT: n")
+    try:
+        C = input()
+        return C == 'y'
+    except:
+        return False
+
 ### METODOS AUXILIARES - EVALUATE
 ### ----------------------------
 
@@ -339,18 +349,25 @@ def printClassifierEvaluation(accuracy_candidates, accuracy_parties):
 # Imprime los datos del mejor clasificador y su accuracy
 def printBestClassifiers(candidate_classificators, party_classificators):
 
-    candidate_classificators = sorted(candidate_classificators, key=operator.itemgetter(0), reverse=True)
-    party_classificators = sorted(party_classificators, key=operator.itemgetter(0), reverse=True)
+    model_candidates = None
+    model_parties = None
 
-    accuracy_candidates, model_candidates = candidate_classificators[0]
-    accuracy_parties, model_parties = party_classificators[0]
+    if candidate_classificators != None:
+        candidate_classificators = sorted(candidate_classificators, key=operator.itemgetter(0), reverse=True)
+        accuracy_candidates, model_candidates = candidate_classificators[0]
 
-    print()
-    printClassifierData(model_candidates.options, 'candidato')
-    print(f'-> Accuracy: {accuracy_candidates}')
-    print()
-    printClassifierData(model_parties.options, 'partido')
-    print(f'-> Accuracy: {accuracy_parties}')
+        print()
+        printClassifierData(model_candidates.options, 'candidato')
+        print(f'-> Accuracy: {accuracy_candidates}')
+
+    if party_classificators != None:
+        party_classificators = sorted(party_classificators, key=operator.itemgetter(0), reverse=True)
+        accuracy_parties, model_parties = party_classificators[0]
+        
+        print()
+        printClassifierData(model_parties.options, 'partido')
+        print(f'-> Accuracy: {accuracy_parties}')
+
     print()
 
     return model_candidates, model_parties

@@ -1,6 +1,7 @@
 ### DEPENDENCIAS
 ### ------------------
 
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
@@ -9,6 +10,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.model_selection import cross_val_predict
 from sklearn.decomposition import PCA
+
+import processing.parser as parser
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -59,7 +62,10 @@ class Model():
 
     # Clasificar 'examples' utilizando el modelo entrenado
     def classify(self, examples_candidates, examples_parties):
-        return self.model_candidates.predict(examples_candidates), self.model_parties.predict(examples_parties)
+        res = self.model_candidates.predict(examples_candidates), self.model_parties.predict(examples_parties)
+        if self.options['candidate_to_party']:
+            res = np.array(map(parser.getCandidateParty, res))
+        return res
 
     # Evaluar el modelo entrenado
     def evaluate(self, k = 0):
@@ -89,24 +95,46 @@ class Model():
             self.evaluation['explained_variance_ratioP'] = self.explained_variance_ratioP
 
         else:
-            # Clasificar el conjunto 'test'
-            testset_candidates_res = self.model_candidates.predict(self.testsetC)
-            testset_parties_res = self.model_parties.predict(self.testsetP)
-            
-            # Evaluar distintas métricas de la clasificación de 'test'
-            self.evaluation = {'k': k}
-            self.evaluation['accuracy_candidates'] = accuracy_score(self.candidates_results, testset_candidates_res)
-            self.evaluation['confusion_matrix_candidates'] = confusion_matrix(self.candidates_results, testset_candidates_res)
-            self.evaluation['report_candidates'] = classification_report(self.candidates_results, testset_candidates_res)
-            self.evaluation['report_candidates_dict'] = classification_report(self.candidates_results, testset_candidates_res, output_dict=True)
 
-            self.evaluation['accuracy_parties'] = accuracy_score(self.parties_results, testset_parties_res)
-            self.evaluation['confusion_matrix_parties'] = confusion_matrix(self.parties_results, testset_parties_res)
-            self.evaluation['report_parties'] = classification_report(self.parties_results, testset_parties_res)
-            self.evaluation['report_parties_dict'] = classification_report(self.parties_results, testset_parties_res, output_dict=True)
-            
-            self.evaluation['explained_variance_ratioC'] = self.explained_variance_ratioC
-            self.evaluation['explained_variance_ratioP'] = self.explained_variance_ratioP
+            if not self.options['candidate_to_party']:
+                # Clasificar el conjunto 'test'
+                testset_candidates_res = self.model_candidates.predict(self.testsetC)
+                testset_parties_res = self.model_parties.predict(self.testsetP)
+                
+                # Evaluar distintas métricas de la clasificación de 'test'
+                self.evaluation = {'k': k}
+                self.evaluation['accuracy_candidates'] = accuracy_score(self.candidates_results, testset_candidates_res)
+                self.evaluation['confusion_matrix_candidates'] = confusion_matrix(self.candidates_results, testset_candidates_res)
+                self.evaluation['report_candidates'] = classification_report(self.candidates_results, testset_candidates_res)
+                self.evaluation['report_candidates_dict'] = classification_report(self.candidates_results, testset_candidates_res, output_dict=True)
+
+                self.evaluation['accuracy_parties'] = accuracy_score(self.parties_results, testset_parties_res)
+                self.evaluation['confusion_matrix_parties'] = confusion_matrix(self.parties_results, testset_parties_res)
+                self.evaluation['report_parties'] = classification_report(self.parties_results, testset_parties_res)
+                self.evaluation['report_parties_dict'] = classification_report(self.parties_results, testset_parties_res, output_dict=True)
+                
+                self.evaluation['explained_variance_ratioC'] = self.explained_variance_ratioC
+                self.evaluation['explained_variance_ratioP'] = self.explained_variance_ratioP
+
+            else:
+                # Clasificar el conjunto 'test'
+                testset_candidates_res = self.model_candidates.predict(self.testsetC)
+                testset_parties_res = self.model_parties.predict(self.testsetP)
+                
+                # Evaluar distintas métricas de la clasificación de 'test'
+                self.evaluation = {'k': k}
+                self.evaluation['accuracy_candidates'] = accuracy_score(self.parties_results, testset_candidates_res)
+                self.evaluation['confusion_matrix_candidates'] = confusion_matrix(self.parties_results, testset_candidates_res)
+                self.evaluation['report_candidates'] = classification_report(self.parties_results, testset_candidates_res)
+                self.evaluation['report_candidates_dict'] = classification_report(self.parties_results, testset_candidates_res, output_dict=True)
+
+                self.evaluation['accuracy_parties'] = accuracy_score(self.parties_results, testset_parties_res)
+                self.evaluation['confusion_matrix_parties'] = confusion_matrix(self.parties_results, testset_parties_res)
+                self.evaluation['report_parties'] = classification_report(self.parties_results, testset_parties_res)
+                self.evaluation['report_parties_dict'] = classification_report(self.parties_results, testset_parties_res, output_dict=True)
+                
+                self.evaluation['explained_variance_ratioC'] = self.explained_variance_ratioC
+                self.evaluation['explained_variance_ratioP'] = self.explained_variance_ratioP
 
         return self.evaluation
 

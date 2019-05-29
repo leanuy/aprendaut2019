@@ -28,12 +28,16 @@ def plotPCA(dataset_full, dataset_type):
     
 def plotVarianceRatio(variance_ratio, dataset_type):
 
+    colors = COLORS[0]
+    if dataset_type == 'Partidos':
+        colors = COLORS[1]
+
     # Generar metadatos para la gráfica
     meta = {
       'title': f'Ratio de Varianza - {dataset_type}',
       'xlabel': 'Número de Componentes',
       'ylabel': '% Varianza',
-      'colors': [COLORS[0]]
+      'colors': [colors]
     }
 
     # Generar única gráfica

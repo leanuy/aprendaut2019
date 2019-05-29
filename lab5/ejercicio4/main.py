@@ -31,16 +31,19 @@ if __name__ == '__main__':
 
         if op == MenuOps.TRAIN:
 
+            candidate_to_party = 0
             pca_dimension = gui.printPCADimension()
             solver_election = gui.printSolverOptions()
             penalty_election = gui.printPenaltyOptions(solver_election)            
             max_iter = gui.printIterations()
             regulation_strength = gui.printRegulationStrength()
+            candidate_to_party = gui.printCandidateToParty()
 
             # Leer dataset de respuestas a encuesta
             datasetC, candidates = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
             datasetP, parties = reader.readDatasetPartiesMasMil(DATA_ENCUESTAS)
             options = {
+                'candidate_to_party': candidate_to_party,
                 'pca_dimension': pca_dimension,                
                 'solver': solver_election,
                 'penalty': penalty_election,
@@ -100,6 +103,7 @@ if __name__ == '__main__':
                 penalty_election = gui.printPenaltyOptions(solver_election)            
                 max_iter = gui.printIterations()
                 regulation_strength = gui.printRegulationStrength()
+                candidate_to_party = gui.printCandidateToParty(),
 
                 # Leer dataset de respuestas a encuesta
                 datasetC, candidates = reader.readDatasetCandidatosMasMil(DATA_ENCUESTAS)
@@ -109,7 +113,8 @@ if __name__ == '__main__':
                     'solver': solver_election,
                     'penalty': penalty_election,
                     'max_iter': max_iter,
-                    'regulation_strength': regulation_strength
+                    'regulation_strength': regulation_strength,
+                    'candidate_to_party': candidate_to_party
                 }
 
                 m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)

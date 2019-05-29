@@ -34,7 +34,8 @@ def getBestModel(datasetC, datasetP, candidates, parties, k, check_pca = False):
                             'solver': solver,
                             'penalty': penalty,
                             'max_iter': max_iter,
-                            'regulation_strength': regulation_strength
+                            'regulation_strength': regulation_strength,
+                            'candidate_to_party': False
                         }
 
                         printClassifierTraining(len(classifiers_candidates) + 1, options)
