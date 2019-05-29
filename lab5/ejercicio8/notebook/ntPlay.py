@@ -21,7 +21,7 @@ from ipywidgets import Text, Label, Button, ToggleButtons, Box, Layout, HBox, VB
 
 # Cargar players
 players = []
-filesToLoad = ["jugador_lab1", "random_board_1_10_logistic_constant"]
+filesToLoad = ["jugador_lab1", "random_metrics_2_100_tanh_invscaling", "self_metrics_2_100_logistic_constant"]
 
 for files in filesToLoad:
     p = archiver.loadPlayer(files, True)
