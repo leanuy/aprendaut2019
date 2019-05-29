@@ -51,7 +51,7 @@ def getAllNeuralNetworks(playerType, inputLayer):
                 t = Training(GameTokens.PLAYER1, options)
                 
                 tic = time.time()
-                (player, results, resultsPlot, _) = t.training()
+                (player, results, _, _) = t.training()
                 toc = time.time()
 
                 playerData = {
@@ -87,7 +87,6 @@ def getAllNeuralNetworks(playerType, inputLayer):
                 learningRateTxt = options['learningRate'][0]
                 filename = f'{playerTypeTxt}_{inputLayerTxt}_{hiddenLayerTxt}_{hiddenNeuronTxt}_{activTxt}_{learningRateTxt}'
                 archiver.savePlayer(filename, playerData)
-                plotter.printResultsPlot(resultsPlot, options['iters'], filename)
 
     print("Finalizando búsqueda...")
     return players
