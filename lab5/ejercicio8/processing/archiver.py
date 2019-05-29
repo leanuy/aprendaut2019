@@ -44,7 +44,7 @@ def loadMassive(fileprefix, from_notebook = False):
 
     players = []
     for filename in os.listdir(root):
-        if fileprefix != '' and fileprefix in filename:
+        if fileprefix == '' or fileprefix in filename:
             try:
                 pickle_in = open(root + filename,"rb")
                 loaded_player = pickle.load(pickle_in)
