@@ -32,7 +32,6 @@ def plotSingleEvaluation(evaluation, k):
         metrics_parties = evaluation['cv_report_parties_dict']
         confusion_matrix_parties = evaluation['cv_confusion_matrix_parties']
 
-    print(metrics_candidates)
     plotMetrics(accuracy_candidates, accuracy_parties, metrics_candidates, metrics_parties)
     plotConfusionMatrix(confusion_matrix_candidates, CandidateDivision.CANDIDATES)
     plotConfusionMatrix(confusion_matrix_parties, CandidateDivision.PARTIES)
