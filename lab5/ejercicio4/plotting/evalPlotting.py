@@ -32,6 +32,7 @@ def plotSingleEvaluation(evaluation, k):
         metrics_parties = evaluation['cv_report_parties_dict']
         confusion_matrix_parties = evaluation['cv_confusion_matrix_parties']
 
+    print(metrics_candidates)
     plotMetrics(accuracy_candidates, accuracy_parties, metrics_candidates, metrics_parties)
     plotConfusionMatrix(confusion_matrix_candidates, CandidateDivision.CANDIDATES)
     plotConfusionMatrix(confusion_matrix_parties, CandidateDivision.PARTIES)
@@ -66,13 +67,13 @@ def plotAllEvaluations(candidates, parties, is_pca=False):
 def plotMetrics(accuracy_candidates, accuracy_parties, metrics_candidates, metrics_parties):
 
     dataset = [
-      (metrics_candidates['micro avg']['precision'], metrics_parties['micro avg']['precision']),
+      # (metrics_candidates['micro avg']['precision'], metrics_parties['micro avg']['precision']),
       (metrics_candidates['macro avg']['precision'], metrics_parties['macro avg']['precision']),
       (metrics_candidates['weighted avg']['precision'], metrics_parties['weighted avg']['precision']),
-      (metrics_candidates['micro avg']['recall'], metrics_parties['micro avg']['recall']),
+      # (metrics_candidates['micro avg']['recall'], metrics_parties['micro avg']['recall']),
       (metrics_candidates['macro avg']['recall'], metrics_parties['macro avg']['recall']),
       (metrics_candidates['weighted avg']['recall'], metrics_parties['weighted avg']['recall']),      
-      (metrics_candidates['micro avg']['f1-score'], metrics_parties['micro avg']['f1-score']),
+      # (metrics_candidates['micro avg']['f1-score'], metrics_parties['micro avg']['f1-score']),
       (metrics_candidates['macro avg']['f1-score'], metrics_parties['macro avg']['f1-score']),
       (metrics_candidates['weighted avg']['f1-score'], metrics_parties['weighted avg']['f1-score'])      
     ]

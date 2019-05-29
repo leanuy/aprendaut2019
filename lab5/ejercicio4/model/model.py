@@ -12,6 +12,8 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.decomposition import PCA
 
 import processing.parser as parser
+import processing.reader as reader
+import pandas as pd
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -121,12 +123,18 @@ class Model():
                 testset_candidates_res = self.model_candidates.predict(self.testsetC)
                 testset_parties_res = self.model_parties.predict(self.testsetP)
                 
+                # Convertir el teset_candidates_res a mapeo de partidos
+                testset_candidates_res = self.candidates_to_parties(testset_candidates_res)
+
+                # Convertir el self.candidates_results a su partido.
+                true_parties_results_from_candidates = self.candidates_to_parties(self.candidates_results)
+
                 # Evaluar distintas métricas de la clasificación de 'test'
                 self.evaluation = {'k': k}
-                self.evaluation['accuracy_candidates'] = accuracy_score(self.parties_results, testset_candidates_res)
-                self.evaluation['confusion_matrix_candidates'] = confusion_matrix(self.parties_results, testset_candidates_res)
-                self.evaluation['report_candidates'] = classification_report(self.parties_results, testset_candidates_res)
-                self.evaluation['report_candidates_dict'] = classification_report(self.parties_results, testset_candidates_res, output_dict=True)
+                self.evaluation['accuracy_candidates'] = accuracy_score(true_parties_results_from_candidates, testset_candidates_res)
+                self.evaluation['confusion_matrix_candidates'] = confusion_matrix(true_parties_results_from_candidates, testset_candidates_res)
+                self.evaluation['report_candidates'] = classification_report(true_parties_results_from_candidates, testset_candidates_res)
+                self.evaluation['report_candidates_dict'] = classification_report(true_parties_results_from_candidates, testset_candidates_res, output_dict=True)
 
                 self.evaluation['accuracy_parties'] = accuracy_score(self.parties_results, testset_parties_res)
                 self.evaluation['confusion_matrix_parties'] = confusion_matrix(self.parties_results, testset_parties_res)
@@ -153,4 +161,24 @@ class Model():
             self.explained_variance_ratioP = pcaP.explained_variance_ratio_
         
             self.transformed = True
+        
+    def candidates_to_parties(self, candidates):
+        partyJSON = reader.readParties(self.options)
+        parties = []
+        for i in range(0, len(partyJSON)):
+            partyCandidates = []
+            for candidate in partyJSON[i]['candidates']:
+                partyCandidates.append(candidate['id'])
+            parties.append((i, partyCandidates))
+
+        res = []
+        for c in candidates:
+            for p in parties:
+                if c in p[1]:
+                    res.append(c)
+                    break
+
+        return np.array(res)
+
+
 
