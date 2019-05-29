@@ -36,6 +36,8 @@ class TrainingDuel():
 
         self.notDraw = options['notDraw']
 
+        self.trainModels = options['trainModels']
+
         # Ratio de aprendizaje en el entrenamiento
         self.learningRate = options['learningRate']
 
@@ -94,26 +96,27 @@ class TrainingDuel():
             else:
                 results_y_axis.append(lastEvaluation)
 
-            # Se arma la lista de pares [tablero, evaluación de sucesor]
-            if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                # Entrenamiento del player 1
-                trainingExamplesPlayer1 = self.getTrainingExamples(self.player1, historial, lastEvaluation)
+            if self.trainModels:
+                # Se arma la lista de pares [tablero, evaluación de sucesor]
+                if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                    # Entrenamiento del player 1
+                    trainingExamplesPlayer1 = self.getTrainingExamples(self.player1, historial, lastEvaluation)
 
-            if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                # Entrenamiento del player 2
-                if lastEvaluation == 1:
-                    lastEvaluation = -1
-                trainingExamplesPlayer2 = self.getTrainingExamples(self.player2, historial, lastEvaluation)
-   
-            # Se actualizan los pesos del modelo utilizando los datos de la última partida
+                if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                    # Entrenamiento del player 2
+                    if lastEvaluation == 1:
+                        lastEvaluation = -1
+                    trainingExamplesPlayer2 = self.getTrainingExamples(self.player2, historial, lastEvaluation)
+    
+                # Se actualizan los pesos del modelo utilizando los datos de la última partida
 
-            # Player 1
-            if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                self.updatePlayer(self.player1, trainingExamplesPlayer1)
+                # Player 1
+                if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                    self.updatePlayer(self.player1, trainingExamplesPlayer1)
 
-            # Player2
-            if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                self.updatePlayer(self.player2, trainingExamplesPlayer2)
+                # Player2
+                if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                    self.updatePlayer(self.player2, trainingExamplesPlayer2)
 
             i += 1
             if variable:

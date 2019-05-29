@@ -5,6 +5,7 @@ import sys
 import os
 import time
 import copy
+import pickle
 
 from model.training import Training
 from model.training_duel import TrainingDuel
@@ -29,7 +30,9 @@ if __name__ == '__main__':
     # NOTA: variable global con historial de models. Ver si rinde
     historial_weigths = []
 
-    players = archiver.loadMassive('self_metrics_2')
+    players = archiver.loadMassive('random')
+    player_lab1 = archiver.loadPlayer('jugador_lab1')
+    players.append(player_lab1)
 
     while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.SEARCH or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
 
@@ -58,7 +61,8 @@ if __name__ == '__main__':
                     'maxRounds': gui.printMaxRounds(),
                     'notDraw': gui.printSkipOnDraw(),
                     'learningRate': gui.printLearningRate(),
-                    'spectate': spectate
+                    'spectate': spectate,
+                    'trainModels': gui.printTrainOptions()
                 }
 
                 t = TrainingDuel(player1, player2, options)
