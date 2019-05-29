@@ -46,11 +46,11 @@ def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 
         if playerType == PlayerType.TRAINED_RANDOM:
             title_metrics = 'Ratio de partidas ganadas - VS Random, Representación con métricas'
-            title_board = 'Ratio de partidas ganadas - VS Random, Representación con celdas'
+            title_board = 'Ratio de partidas ganadas - VS Random, Representación con tablero'
 
         elif playerType == PlayerType.TRAINED_SELF:
             title_metrics = 'Ratio de partidas ganadas - VS Si Mismo, Representación con métricas'
-            title_board = 'Ratio de partidas ganadas - VS Si Mismo, Representación con celdas'
+            title_board = 'Ratio de partidas ganadas - VS Si Mismo, Representación con tablero'
 
     elif metricType == CompareOps.VICTORY_RATE:
 
@@ -59,11 +59,11 @@ def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 
         if playerType == PlayerType.TRAINED_RANDOM:
             title_metrics = 'Ratio de victorias - VS Random, Representación con métricas'
-            title_board = 'Ratio de victorias - VS Random, Representación con celdas'
+            title_board = 'Ratio de victorias - VS Random, Representación con tablero'
 
         elif playerType == PlayerType.TRAINED_SELF:
             title_metrics = 'Ratio de victorias - VS Si Mismo, Representación con métricas'
-            title_board = 'Ratio de victorias - VS Si Mismo, Representación con celdas'
+            title_board = 'Ratio de victorias - VS Si Mismo, Representación con tablero'
 
     meta_metrics = {
       'title': title_metrics,
@@ -82,8 +82,8 @@ def plotWinRate(metricType, playerType, winRateMetrics, winRateBoard):
 # Grafica el promedio del ratio de partidas ganadas para todos los modelos según sus capas ocultas
 def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
 
-    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
-    labelsC = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+    labels = ['VS Random, Métricas', 'VS Random, Tablero', 'VS Si Mismo, Métricas', 'VS Si Mismo, Tablero']
+    labelsC = ['VS Random, Métricas', 'VS Random, Tablero', 'VS Si Mismo, Métricas', 'VS Si Mismo, Tablero']
 
     meta_layers = {
       'title': 'Ratio de partidas ganadas - Capas Ocultas',
@@ -97,7 +97,7 @@ def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
       'title': 'Ratio de partidas ganadas - Neuronas Ocultas',
       'xlabel': 'Número de neuronas por capa oculta',
       'ylabel': 'Ratio de partidas ganadas',
-      'xticks': ('1', '100'),      
+      'xticks': ('10', '100'),      
       'colors': [COLORS[0], COLORS[1], COLORS[2], COLORS[4]]
     }
 
@@ -106,7 +106,7 @@ def plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData):
 # Grafica el promedio del ratio de partidas ganadas para todos los modelos según su función de activación
 def plotActivationWinRate(data):
 
-    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+    labels = ['VS Random, Métricas', 'VS Random, Tablero', 'VS Si Mismo, Métricas', 'VS Si Mismo, Tablero']
 
     meta = {
       'title': 'Ratio de partidas ganadas - Función de activación',
@@ -121,7 +121,7 @@ def plotActivationWinRate(data):
 # Grafica el promedio del ratio de partidas ganadas para todos los modelos según su ratio de aprendizaje
 def plotLearningRateWinRate(data):
 
-    labels = ['VS Random, Métricas', 'VS Random, Celdas', 'VS Si Mismo, Metricas', 'VS Si Mismo, Celdas']
+    labels = ['VS Random, Métricas', 'VS Random, Tablero', 'VS Si Mismo, Métricas', 'VS Si Mismo, Tablero']
 
     meta = {
       'title': 'Ratio de partidas ganadas - Ratio de Aprendizaje',
