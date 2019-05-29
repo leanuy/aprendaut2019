@@ -350,6 +350,17 @@ def printNormalizeWeights():
     else:
         return False
 
+# Imprime un booleano si desea entrenar en un duelo o no
+def printTrainOptions():
+    print ("")
+    print ("-> Desea que los jugadores aprendan en el duelo? (y/n) ")
+    print ("-> DEFAULT: y")
+    normalized_model = input()
+    if normalized_model == 'n':
+        return False
+    else:
+        return True
+
 # Pregunta al usuario si desea contar los empates
 def printSkipOnDraw():
     print ("")
