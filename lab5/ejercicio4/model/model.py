@@ -175,7 +175,7 @@ class Model():
         for c in candidates:
             for p in parties:
                 if c in p[1]:
-                    res.append(c)
+                    res.append(p[0])
                     break
 
         return np.array(res)
