@@ -69,23 +69,6 @@ class TrainingDuel():
             # Obtener tableros del juego
             historial = g.getBoards()
 
-            # Se arma la lista de pares [tablero, evaluación de sucesor]
-            for board, nextBoard in zip(historial, historial[1:]):
-                if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                    # Entrenamiento del player 1
-                    trainingExamplesPlayer1 = []
-                    featuresPlayer1 = board.getFeatures(self.player1.playerNumber, self.player1.model.options['modelType'])
-                    nextFeaturesPlayer1 = nextBoard.getFeatures(self.player1.playerNumber, self.player1.model.options['modelType'])
-                    trainingExamplesPlayer1.append([featuresPlayer1, self.player1.model.evaluate(nextFeaturesPlayer1)])
-
-                # Entrenamiento del player 2
-                if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                    # Entrenamiento del player 1
-                    trainingExamplesPlayer2 = []
-                    featuresPlayer2 = board.getFeatures(self.player2.playerNumber, self.player2.model.options['modelType'])
-                    nextFeaturesPlayer2 = nextBoard.getFeatures(self.player2.playerNumber, self.player2.model.options['modelType'])
-                    trainingExamplesPlayer2.append([featuresPlayer2, self.player2.model.evaluate(nextFeaturesPlayer2)])
-
             # Se checkea el resultado del juego para setear la evaluación del último tablero
             if res == GameResults.WIN:
                 print("-> Ha ganado el jugador 1!")
@@ -104,29 +87,64 @@ class TrainingDuel():
                     if variable:
                         count -= 1
                     continue
-                lastEvaluation = 0
-
+                lastEvaluation = -0.5
             results_x_axis.append(i)
-            results_y_axis.append(lastEvaluation)
-            
-            lastBoard = historial[-1]
+            if lastEvaluation == -0.5:
+                results_y_axis.append(0)
+            else:
+                results_y_axis.append(lastEvaluation)
 
+            # Se arma la lista de pares [tablero, evaluación de sucesor]
+            if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                # Entrenamiento del player 1
+                trainingExamplesPlayer1 = self.getTrainingExamples(self.player1, historial, lastEvaluation)
+
+            if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
+                # Entrenamiento del player 2
+                if lastEvaluation == 1:
+                    lastEvaluation = -1
+                trainingExamplesPlayer2 = self.getTrainingExamples(self.player2, historial, lastEvaluation)
+   
             # Se actualizan los pesos del modelo utilizando los datos de la última partida
 
             # Player 1
             if self.player1.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                trainingExamplesPlayer1.append([lastBoard.getFeatures(self.player1.playerNumber, self.player1.model.options['modelType']), lastEvaluation])
-                for t in trainingExamplesPlayer1:
-                    self.player1.model.update(t[0], t[1], self.learningRate)
+                self.updatePlayer(self.player1, trainingExamplesPlayer1)
 
             # Player2
             if self.player2.getPlayerType() != PlayerType.TRAINED_RANDOM:
-                trainingExamplesPlayer2.append([lastBoard.getFeatures(self.player2.playerNumber, self.player2.model.options['modelType']), (-1)*lastEvaluation])
-                for t in trainingExamplesPlayer2:
-                    self.player2.model.update(t[0], t[1], self.learningRate)
+                self.updatePlayer(self.player2, trainingExamplesPlayer2)
 
             i += 1
             if variable:
                 count -= 1
 
         return (self.player1, self.player2, results, (results_x_axis, results_y_axis))
+    
+    def getTrainingExamples(self, player, historial, lastEvaluation):
+        # Se arma la lista de pares [tablero, evaluación de sucesor]
+        trainingExamples = []
+        if player.model.options['modelType'] == ModelTypes.LINEAR:
+            for board, nextBoard in zip(historial, historial[1:]):
+                features = board.getFeatures(player.playerNumber)
+                nextFeatures = nextBoard.getFeatures(player.playerNumber)
+                trainingExamples.append([features, player.model.evaluate(nextFeatures)])
+            lastBoard = historial[-1]
+            trainingExamples.append([lastBoard.getFeatures(player.playerNumber), lastEvaluation])
+        else: # Neural
+            boardIndex = 0
+            for board in reversed(historial):
+                trainingExamples.append([board.getFeatures(player.playerNumber, player.model.options['inputLayer']), pow(0.9,boardIndex)*lastEvaluation])
+                boardIndex += 1
+        return trainingExamples
+    
+    def updatePlayer(self, player, trainingExamples):
+        if player.model.options['modelType'] == ModelTypes.LINEAR:
+            index = 0
+            for t in trainingExamples:
+                player.model.update(t[0], t[1], self.learningRate)
+                player.model.update(t[0], t[1], self.learningRate)
+                index += 1
+        else: # Neural
+            trainingExamples = np.array(trainingExamples)
+            player.model.update(trainingExamples[:,0], trainingExamples[:,1])

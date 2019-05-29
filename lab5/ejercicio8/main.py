@@ -4,19 +4,19 @@
 import sys
 import os
 import time
-import pickle
 import copy
 
 from model.training import Training
 from model.training_duel import TrainingDuel
 from model.model_concept import ModelConcept
-
 from game.game import Game
 from game.player import Player
-
-import utils.gui as gui
+import evaluation.evaluator as evaluator
+import evaluation.tourney as tourney
 import processing.plotter as plotter
-from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType
+import processing.archiver as archiver
+import utils.gui as gui
+from utils.const import MenuOps, PlayerType, GameMode, GameTokens, GameResults, ModelTypes, PlayerType, ArchiveOps, CompareOps
 
 ### METODO PRINCIPAL
 ### ----------------
@@ -29,13 +29,16 @@ if __name__ == '__main__':
     # NOTA: variable global con historial de models. Ver si rinde
     historial_weigths = []
 
-    while op == MenuOps.TRAIN or op == MenuOps.PLAY_VS_IA or op == MenuOps.LOAD or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.SAVE:
+    players = archiver.loadMassive('self_metrics_2')
+
+    while op == MenuOps.TRAIN or op == MenuOps.LOAD or op == MenuOps.SAVE or op == MenuOps.EVALUATE or op == MenuOps.SEARCH or op == MenuOps.COMPARE or op == MenuOps.PLAY_VS_IA or op == MenuOps.WATCH_IA_VS_IA or op == MenuOps.TOURNEY:
 
         gui.printMenu(players)
         op = gui.printMenuOption()
 
         if op == MenuOps.TRAIN:
-            (playerType, playerName) = gui.printPlayerType()
+
+            playerType = gui.printPlayerType()
 
             if playerType == PlayerType.TRAINED_SHOWDOWN:
                 player1Index = gui.pickPlayer(players, "-> Elija al jugador 1 por su índice: ")
@@ -64,27 +67,55 @@ if __name__ == '__main__':
 
                 # Updateamos los modelos
                 players[player1Index-1]['player'] = player1
+                players[player1Index-1]['results'][0] += results[0]
+                players[player1Index-1]['results'][1] += results[1]
+                players[player1Index-1]['results'][2] += results[2]
+                players[player1Index-1]['iterations'] += options['iters']
+                if player1.getModel().options['modelType'] == ModelTypes.LINEAR:
+                    players[player1Index-1]['finalWeights'] = player1.getModel().getWeights()
 
                 # HACK: Guardamos a player1 como un player1 para que no se rompa play vs AI.
                 player2.setPlayerNumber(GameTokens.PLAYER1)
                 players[player2Index-1]['player'] = player2
+                players[player2Index-1]['results'][0] += results[1]
+                players[player2Index-1]['results'][1] += results[0]
+                players[player2Index-1]['results'][2] += results[2]
+                players[player2Index-1]['iterations'] += options['iters']
+                if player2.getModel().options['modelType'] == ModelTypes.LINEAR:
+                    players[player2Index-1]['finalWeights'] = player2.getModel().getWeights()
 
                 plotter.printResultsPlot(resultsPlot, options['iters'])
                 
             # Normal training
             else:
-                modelType = gui.printModelOptions()
-                options = {
-                    'modelType': modelType,
-                    'playerType': playerType,
-                    'iters': gui.printTrainingIterations(),
-                    'maxRounds': gui.printMaxRounds(),
-                    'notDraw': gui.printSkipOnDraw(),
-                    'learningRate': gui.printLearningRate()
-                }
-                if modelType == ModelTypes.CONCEPT:
-                    options['weights'] = gui.printInitialWeights()
-                    options['normalize_weights'] = gui.printNormalizeWeights()
+                (modelType, modelName) = gui.printModelOptions()
+
+                if modelType == ModelTypes.NEURAL:
+                    options = {
+                        'playerType': playerType,
+                        'modelType': modelType,
+                        'inputLayer': gui.printInputLayer(),
+                        'hiddenLayer': gui.printHiddenLayers(),
+                        'hiddenNeuron': gui.printHiddenNeurons(),
+                        'activationFunction': gui.printActivationFunction(),
+                        'learningRate': gui.printLearningRateNeural(),
+                        'iters': gui.printTrainingIterations(),
+                        'maxRounds': gui.printMaxRounds(),
+                        'notDraw': gui.printSkipOnDraw(),
+                    }
+                    options['hiddenLayerSizes'] = tuple([options['hiddenNeuron'] for i in range(options['hiddenLayer'])])
+
+                else:
+                    options = {
+                        'playerType': playerType,
+                        'modelType': modelType,
+                        'weights': gui.printInitialWeights(),
+                        'normalize_weights': gui.printNormalizeWeights(),
+                        'learningRate': gui.printLearningRate(),
+                        'iters': gui.printTrainingIterations(),
+                        'maxRounds': gui.printMaxRounds(),
+                        'notDraw': gui.printSkipOnDraw(),
+                    }
                 
                 t = Training(GameTokens.PLAYER1, options)
 
@@ -98,33 +129,160 @@ if __name__ == '__main__':
                 print("-> FIN DEL ENTRENAMIENTO")
                 print()
 
-                playerData = {
-                    'player': player,
-                    'type': playerType,
-                    'modelType': modelType,
-                    'name': playerName,
-                    'time': toc-tic,
-                    'iterations': options['iters'],
-                    'maxRounds': options['maxRounds'],
-                    'results': results,
-                    'learningRate': options['learningRate']
-                }
-                if modelType == ModelTypes.CONCEPT:
+                if modelType == ModelTypes.NEURAL:
+                    playerData = {
+                        'playerID': len(players) + 1,
+                        'player': player,
+                        'type': playerType,
+                        'name': modelName,
+                        'modelType': modelType,
+                        'time': toc-tic,
+                        'inputLayer': options['inputLayer'],
+                        'hiddenLayer': options['hiddenLayer'],
+                        'hiddenNeuron': options['hiddenNeuron'],
+                        'activationFunction': options['activationFunction'],
+                        'learningRate': options['learningRate'],
+                        'iterations': options['iters'],
+                        'maxRounds': options['maxRounds'],
+                        'notDraw': options['notDraw'],
+                        'results': results
+                    }
+
+                else:
+                    playerData = {
+                        'playerID': len(players) + 1,
+                        'player': player,
+                        'type': playerType,
+                        'name': modelName,
+                        'modelType': modelType,
+                        'time': toc-tic,
+                        'initialWeights': options['weights'],
+                        'finalWeights': player.getModel().getWeights(),
+                        'normalize_weights': options['normalize_weights'],
+                        'learningRate': options['learningRate'],
+                        'iterations': options['iters'],
+                        'maxRounds': options['maxRounds'],
+                        'notDraw': options['notDraw'],
+                        'results': results
+                    }
                     historial_weigths.append(player.getModel().getWeights())
-                    playerData['initialWeights'] = options['weights']
-                    playerData['finalWeights'] = player.getModel().getWeights()
 
                 players.append(playerData)
-
                 gui.printTrainedPlayer(playerData)
                 plotter.printResultsPlot(resultsPlot, options['iters'])
-                plotter.printErrorPlot(errorsPlot, options['iters'])
+                
+                if modelType == ModelTypes.LINEAR:
+                    plotter.printErrorPlot(errorsPlot, options['iters'])
 
                 filename = gui.printSavePlayer()
-                if filename.strip():
-                    pickle_out = open(filename,"wb")
-                    pickle.dump(playerData, pickle_out)
-                    pickle_out.close()
+                archiver.savePlayer(filename, playerData)
+
+            input("-> Oprima enter para volver al menú")
+
+        elif op == MenuOps.LOAD:
+            archive_op = gui.printArchiveOptions(ArchiveOps.LOAD)
+            if archive_op == ArchiveOps.SINGLE:
+                filename = gui.printLoadPlayer()
+                p = archiver.loadPlayer(filename)
+                if p != None:
+                    players.append(p)
+            else:
+                fileprefix = gui.printLoadMassive()
+                players = archiver.loadMassive(fileprefix)
+
+            input("-> Oprima enter para volver al menú")
+
+        elif op == MenuOps.SAVE:
+            archive_op = gui.printArchiveOptions(ArchiveOps.SAVE)
+            if archive_op == ArchiveOps.SINGLE:
+                playerIndex = gui.pickPlayer(players)
+                player = players[playerIndex-1]
+                filename = gui.printSavePlayer()
+                archiver.savePlayer(filename, player)
+            else:
+                for p in players:
+                    playerTypeTxt = p['type'].value
+                    inputLayerTxt = p['inputLayer'].value
+                    hiddenLayerTxt = p['hiddenLayer']
+                    hiddenNeuronTxt = p['hiddenNeuron']
+                    activTxt = p['activationFunction'].value
+                    learningRateTxt = p['learningRate'][0]
+                    filename = f'saved_{playerTypeTxt}_{inputLayerTxt}_{hiddenLayerTxt}_{hiddenNeuronTxt}_{activTxt}_{learningRateTxt}'
+                    archiver.savePlayer(filename, p)
+
+            input("-> Oprima enter para volver al menú")
+            
+        elif op == MenuOps.SEARCH:
+
+            playerType = gui.printPlayerType(False)
+            inputLayer = gui.printInputLayer()
+
+            players = evaluator.getAllNeuralNetworks(playerType, inputLayer)
+            sortedPlayers = evaluator.getBestNeuralNetworks(players)
+
+            print('El mejor modelo es: ')
+            gui.printTrainedPlayer(sortedPlayers[0], players.index(sortedPlayers[0]) + 1)
+
+            input("-> Oprima enter para volver al menú")
+        
+        elif op == MenuOps.COMPARE:
+
+            compare_op = gui.printCompareOption()
+
+            if compare_op == CompareOps.WIN_RATE or compare_op == CompareOps.VICTORY_RATE:
+
+                playerType = gui.printPlayerType(False)
+
+                player_metrics = archiver.loadMassive(f'{playerType.value}_metrics')
+                players_board = archiver.loadMassive(f'{playerType.value}_board')
+
+                player_metrics = evaluator.getRateFromPlayers(player_metrics, compare_op)
+                players_board = evaluator.getRateFromPlayers(players_board, compare_op)
+
+                plotter.plotWinRate(compare_op, playerType, player_metrics, players_board)
+            
+            else:
+            
+                players_random_metrics = archiver.loadMassive(f'random_metrics')
+                players_random_board = archiver.loadMassive(f'random_board')
+                players_self_metrics = archiver.loadMassive(f'self_metrics')
+                players_self_board = archiver.loadMassive(f'self_board')
+
+                if compare_op == CompareOps.HIDDEN_LAYERS:
+
+                    hiddenLayersData = []
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_metrics))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_random_board))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_metrics))
+                    hiddenLayersData.append(evaluator.getHiddenLayersRateFromPlayers(players_self_board))
+
+                    hiddenNeuronsData = []
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_metrics))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_random_board))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_metrics))
+                    hiddenNeuronsData.append(evaluator.getHiddenNeuronsRateFromPlayers(players_self_board))
+
+                    plotter.plotHiddenLayersWinRate(hiddenLayersData, hiddenNeuronsData)
+
+                elif compare_op == CompareOps.ACTIVATION:
+
+                    activationData = []
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_random_metrics))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_random_board))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_self_metrics))
+                    activationData.append(evaluator.getActivationRateFromPlayers(players_self_board))
+
+                    plotter.plotActivationWinRate(activationData)
+
+                elif compare_op == CompareOps.LEARNING_RATE:
+
+                    learningRateData = []
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_random_metrics))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_random_board))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_self_metrics))
+                    learningRateData.append(evaluator.getLearningRatesRateFromPlayers(players_self_board))
+
+                    plotter.plotLearningRateWinRate(learningRateData)
 
             input("-> Oprima enter para volver al menú")
 
@@ -183,21 +341,25 @@ if __name__ == '__main__':
                 print("-> Ha habido un empate! Oprime enter para volver al menú")
             input()
 
-        elif op == MenuOps.LOAD:
-            filename = gui.printLoadPlayer()
-            if filename.strip():
-                try:
-                    pickle_in = open(filename,"rb")
-                    player = pickle.load(pickle_in)
-                    players.append(player)
-                except:
-                    print("Error! Archivo erroneo, por favor intente nuevamente.")
+        elif op == MenuOps.TOURNEY:
 
-        elif op == MenuOps.SAVE:
-            playerIndex = gui.pickPlayer(players)
-            player = players[playerIndex-1]
-            filename = gui.printSavePlayer()
-            if filename.strip():
-                pickle_out = open(filename,"wb")
-                pickle.dump(player, pickle_out)
-                pickle_out.close()
+            tourneyPlayers = []
+            indexes = gui.printTourneyPlayers()
+
+            if indexes == None:
+                tourneyPlayers = evaluator.getBestNeuralNetworks(players)
+                tourneyPlayers = tourneyPlayers[:8]
+                indexes = []
+                for player in tourneyPlayers:
+                    indexes.append(players.index(player))
+            else:
+                for index in indexes:
+                    tourneyPlayers.append(players[index])
+
+            for p, index in zip(tourneyPlayers, indexes):
+                p['playerID'] = index + 1
+
+            table = tourney.simulateTourney(tourneyPlayers)
+            gui.printTourneyResults(table, tourneyPlayers)
+
+            input("-> Oprima enter para volver al menú")

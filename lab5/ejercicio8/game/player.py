@@ -6,7 +6,7 @@ import random
 from model.model_concept import ModelConcept
 from random import randint
 
-from utils.const import PlayerType
+from utils.const import PlayerType, ModelTypes
 
 ### CLASE PRINCIPAL
 ### ------------------
@@ -44,7 +44,6 @@ class Player():
 
     def getModel(self):
         return self.model
-
     def setModel(self, m):
         self.model = m
 
@@ -66,66 +65,38 @@ class Player():
         # Obtener las fichas del jugador
         playerTokens = board.getPlayerSlots(self.playerNumber)
 
+        allMovesForward = []
+        allMovesBackward = []
+
+        # Se recorre todas las piezas del jugador
+        for token in playerTokens:
+            
+            # Se obtiene la lista de posibles movimientos desde FROM
+            (fromVX, fromVY) = token
+            (movesForward, movesBackward) = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
+
+            for movef in movesForward:
+                allMovesForward.append((token, movef))
+            for moveb in movesBackward:
+                allMovesBackward.append((token, moveb))
+
+        # Preferimos movimientos hacia adelante siempre que estos sean posibles
+        if allMovesForward:
+            moves = allMovesForward
+        else:
+            moves = allMovesBackward
+
         if self.playerType == PlayerType.RANDOM:
-
-            # Lista auxiliar para no repetir fichas ya elegidas aleatoriamente
-            usedTokens = [False for token in playerTokens]
-
-            # Comprobar si se agotaron todos los posibles movimientos. En ese caso
-            # se retorna (0,0) a (0,0) y el juego interpreta que no hay movimientos
-            while not all(token for token in usedTokens):
-
-                # Obtener ficha aleatoria que no haya sido checkeada
-                (fromVX, fromVY) = random.choice(playerTokens)
-                tokenIndex = playerTokens.index((fromVX, fromVY))
-                while usedTokens[tokenIndex]:
-                    (fromVX, fromVY) = random.choice(playerTokens)
-                    tokenIndex = playerTokens.index((fromVX, fromVY))
-
-                # Marcarla como usada para no volver a elegirla si no llega a ser
-                # posible moverla
-                usedTokens[tokenIndex] = True
-
-                # Obtener la lista de posibles movimientos desde FROM y si existe alguno
-                # elegir aleatoriamente entre ellos y devolverlo
-                (movesForward, movesBackward) = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
-
-                # Preferimos movimientos hacia adelante siempre que estos sean posibles
-                if movesForward:
-                    moves = movesForward
-                else:
-                    moves = movesBackward
-
-                if moves:
-                    return ((fromVX, fromVY), random.choice(moves))
-
-            return ((0,0),(0,0))
+            # Se elige un movimiento al azar
+            move = random.choice(moves)
+            ((fromX, fromY), (toX, toY)) = move
+            return move
 
         else:
 
             bestFrom = None
             bestTo = None
             bestEvaluation = 0
-            allMovesForward = []
-            allMovesBackward = []
-
-            # Se recorre todas las piezas del jugador
-            for token in playerTokens:
-                
-                # Se obtiene la lista de posibles movimientos desde FROM
-                (fromVX, fromVY) = token
-                (movesForward, movesBackward) = board.getPossibleMoves(self.playerNumber, fromVX, fromVY)
-
-                for movef in movesForward:
-                    allMovesForward.append((token, movef))
-                for moveb in movesBackward:
-                    allMovesBackward.append((token, moveb))
-
-            # Preferimos movimientos hacia adelante siempre que estos sean posibles
-            if allMovesForward:
-                moves = allMovesForward
-            else:
-                moves = allMovesBackward
 
             # Se recorre todos los posibles movimientos, evaluando el tablero tras cada uno
             for (fromVX, fromVY), (toVX, toVY) in moves:
@@ -134,7 +105,10 @@ class Player():
                     continue
 
                 board.moveToken(self.playerNumber, fromVX, fromVY, toVX, toVY)
-                features = board.getFeatures(self.playerNumber, self.model.options['modelType'])
+                if self.model.options['modelType'] == ModelTypes.NEURAL:
+                    features = board.getFeatures(self.playerNumber, self.model.options['inputLayer'])
+                else:
+                    features = board.getFeatures(self.playerNumber)
                 evaluation = self.model.evaluate(features)
 
                 # Si es el primer movimiento evaluado o tiene la mejor evaluacion conseguida

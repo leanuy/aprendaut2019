@@ -3,35 +3,73 @@
 
 from enum import Enum
 
-### CONSTANTES
-### ------------------
+### CONSTANTES - Opciones
+### ---------------------
 
 # Opciones del menú principal
 class MenuOps(Enum):
     TRAIN = 1
-    PLAY_VS_IA = 2
-    WATCH_IA_VS_IA = 3
-    LOAD = 4
-    SAVE = 5
+    LOAD = 2
+    SAVE = 3
+    EVALUATE = 4
+    SEARCH = 5
+    COMPARE = 6
+    PLAY_VS_IA = 7
+    WATCH_IA_VS_IA = 8
+    TOURNEY = 9
 
-# Tipos de modelos
-class ModelTypes(Enum):
-    CONCEPT = 1
-    NEURAL_BOARD = 2
-    NEURAL_METRICS = 3
+# Opciones del menú de manejo de archivos
+class ArchiveOps(Enum):
+    LOAD = 1
+    SAVE = 2
+    SINGLE = 3
+    MASSIVE = 4
+
+# Opciones del menú de comparación y graficas
+class CompareOps(Enum):
+    WIN_RATE = 1
+    VICTORY_RATE = 2
+    HIDDEN_LAYERS = 3
+    ACTIVATION = 4
+    LEARNING_RATE = 5
 
 # Tipos de jugadores para la opción JUGAR
 class PlayerType(Enum):
     RANDOM = 0
-    TRAINED_RANDOM = 1
-    TRAINED_SELF = 2
+    TRAINED_RANDOM = 'random'
+    TRAINED_SELF = 'self'
     TRAINED_SHOWDOWN = 3
+
+# Tipos de modelos
+class ModelTypes(Enum):
+    LINEAR = 1
+    NEURAL = 2
+
+# Features de la capa de entrada en una red
+class InputLayerTypes(Enum):
+    METRICS = 'metrics'
+    BOARD = 'board'
+
+# Tipos de funciones de activacion
+class ActivationFunctions(Enum):
+    SIGMOID = 'logistic'    
+    RELU = 'relu'
+    TANH = 'tanh'
+
+HiddenLayersCount = [1, 2, 3]
+HiddenNeuronsCount = [10, 100]
+HiddenLayersOps = [(10), (100), (10, 10), (100, 100), (10, 10, 10), (100, 100, 100)]
+LearningRateOps = [('constant', 0.001), ('invscaling', 0.1)]
+
+### CONSTANTES - Juego
+### ---------------------
 
 # Tipos de juego para la clase Game
 class GameMode(Enum):
     TRAINING = 1
     PLAYING = 2
     SPECTATING = 3
+    TOURNEY = 4
 
 # Tipos de pieza para la clase Game y Board
 class GameTokens(Enum):
