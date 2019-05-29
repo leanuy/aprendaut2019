@@ -1,23 +1,28 @@
-Para ejecutar el laboratorio, debe situarse en el mismo directorio que main.py y correr en python 3:
+Para ejecutar el programa del ejercicio 4, debe situarse en el mismo directorio que main.py y correr en python 3:
 python main.py
 Luego se le va a desplegar el siguiente menú, del cual puede elegir que acción realizar:
 
-###############################################################################
-#                                                                             #
-#        MENÚ - Laboratorio 4 (Análisis de datos - PCA, K-Means)              #
-#                                                                             #
-###############################################################################
+##########################################################
+#                                                        #
+#    MENÚ - Laboratorio 5 (Regresión Logística - PCA)    #
+#                                                        #
+##########################################################
 
 Clasificadores actuales:
 
-1. Reducir dimensiones (PCA)
-2. Generar clusters (K-Means)
-0. Salir 
+1. Entrenar clasificador
+2. Evaluar clasificador
+3. Graficar datos de clasificador
+4. Buscar mejor clasificador
+0. Salir
 
--> Elija una opción:
+-> Elija una opción: 
 
 --------------------------------------------------------------------------------------------------------
 
-Antes de ejecutar se le dan opciones al usuario para graficar, estas dependen de opciones elegidas previamente (no sólo del modelo).
-
-Para obtener las graficas de barras separando por partido o espectro unidimensional/bidimensional es necesario elegir ´Graficar conjunto de datos para cada partido´
+Dentro de las opciones, cada una cubre lo siguiente:
+- Entrenar clasificador: Esta opción da a elegir distintos parámetros para configurar un modelo y guardar un clasificador.
+- Evaluar clasificador: Esta opción permite seleccionar un modelo previamente entrenado, seleccionar un método de evaluación y clasificar.
+- Graficar datos de clasificador: Esta opción permite elegir entre graficar datos del corpus, de evaluación de un modelo o comparación de modelos.
+- Buscar mejor clasificador: Esta opción combina los distintos parámetros posible para generar el modelo y selecciona los mejores.
+- Salir: Se termina el programa.
