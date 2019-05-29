@@ -13,27 +13,31 @@ COLORS = ['#f58231', '#4363d8', '#e6194B', '#3cb44b', '#469990', '#ffe119', '#00
 ### METODO PRINCIPAL
 ### ----------------
 
-def plotPCA(dataset_full):
+def plotPCA(dataset_full, dataset_type):
 
-    dataset, _, _ = dataset_full
+    dataset, _ = dataset_full
 
     pca = PCA(n_components=26)
     pca.fit_transform(dataset.values)
     variance_ratio = list(pca.explained_variance_ratio_)
 
-    plotVarianceRatio(variance_ratio)
+    plotVarianceRatio(variance_ratio, dataset_type)
         
 ### METODOS AUXILIARES
 ### ------------------
     
-def plotVarianceRatio(variance_ratio):
+def plotVarianceRatio(variance_ratio, dataset_type):
+
+    colors = COLORS[0]
+    if dataset_type == 'Partidos':
+        colors = COLORS[1]
 
     # Generar metadatos para la gráfica
     meta = {
-      'title': 'Ratio de Varianza',
+      'title': f'Ratio de Varianza - {dataset_type}',
       'xlabel': 'Número de Componentes',
       'ylabel': '% Varianza',
-      'colors': [COLORS[0]]
+      'colors': [colors]
     }
 
     # Generar única gráfica

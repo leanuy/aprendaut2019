@@ -10,7 +10,7 @@ from utils.gui import printClassifierTraining, printClassifierEvaluation
 ### METODOS PRINCIPALES
 ### -------------------
 
-def getBestModel(dataset, candidates, parties, k, check_pca = False):
+def getBestModel(datasetC, datasetP, candidates, parties, k, check_pca = False):
 
     classifiers_candidates = []
     classifiers_parties = []
@@ -30,25 +30,31 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                     for regulation_strength in RegulationStrengthOps:
                         
                         options = {
-                            'pca_dimension': 1,                
+                            'pca_dimension': 0,                
                             'solver': solver,
                             'penalty': penalty,
                             'max_iter': max_iter,
-                            'regulation_strength': regulation_strength
+                            'regulation_strength': regulation_strength,
+                            'candidate_to_party': False
                         }
 
                         printClassifierTraining(len(classifiers_candidates) + 1, options)
 
-                        m = Model(dataset.values, candidates.values, parties.values, options)
+                        m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)
                         if k == 0:
                             m.train()
-                        evaluation = m.evaluate(k) 
+                        evaluation = m.evaluate(k)
 
-                        printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
+                        if k != 0:
+                            printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
 
-                        classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
-                        classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
+                            classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
+                            classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
+                        else:
+                            printClassifierEvaluation(evaluation['accuracy_candidates'], evaluation['accuracy_parties'])
 
+                            classifiers_candidates.append((evaluation['accuracy_candidates'], m))
+                            classifiers_parties.append((evaluation['accuracy_parties'], m))
     else:
 
         for i in range(1, 26):
@@ -57,21 +63,26 @@ def getBestModel(dataset, candidates, parties, k, check_pca = False):
                 'pca_dimension': i,                
                 'solver': SolverOps.LIBLINEAR,
                 'penalty': PenaltyOps.L2,
-                'max_iter': 10000,
-                'regulation_strength': 0.1
+                'max_iter': 1000,
+                'regulation_strength': 100.0
             }
 
             printClassifierTraining(len(classifiers_candidates) + 1, options)
 
-            m = Model(dataset.values, candidates.values, parties.values, options)
+            m = Model(datasetC.values, datasetP.values, candidates.values, parties.values, options)
             if k == 0:
                 m.train()
             evaluation = m.evaluate(k)
+            if k != 0:
+                printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
 
-            printClassifierEvaluation(evaluation['cv_accuracy_candidates'], evaluation['cv_accuracy_parties'])
+                classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
+                classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
+            else:
+                printClassifierEvaluation(evaluation['accuracy_candidates'], evaluation['accuracy_parties'])
 
-            classifiers_candidates.append((evaluation['cv_accuracy_candidates'], m))
-            classifiers_parties.append((evaluation['cv_accuracy_parties'], m))
+                classifiers_candidates.append((evaluation['accuracy_candidates'], m))
+                classifiers_parties.append((evaluation['accuracy_parties'], m))
 
     return (classifiers_candidates, classifiers_parties)
     
